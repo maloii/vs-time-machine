@@ -1,0 +1,32 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: center;
+  height: 60px;
+  padding-left: 110px;
+  box-sizing: border-box;
+  & > div {
+    align-self: center;
+  };
+}
+
+.logo {
+  display: flex;
+  justify-content: center;
+}
+
+.selectSerialPort {
+  height: 100%;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  & > button {
+    align-self: center;
+    margin-right: 15px;
+    height: 40px;
+  };
+  & > div {
+    align-self: center;
+  };
+}

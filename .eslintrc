@@ -1,0 +1,13 @@
+{
+  "extends": ["react-app"],
+  "plugins": ["prettier"],
+  "rules": {
+    "linebreak-style": 0,
+    "comma-dangle": 0,
+    "prettier/prettier": "error",
+    "no-console": "off",
+    "no-underscore-dangle": "off",
+    "import/prefer-default-export": 0
+  }
+}
+
