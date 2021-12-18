@@ -1,28 +1,24 @@
 import React, { FC } from 'react';
 import { observer } from 'mobx-react';
-import { BrowserRouter, HashRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { MainLayout } from './modules/common/components/MainLayout/MainLayout';
 import { SerialPortController } from './serial-port/controllers/SerialPortController';
-import { CompetitionController } from './modules/competition/controllers/CompetitionController';
-import { MainLayout } from './common/components/MainLayout/MainLayout';
+import { SportsmenController } from '@/modules/sportsmen/controllers/SportsmenController';
 
 export const Router: FC = observer(() => {
-  return (
+  const routers = (
     <MainLayout>
-      {!process.env.NODE_ENV || process.env.NODE_ENV === 'development' ? (
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<CompetitionController />} />
-            <Route path="/serial-port" element={<SerialPortController />} />
-          </Routes>
-        </BrowserRouter>
-      ) : (
-        <HashRouter>
-          <Routes>
-            <Route path="/" element={<CompetitionController />} />
-            <Route path="/serial-port" element={<SerialPortController />} />
-          </Routes>
-        </HashRouter>
-      )}
+      <Routes>
+        <Route path="/serial-port" element={<SerialPortController />} />
+        <Route path="/serial-port" element={<SerialPortController />} />
+        <Route path="/sportsmen" element={<SportsmenController />} />
+        <Route path="*" element={<Navigate replace to="/sportsmen" />} />
+      </Routes>
     </MainLayout>
+  );
+  return !process.env.NODE_ENV || process.env.NODE_ENV === 'development' ? (
+    <BrowserRouter>{routers}</BrowserRouter>
+  ) : (
+    <HashRouter>{routers}</HashRouter>
   );
 });

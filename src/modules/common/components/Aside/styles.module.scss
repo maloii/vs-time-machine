@@ -1,0 +1,52 @@
+aside {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 98;
+
+  width: 110px;
+  background-color: #1E1E2D;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo {
+  margin-top: 25px;
+  margin-bottom: 30px;
+  & > svg {
+    width: 90px;
+    height: auto;
+  }
+}
+
+.itemMenu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 25px;
+  cursor: pointer;
+  text-decoration: none;
+  & > svg {
+    width: 50px;
+    height: auto;
+    margin: 0 auto;
+  }
+  & > span {
+    margin-top: 5px;
+    color: #9899ac;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  &:hover {
+    svg {
+      stroke: #2c77f4;
+    }
+
+    span {
+      color: #fff;
+    }
+  }
+}
