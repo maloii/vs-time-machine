@@ -29,7 +29,8 @@
     "@mui/x-data-grid-pro": "~5.2.1",
     "@mui/icons-material": "5.2.4",
     "@mui/x-data-grid-generator": "~5.2.1",
-    "@mui/styles": "~5.2.3"
+    "@mui/styles": "~5.2.3",
+    "classnames": "~2.3.1"
   },
   "devDependencies": {
     "@types/jest": "~26.0.24",

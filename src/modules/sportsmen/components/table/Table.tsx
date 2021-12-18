@@ -1,7 +1,7 @@
 import React, { FC, useCallback } from 'react';
 import { ISportsman } from '@/types/ISportsman';
 import { observer } from 'mobx-react';
-import { Button } from '@mui/material';
+import { Button, Checkbox } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
@@ -10,8 +10,7 @@ import {
   GridColumns,
   GridActionsCellItem,
   GridRowParams,
-  GridToolbar,
-  GridValueGetterParams
+  GridToolbar
 } from '@mui/x-data-grid';
 
 import styles from './styles.module.scss';
@@ -39,14 +38,43 @@ export const Table: FC<IProps> = observer(
       },
       [onEditSportsmen, sportsmen]
     );
+
+    const handleChangeSelected = useCallback(
+      (_id: string) => () => {
+        onEditSportsmen(
+          sportsmen.map((sportsman) => {
+            if (sportsman._id === _id) {
+              sportsman.selected = !sportsman.selected;
+            }
+            return sportsman;
+          })
+        );
+      },
+      [onEditSportsmen, sportsmen]
+    );
+
     const handleDeleteClick = useCallback(
       (id: string) => () => {
-        onDeleteSportsmen(id);
+        if (window.confirm('Are you sure you want to remove the sportsman?')) {
+          onDeleteSportsmen(id);
+        }
       },
       [onDeleteSportsmen]
     );
 
     const columns: GridColumns = [
+      {
+        field: 'selected',
+        headerName: '',
+        type: 'actions',
+        width: 60,
+        getActions: (params: GridRowParams) => [
+          <Checkbox
+            checked={Boolean(params.getValue(params.id, 'selected'))}
+            onChange={handleChangeSelected(params.id as string)}
+          />
+        ]
+      },
       { field: 'num', headerName: 'Num', type: 'number', width: 60, align: 'center' },
       { field: 'lastName', editable: true, headerName: 'Last name', flex: 1 },
       { field: 'firstName', editable: true, headerName: 'First name', flex: 1 },
@@ -60,7 +88,7 @@ export const Table: FC<IProps> = observer(
       {
         field: 'actions',
         type: 'actions',
-        headerName: 'Actions',
+        headerName: '',
         width: 100,
         cellClassName: 'actions',
         getActions: (params: GridRowParams) => {
@@ -88,6 +116,7 @@ export const Table: FC<IProps> = observer(
             rows={sportsmen.map((item, indx) => ({ ...item, num: indx + 1 }))}
             onCellEditCommit={handleCellEditCommit}
             getRowId={(row) => row._id}
+            hideFooterPagination
             components={{
               Toolbar: GridToolbar
             }}

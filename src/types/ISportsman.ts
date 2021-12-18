@@ -15,4 +15,5 @@ export interface ISportsman {
   email: string;
   country: string;
   position: number;
+  selected: boolean;
 }

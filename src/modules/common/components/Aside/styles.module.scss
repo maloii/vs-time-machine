@@ -39,10 +39,27 @@ aside {
     font-size: 1rem;
     text-align: center;
   }
+}
 
+.iconStroke {
   &:hover {
     svg {
       stroke: #2c77f4;
+    }
+
+    span {
+      color: #fff;
+    }
+  }
+}
+
+.iconFill {
+  &:hover {
+    svg {
+      fill: #2c77f4;
+    }
+    path {
+      fill: #2c77f4;
     }
 
     span {
