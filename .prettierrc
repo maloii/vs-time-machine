@@ -1,6 +1,6 @@
 {
   "singleQuote": true,
-  "tabWidth": 2,
+  "tabWidth": 4,
   "useTabs": false,
   "trailingComma": "none",
   "bracketSpacing": true,

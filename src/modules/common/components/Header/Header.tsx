@@ -6,10 +6,10 @@ import { SelectSerialPort } from './SelectSerialPort';
 import styles from './styles.module.scss';
 
 export const Header = observer(() => {
-  return (
-    <div className={styles.header}>
-      <SelectCompetition />
-      <SelectSerialPort />
-    </div>
-  );
+    return (
+        <div className={styles.header}>
+            <SelectCompetition />
+            <SelectSerialPort />
+        </div>
+    );
 });

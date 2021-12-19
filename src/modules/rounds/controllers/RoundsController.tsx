@@ -6,78 +6,122 @@ import { TabRounds } from '@/modules/rounds/components/TabRounds/TabRounds';
 import { story } from '@/story/story';
 import { db } from '@/repository/Repository';
 import { DialogAddRound } from '@/modules/rounds/components/DialogAddRound/DialogAddRound';
-import { randomId } from '@mui/x-data-grid-generator';
 
 import styles from './styles.module.scss';
+import { IRound } from '@/types/IRound';
+import { loadCompetitionAction } from '@/actions/loadCompetitionAction';
 
 export const RoundsController: FC = observer(() => {
-  const [openDialogAdd, setOpenDialogAdd] = useState(false);
+    const [openDialogAdd, setOpenDialogAdd] = useState(false);
+    const [openDialogEdit, setOpenDialogEdit] = useState(false);
 
-  const rounds = [...(story.competition?.rounds || [])].sort((a, b) => a.sort - b.sort);
+    const rounds = [...(story.rounds || [])].sort((a, b) => a.sort - b.sort);
 
-  const selectedRound = useMemo(() => rounds.find((round) => round.selected), [rounds]);
+    const selectedRound = useMemo(() => rounds.find((round) => round.selected), [rounds]);
 
-  const handleSelectRound = useCallback(
-    async (_id: string) => {
-      if (story.competition) {
-        await db.competition.update(
-          { selected: true },
-          {
-            $set: {
-              rounds: rounds.map((round) => ({ ...round, selected: round._id === _id }))
+    const handleSelectRound = useCallback(async (_id: string) => {
+        if (story.competition) {
+            await db.round.update(
+                { competitionId: story.competition._id, selected: true },
+                { $set: { selected: false } },
+                { multi: true }
+            );
+            await db.round.update({ _id }, { $set: { selected: true } });
+            await loadCompetitionAction();
+        }
+    }, []);
+
+    const handleOpenAddRound = useCallback(() => setOpenDialogAdd(true), []);
+    const handleOpenEditRound = useCallback(() => setOpenDialogEdit(true), []);
+    const handleCloseDialog = useCallback(() => {
+        setOpenDialogAdd(false);
+        setOpenDialogEdit(false);
+    }, []);
+
+    const handleAddRound = useCallback(
+        async (
+            round: Omit<
+                IRound,
+                '_id' | 'competitionId' | 'selected' | 'dateCreate' | 'minTimeLap' | 'close' | 'sort' | 'groups'
+            >
+        ) => {
+            if (story.competition && round.name) {
+                await Promise.all(
+                    rounds.map(async (item, indx) => {
+                        return await db.round.update(
+                            { _id: item._id },
+                            {
+                                $set: { selected: false, sort: indx }
+                            }
+                        );
+                    })
+                );
+
+                await db.round.insert({
+                    ...round,
+                    competitionId: story.competition._id,
+                    dateCreate: DateTime.now(),
+                    sort: rounds.length,
+                    selected: true
+                });
+                await loadCompetitionAction();
+                handleCloseDialog();
             }
-          }
-        );
-        story.setCompetition(await db.competition.findOne({ _id: story.competition._id }));
-      }
-    },
-    [rounds]
-  );
+        },
+        [rounds, handleCloseDialog]
+    );
 
-  const handleOpenAddRound = useCallback(() => setOpenDialogAdd(true), []);
-  const handleCloseDialogAdd = useCallback(() => setOpenDialogAdd(false), []);
-
-  const handleAddRound = useCallback(
-    async (name: string) => {
-      if (story.competition && name) {
-        await db.competition.update(
-          { selected: true },
-          {
-            $set: {
-              rounds: rounds.map((round, indx) => ({ ...round, selected: false, sort: indx }))
+    const handleEditRound = useCallback(
+        async (
+            round: Omit<
+                IRound,
+                '_id' | 'competitionId' | 'selected' | 'dateCreate' | 'minTimeLap' | 'close' | 'sort' | 'groups'
+            >
+        ) => {
+            if (story.competition && selectedRound && round.name) {
+                await db.round.update({ _id: selectedRound._id }, { $set: { ...round } });
+                await loadCompetitionAction();
+                handleCloseDialog();
             }
-          }
-        );
-        await db.competition.update(
-          { selected: true },
-          {
-            $push: {
-              rounds: {
-                _id: randomId(),
-                dateCreate: DateTime.now(),
-                name,
-                sort: rounds.length,
-                selected: true
-              }
-            }
-          }
-        );
-        story.setCompetition(await db.competition.findOne({ _id: story.competition._id }));
-        handleCloseDialogAdd();
-      }
-    },
-    [rounds, handleCloseDialogAdd]
-  );
+        },
+        [selectedRound, handleCloseDialog]
+    );
 
-  return (
-    <div className={styles.root}>
-      <TabRounds
-        rounds={rounds}
-        selectedId={selectedRound?._id}
-        onSelect={handleSelectRound}
-        onAddRound={handleOpenAddRound}
-      />
-      <DialogAddRound open={openDialogAdd} onClose={handleCloseDialogAdd} onSave={handleAddRound} />
-    </div>
-  );
+    const handleDeleteRound = useCallback(
+        async (_id: string) => {
+            await db.round.remove({ _id }, {});
+            await loadCompetitionAction();
+
+            if ((rounds || []).length > 1) {
+                const newSelectedRound = rounds[rounds.length - 2];
+                await db.round.update({ _id: newSelectedRound._id }, { $set: { selected: true } });
+                await loadCompetitionAction();
+            }
+            handleCloseDialog();
+        },
+        [handleCloseDialog, rounds]
+    );
+
+    return (
+        <div className={styles.root}>
+            <TabRounds
+                rounds={rounds}
+                selectedId={selectedRound?._id}
+                onSelect={handleSelectRound}
+                onAddRound={handleOpenAddRound}
+                onEditRound={handleOpenEditRound}
+            />
+            {(openDialogAdd || openDialogEdit) && (
+                <DialogAddRound
+                    open={openDialogAdd || openDialogEdit}
+                    onClose={handleCloseDialog}
+                    onSave={handleAddRound}
+                    onUpdate={handleEditRound}
+                    onDelete={handleDeleteRound}
+                    rounds={rounds}
+                    round={openDialogEdit ? selectedRound : undefined}
+                />
+            )}
+        </div>
+    );
 });
