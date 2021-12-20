@@ -1,8 +1,7 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
-import { ICompetition } from '@/types/ICompetition';
 import _ from 'lodash';
-import { FormControl, MenuItem, TextField } from '@mui/material';
+import { Divider, FormControl, MenuItem, TextField } from '@mui/material';
 import { DialogCompetitionEdit } from '../../../competition/components/DialogCompetitionEdit/DialogCompetitionEdit';
 import { db } from '@/repository/Repository';
 import { story } from '@/story/story';
@@ -47,6 +46,7 @@ export const SelectCompetition: FC = observer(() => {
                             {item.name}
                         </MenuItem>
                     ))}
+                    <Divider />
                     <MenuItem value={0}>
                         <em>Create new competition</em>
                     </MenuItem>

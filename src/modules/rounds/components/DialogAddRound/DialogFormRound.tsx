@@ -41,7 +41,7 @@ interface IProps {
     round?: IRound;
 }
 
-export const DialogAddRound: FC<IProps> = ({ open, onClose, onSave, onUpdate, onDelete, rounds, round }: IProps) => {
+export const DialogFormRound: FC<IProps> = ({ open, onClose, onSave, onUpdate, onDelete, rounds, round }: IProps) => {
     const [name, setName] = useState(round?.name || '');
     const [typeRound, setTypeRound] = useState(round?.typeRound || TypeRound.PRACTICE);
     const [typeRace, setTypeRace] = useState(round?.typeRace || TypeRace.FIXED_COUNT_LAPS);
@@ -143,7 +143,7 @@ export const DialogAddRound: FC<IProps> = ({ open, onClose, onSave, onUpdate, on
 
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogTitle>New round</DialogTitle>
+            <DialogTitle>{round ? 'Edit' : 'New'} round</DialogTitle>
             <DialogContent>
                 <Box
                     component="form"

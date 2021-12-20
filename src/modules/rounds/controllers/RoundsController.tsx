@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { TabRounds } from '@/modules/rounds/components/TabRounds/TabRounds';
 import { story } from '@/story/story';
 import { db } from '@/repository/Repository';
-import { DialogAddRound } from '@/modules/rounds/components/DialogAddRound/DialogAddRound';
+import { DialogFormRound } from '@/modules/rounds/components/DialogAddRound/DialogFormRound';
 
 import styles from './styles.module.scss';
 import { IRound } from '@/types/IRound';
@@ -112,7 +112,7 @@ export const RoundsController: FC = observer(() => {
                 onEditRound={handleOpenEditRound}
             />
             {(openDialogAdd || openDialogEdit) && (
-                <DialogAddRound
+                <DialogFormRound
                     open={openDialogAdd || openDialogEdit}
                     onClose={handleCloseDialog}
                     onSave={handleAddRound}
