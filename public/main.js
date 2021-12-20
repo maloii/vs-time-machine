@@ -6,39 +6,39 @@ const remoteMain = require('@electron/remote/main');
 remoteMain.initialize();
 
 function createWindow() {
-  const mainWindow = new BrowserWindow({
-    width: 1024,
-    height: 1024,
-    webPreferences: {
-      nodeIntegration: true,
-      enableRemoteModule: true,
-      contextIsolation: false
-    },
-    icon: path.join(__dirname, 'AppIcon.icns')
-  });
+    const mainWindow = new BrowserWindow({
+        width: 1024,
+        height: 1024,
+        webPreferences: {
+            nodeIntegration: true,
+            enableRemoteModule: true,
+            contextIsolation: false
+        },
+        icon: path.join(__dirname, 'AppIcon.icns')
+    });
 
-  mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
+    mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
 
-  remoteMain.enable(mainWindow.webContents);
+    remoteMain.enable(mainWindow.webContents);
 
-  // Отображаем средства разработчика.
-  // mainWindow.webContents.openDevTools();
+    // Отображаем средства разработчика.
+    // mainWindow.webContents.openDevTools();
 }
 
 app.allowRendererProcessReuse = false;
 
 app.whenReady().then(() => {
-  createWindow();
+    createWindow();
 
-  app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
+    app.on('activate', function () {
+        if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
 });
 
 app.on('window-all-closed', function () {
-  app.quit();
+    app.quit();
 });
 
 ipcMain.on('setMyGlobalVariable', (event, myGlobalVariableValue) => {
-  global.myGlobalVariable = myGlobalVariableValue;
+    global.myGlobalVariable = myGlobalVariableValue;
 });
