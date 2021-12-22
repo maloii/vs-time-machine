@@ -3,7 +3,6 @@ import { TypeGroup } from './TypeGroup';
 
 export interface IGroup {
     _id: string;
-    dateCreate: DateTime;
     name: string;
     sort: number;
     selected: boolean;

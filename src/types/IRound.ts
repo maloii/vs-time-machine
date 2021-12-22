@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon';
 import { TypeRound } from './TypeRound';
 import { TypeRace } from './TypeRace';
 import { IGroup } from './IGroup';
@@ -9,7 +8,6 @@ import { TypeRaceElimination } from '@/types/TypeRaceElimination';
 export interface IRound {
     _id: string;
     competitionId: string;
-    dateCreate: DateTime;
     name: string;
     sort: number;
     selected: boolean;

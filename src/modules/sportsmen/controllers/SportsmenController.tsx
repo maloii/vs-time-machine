@@ -4,7 +4,6 @@ import _ from 'lodash';
 import { Table } from '@/modules/sportsmen/components/table/Table';
 import { story } from '@/story/story';
 import { db } from '@/repository/Repository';
-import { DateTime } from 'luxon';
 import { ISportsman } from '@/types/ISportsman';
 import { loadCompetitionAction } from '@/actions/loadCompetitionAction';
 import { DialogSportsmanEdit } from '@/modules/sportsmen/components/DialogSportsmanEdit/DialogSportsmanEdit';
@@ -40,8 +39,7 @@ export const SportsmenController: FC = observer(() => {
             if (story.competition) {
                 await db.sportsman.insert({
                     ...sportsman,
-                    competitionId: story.competition._id,
-                    dateCreate: DateTime.now()
+                    competitionId: story.competition._id
                 });
                 await loadCompetitionAction();
                 handleClose();
@@ -68,14 +66,18 @@ export const SportsmenController: FC = observer(() => {
         [handleClose]
     );
 
-    const handleDeleteSportsmen = useCallback(async (_id: string) => {
-        if (story.competition) {
-            if (window.confirm('Are you sure you want to remove the sportsman?')) {
-                await db.sportsman.remove({ _id }, {});
-                await loadCompetitionAction();
+    const handleDeleteSportsmen = useCallback(
+        async (_id: string) => {
+            if (story.competition) {
+                if (window.confirm('Are you sure you want to remove the sportsman?')) {
+                    await db.sportsman.remove({ _id }, {});
+                    await loadCompetitionAction();
+                    handleClose();
+                }
             }
-        }
-    }, []);
+        },
+        [handleClose]
+    );
 
     if (!story.competition) return null;
 

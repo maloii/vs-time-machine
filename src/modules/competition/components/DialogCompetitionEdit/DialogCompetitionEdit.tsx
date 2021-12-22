@@ -1,7 +1,6 @@
 import React, { FC, useCallback, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
-import { DateTime } from 'luxon';
 import { ICompetition } from '@/types/ICompetition';
 import { db } from '@/repository/Repository';
 import { loadCompetitionAction } from '@/actions/loadCompetitionAction';
@@ -22,9 +21,7 @@ export const DialogCompetitionEdit: FC<Iprops> = observer(({ open, onClose }: Ip
             await db.competition.update({ selected: true }, { $set: { selected: false } });
             await db.competition.insert<Omit<ICompetition, '_id'>>({
                 name,
-                dateCreate: DateTime.now(),
                 selected: true,
-                sportsmen: [],
                 gates: []
             });
             await loadCompetitionAction();

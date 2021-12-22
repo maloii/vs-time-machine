@@ -1,9 +1,7 @@
-import { DateTime } from 'luxon';
-
 export interface ISportsman {
     _id: string;
     competitionId: string;
-    dateCreate: DateTime;
+    transponders: number[];
     firstName: string;
     lastName: string;
     middleName: string;

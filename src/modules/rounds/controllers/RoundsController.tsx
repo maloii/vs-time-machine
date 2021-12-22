@@ -1,5 +1,4 @@
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { DateTime } from 'luxon';
 import { observer } from 'mobx-react';
 
 import { TabRounds } from '@/modules/rounds/components/TabRounds/TabRounds';
@@ -60,7 +59,6 @@ export const RoundsController: FC = observer(() => {
                 await db.round.insert({
                     ...round,
                     competitionId: story.competition._id,
-                    dateCreate: DateTime.now(),
                     sort: rounds.length,
                     selected: true
                 });

@@ -1,5 +1,18 @@
-import React, { ChangeEvent, FC, useCallback, useRef, useState } from 'react';
-import { Button, Dialog, DialogContent, Box, DialogActions, DialogTitle, TextField, Divider } from '@mui/material';
+import React, { ChangeEvent, FC, SyntheticEvent, useCallback, useRef, useState } from 'react';
+import {
+    Button,
+    Dialog,
+    DialogContent,
+    Box,
+    DialogActions,
+    DialogTitle,
+    TextField,
+    Divider,
+    Autocomplete,
+    Chip,
+    AutocompleteValue
+} from '@mui/material';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { ISportsman } from '@/types/ISportsman';
 import { getFilePath, copyFile } from '@/utils/fileUtils';
 
@@ -28,6 +41,7 @@ export const DialogSportsmanEdit: FC<IProps> = ({ open, onClose, sportsman, onSa
     const [country, setCountry] = useState(sportsman?.country || '');
     const [position, setPosition] = useState(sportsman?.position || '');
     const [photo, setPhoto] = useState(sportsman?.photo || '');
+    const [transponders, setTransponders] = useState(sportsman?.transponders || []);
 
     const fileRef = useRef<HTMLInputElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
@@ -70,12 +84,16 @@ export const DialogSportsmanEdit: FC<IProps> = ({ open, onClose, sportsman, onSa
             setPhoto(await copyFile(fileRef.current.files?.[0]?.path));
         }
     }, []);
+    const handleChangeDeletePhoto = useCallback(() => setPhoto(''), []);
+
+    const handleChangeTransponders = useCallback(
+        (event: SyntheticEvent, value: AutocompleteValue<any, any, any, any>) => {
+            setTransponders(value);
+        },
+        []
+    );
 
     const handleSave = useCallback(async () => {
-        if (fileRef.current && fileRef.current.files?.[0]?.path) {
-            const newPhotoName = await copyFile(fileRef.current.files?.[0]?.path);
-            console.log(newPhotoName);
-        }
         const newDataSportsman = {
             firstName,
             lastName,
@@ -88,6 +106,7 @@ export const DialogSportsmanEdit: FC<IProps> = ({ open, onClose, sportsman, onSa
             phone,
             email,
             country,
+            transponders,
             position: Number(position) || undefined
         };
         if (sportsman?._id) {
@@ -110,7 +129,9 @@ export const DialogSportsmanEdit: FC<IProps> = ({ open, onClose, sportsman, onSa
         photo,
         position,
         sportsman?._id,
-        team
+        sportsman?.selected,
+        team,
+        transponders
     ]);
 
     const handleDelete = useCallback(() => {
@@ -131,6 +152,31 @@ export const DialogSportsmanEdit: FC<IProps> = ({ open, onClose, sportsman, onSa
                     noValidate
                     autoComplete="off"
                 >
+                    <Autocomplete
+                        multiple
+                        fullWidth
+                        options={[]}
+                        value={(transponders || []).map(String)}
+                        disableClearable
+                        freeSolo
+                        autoSelect
+                        style={{ width: 'calc(50ch + 16px)' }}
+                        renderTags={(value: readonly string[], getTagProps) =>
+                            value.map((option: string, index: number) => (
+                                <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+                            ))
+                        }
+                        onChange={handleChangeTransponders}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                type="number"
+                                variant="filled"
+                                label="Transponders"
+                                placeholder="Transponders"
+                            />
+                        )}
+                    />
                     <TextField label="Last name" error={!lastName} value={lastName} onChange={handleChangeLastName} />
                     <TextField label="First name" value={firstName} onChange={handleChangeFirstName} />
                     <TextField label="Middle name" value={middleName} onChange={handleChangeMiddleName} />
@@ -154,11 +200,16 @@ export const DialogSportsmanEdit: FC<IProps> = ({ open, onClose, sportsman, onSa
                     <TextField label="Position" type="number" value={position} onChange={handleChangePosition} />
                 </Box>
                 <div className={styles.photoBlock}>
-                    <img ref={imageRef} src={getFilePath(photo || 'empty_person.png')} alt="sportsman" />
-                    <Button variant="contained" component="label">
-                        Select photo
-                        <input type="file" ref={fileRef} hidden onChange={handleChangePhoto} />
-                    </Button>
+                    <div>
+                        {!!photo && (
+                            <CancelOutlinedIcon className={styles.deletePhoto} onClick={handleChangeDeletePhoto} />
+                        )}
+                        <img ref={imageRef} src={getFilePath(photo || 'empty_person.png')} alt="sportsman" />
+                        <Button variant="contained" component="label">
+                            Select photo
+                            <input type="file" ref={fileRef} hidden onChange={handleChangePhoto} />
+                        </Button>
+                    </div>
                 </div>
             </DialogContent>
             <DialogActions>
