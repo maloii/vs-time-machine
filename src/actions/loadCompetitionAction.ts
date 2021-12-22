@@ -7,6 +7,7 @@ export const loadCompetitionAction = async (): Promise<void> => {
     const competition = await db.competition.findOne<ICompetition>({ selected: true });
     if (competition) {
         story.setCompetition(competition);
+        story.setSportsmen(await db.sportsman.find({ competitionId: competition._id }));
         story.setRounds(await db.round.find({ competitionId: competition._id }));
     }
 };

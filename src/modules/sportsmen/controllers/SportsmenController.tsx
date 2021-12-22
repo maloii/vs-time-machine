@@ -1,9 +1,9 @@
 import React, { FC, useCallback, useState } from 'react';
 import { observer } from 'mobx-react';
+import _ from 'lodash';
 import { Table } from '@/modules/sportsmen/components/table/Table';
 import { story } from '@/story/story';
 import { db } from '@/repository/Repository';
-import { randomId } from '@mui/x-data-grid-generator';
 import { DateTime } from 'luxon';
 import { ISportsman } from '@/types/ISportsman';
 import { loadCompetitionAction } from '@/actions/loadCompetitionAction';
@@ -17,57 +17,63 @@ export const SportsmenController: FC = observer(() => {
     const [openDialogAdd, setOpenDialogAdd] = useState(false);
     const [sportsmanEdit, setSportsmanEdit] = useState<ISportsman>();
 
+    const sportsmen = [...story.sportsmen];
+
     const handleClose = useCallback(() => {
         setOpenDialogAdd(false);
         setSportsmanEdit(undefined);
     }, []);
 
-    const handleAddSportsman = useCallback(() => {
+    const handleOpenAddSportsman = useCallback(() => {
         setOpenDialogAdd(true);
-        // if (story.competition) {
-        //     await db.competition.update(
-        //         { selected: true },
-        //         {
-        //             $push: {
-        //                 sportsmen: {
-        //                     _id: randomId(),
-        //                     dateCreate: DateTime.now(),
-        //                     firstName: '',
-        //                     lastName: '',
-        //                     middleName: ''
-        //                 }
-        //             }
-        //         }
-        //     );
-        //     await loadCompetitionAction();
-        // }
     }, []);
 
-    const handleEditSportsmen = useCallback(async (sportsmen: ISportsman[]) => {
-        if (story.competition) {
-            await db.competition.update(
-                { selected: true },
-                {
-                    $set: {
-                        sportsmen
+    const handleOpenEditSportsman = useCallback(
+        (_id: string) => {
+            setSportsmanEdit(_.find(sportsmen, ['_id', _id]));
+        },
+        [sportsmen]
+    );
+
+    const handleSaveSportsman = useCallback(
+        async (sportsman: Omit<ISportsman, '_id' | 'competitionId' | 'dateCreate'>) => {
+            if (story.competition) {
+                await db.sportsman.insert({
+                    ...sportsman,
+                    competitionId: story.competition._id,
+                    dateCreate: DateTime.now()
+                });
+                await loadCompetitionAction();
+                handleClose();
+            }
+        },
+        [handleClose]
+    );
+
+    const handleUpdateSportsman = useCallback(
+        async (_id: string, sportsman: Omit<ISportsman, '_id' | 'competitionId' | 'dateCreate'>) => {
+            if (story.competition && _id) {
+                await db.sportsman.update(
+                    { _id },
+                    {
+                        $set: {
+                            ...sportsman
+                        }
                     }
-                }
-            );
-            await loadCompetitionAction();
-        }
-    }, []);
+                );
+                await loadCompetitionAction();
+                handleClose();
+            }
+        },
+        [handleClose]
+    );
 
     const handleDeleteSportsmen = useCallback(async (_id: string) => {
         if (story.competition) {
-            await db.competition.update(
-                { selected: true },
-                {
-                    $set: {
-                        sportsmen: [...story.competition.sportsmen].filter((item) => item._id !== _id)
-                    }
-                }
-            );
-            await loadCompetitionAction();
+            if (window.confirm('Are you sure you want to remove the sportsman?')) {
+                await db.sportsman.remove({ _id }, {});
+                await loadCompetitionAction();
+            }
         }
     }, []);
 
@@ -76,20 +82,24 @@ export const SportsmenController: FC = observer(() => {
     return (
         <div className={styles.root}>
             <div className={styles.actions}>
-                <Button color="primary" startIcon={<AddIcon />} onClick={handleAddSportsman}>
+                <Button color="primary" startIcon={<AddIcon />} onClick={handleOpenAddSportsman}>
                     Add sportsman
                 </Button>
             </div>
             <Table
-                sportsmen={[...story.competition.sportsmen]}
-                onEditSportsmen={handleEditSportsmen}
-                onDeleteSportsmen={handleDeleteSportsmen}
+                sportsmen={sportsmen}
+                onUpdate={handleUpdateSportsman}
+                onDelete={handleDeleteSportsmen}
+                onOpenEdit={handleOpenEditSportsman}
             />
             {(openDialogAdd || !!sportsmanEdit) && (
                 <DialogSportsmanEdit
                     open={openDialogAdd || !!sportsmanEdit}
                     sportsman={sportsmanEdit}
                     onClose={handleClose}
+                    onSave={handleSaveSportsman}
+                    onUpdate={handleUpdateSportsman}
+                    onDelete={handleDeleteSportsmen}
                 />
             )}
         </div>

@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 
 export interface ISportsman {
     _id: string;
+    competitionId: string;
     dateCreate: DateTime;
     firstName: string;
     lastName: string;
@@ -9,11 +10,11 @@ export interface ISportsman {
     nick: string;
     photo: string;
     city: string;
-    age: number;
+    age?: number;
     team: string;
     phone: string;
     email: string;
     country: string;
-    position: number;
+    position?: number;
     selected: boolean;
 }

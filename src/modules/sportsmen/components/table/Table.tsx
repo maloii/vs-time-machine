@@ -1,8 +1,8 @@
 import React, { FC, useCallback } from 'react';
 import { ISportsman } from '@/types/ISportsman';
 import { observer } from 'mobx-react';
-import { Button, Checkbox } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import { Checkbox } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
     DataGrid,
@@ -14,50 +14,48 @@ import {
 } from '@mui/x-data-grid';
 
 import styles from './styles.module.scss';
+import _ from 'lodash';
 
 interface IProps {
     sportsmen: ISportsman[];
-    onEditSportsmen: (sportsmen: ISportsman[]) => void;
-    onDeleteSportsmen: (id: string) => void;
+    onUpdate: (_id: string, sportsman: Omit<ISportsman, '_id' | 'competitionId' | 'dateCreate'>) => void;
+    onDelete: (id: string) => void;
+    onOpenEdit: (id: string) => void;
 }
 
-export const Table: FC<IProps> = observer(({ sportsmen, onEditSportsmen, onDeleteSportsmen }: IProps) => {
+export const Table: FC<IProps> = observer(({ sportsmen, onUpdate, onDelete, onOpenEdit }: IProps) => {
     const handleCellEditCommit = useCallback(
         (params: GridCellEditCommitParams) => {
-            onEditSportsmen(
-                sportsmen.map((sportsman) => {
-                    if (sportsman._id === params.id) {
-                        // @ts-ignore
-                        sportsman[params.field] = params.value;
-                    }
-                    return sportsman;
-                })
-            );
+            const editSportsmen = _.find(sportsmen, ['_id', params.id]);
+            if (editSportsmen) {
+                onUpdate(editSportsmen._id, { ...editSportsmen, [params.field]: params.value });
+            }
         },
-        [onEditSportsmen, sportsmen]
+        [onUpdate, sportsmen]
     );
 
     const handleChangeSelected = useCallback(
         (_id: string) => () => {
-            onEditSportsmen(
-                sportsmen.map((sportsman) => {
-                    if (sportsman._id === _id) {
-                        sportsman.selected = !sportsman.selected;
-                    }
-                    return sportsman;
-                })
-            );
+            const editSportsmen = _.find(sportsmen, ['_id', _id]);
+            if (editSportsmen) {
+                onUpdate(editSportsmen._id, { ...editSportsmen, selected: !editSportsmen.selected });
+            }
         },
-        [onEditSportsmen, sportsmen]
+        [onUpdate, sportsmen]
     );
 
     const handleDeleteClick = useCallback(
         (id: string) => () => {
-            if (window.confirm('Are you sure you want to remove the sportsman?')) {
-                onDeleteSportsmen(id);
-            }
+            onDelete(id);
         },
-        [onDeleteSportsmen]
+        [onDelete]
+    );
+
+    const handleEditClick = useCallback(
+        (id: string) => () => {
+            onOpenEdit(id);
+        },
+        [onOpenEdit]
     );
 
     const columns: GridColumns = [
@@ -95,6 +93,12 @@ export const Table: FC<IProps> = observer(({ sportsmen, onEditSportsmen, onDelet
                         icon={<DeleteIcon />}
                         label="Delete"
                         onClick={handleDeleteClick(params.id as string)}
+                        color="inherit"
+                    />,
+                    <GridActionsCellItem
+                        icon={<EditIcon />}
+                        label="Edit"
+                        onClick={handleEditClick(params.id as string)}
                         color="inherit"
                     />
                 ];

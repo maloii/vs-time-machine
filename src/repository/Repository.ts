@@ -10,12 +10,14 @@ const dbFactory = (fileName: string) =>
 
 interface IRepository {
     competition: Datastore;
+    sportsman: Datastore;
     round: Datastore;
     lap: Datastore;
 }
 
 export const db: IRepository = {
     competition: dbFactory('competition.db'),
+    sportsman: dbFactory('sportsman.db'),
     round: dbFactory('round.db'),
     lap: dbFactory('lap.db')
 };

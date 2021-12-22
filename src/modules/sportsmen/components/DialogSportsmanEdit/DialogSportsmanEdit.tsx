@@ -1,7 +1,7 @@
-import React, { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, FC, useCallback, useRef, useState } from 'react';
 import { Button, Dialog, DialogContent, Box, DialogActions, DialogTitle, TextField, Divider } from '@mui/material';
 import { ISportsman } from '@/types/ISportsman';
-import { getFilePath, copyFile, copyFileEmptyPerson } from '@/utils/fileUtils';
+import { getFilePath, copyFile } from '@/utils/fileUtils';
 
 import styles from './styles.module.scss';
 
@@ -9,9 +9,12 @@ interface IProps {
     open: boolean;
     onClose: () => void;
     sportsman?: ISportsman;
+    onSave: (sportsman: Omit<ISportsman, '_id' | 'competitionId' | 'dateCreate'>) => void;
+    onUpdate: (_id: string, sportsman: Omit<ISportsman, '_id' | 'competitionId' | 'dateCreate'>) => void;
+    onDelete: (_id: string) => void;
 }
 
-export const DialogSportsmanEdit: FC<IProps> = ({ open, onClose, sportsman }: IProps) => {
+export const DialogSportsmanEdit: FC<IProps> = ({ open, onClose, sportsman, onSave, onUpdate, onDelete }: IProps) => {
     const [firstName, setFirstName] = useState(sportsman?.firstName || '');
     const [lastName, setLastName] = useState(sportsman?.lastName || '');
     const [middleName, setMiddleName] = useState(sportsman?.middleName || '');
@@ -23,7 +26,7 @@ export const DialogSportsmanEdit: FC<IProps> = ({ open, onClose, sportsman }: IP
     const [phone, setPhone] = useState(sportsman?.phone || '');
     const [email, setEmail] = useState(sportsman?.email || '');
     const [country, setCountry] = useState(sportsman?.country || '');
-    const [position, setPosition] = useState(sportsman?.country || '');
+    const [position, setPosition] = useState(sportsman?.position || '');
     const [photo, setPhoto] = useState(sportsman?.photo || '');
 
     const fileRef = useRef<HTMLInputElement>(null);
@@ -68,21 +71,53 @@ export const DialogSportsmanEdit: FC<IProps> = ({ open, onClose, sportsman }: IP
         }
     }, []);
 
-    // photo: string;
-
     const handleSave = useCallback(async () => {
         if (fileRef.current && fileRef.current.files?.[0]?.path) {
             const newPhotoName = await copyFile(fileRef.current.files?.[0]?.path);
             console.log(newPhotoName);
         }
-    }, []);
-    const handleDelete = useCallback(() => {}, []);
+        const newDataSportsman = {
+            firstName,
+            lastName,
+            middleName,
+            nick,
+            photo,
+            city,
+            age: Number(age) || undefined,
+            team,
+            phone,
+            email,
+            country,
+            position: Number(position) || undefined
+        };
+        if (sportsman?._id) {
+            onUpdate(sportsman?._id, { ...newDataSportsman, selected: sportsman.selected });
+        } else {
+            onSave({ ...newDataSportsman, selected: true });
+        }
+    }, [
+        age,
+        city,
+        country,
+        email,
+        firstName,
+        lastName,
+        middleName,
+        nick,
+        onSave,
+        onUpdate,
+        phone,
+        photo,
+        position,
+        sportsman?._id,
+        team
+    ]);
 
-    useEffect(() => {
-        (async function () {
-            await copyFileEmptyPerson();
-        })();
-    }, []);
+    const handleDelete = useCallback(() => {
+        if (sportsman?._id) {
+            onDelete(sportsman?._id);
+        }
+    }, [onDelete, sportsman?._id]);
 
     return (
         <Dialog open={open} onClose={onClose}>
