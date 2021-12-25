@@ -59,6 +59,7 @@ export const Table: FC<IProps> = observer(({ sportsmen, onUpdate, onDelete, onOp
     );
 
     const columns: GridColumns = [
+        { field: 'num', headerName: '№', type: 'number', width: 60, align: 'center' },
         {
             field: 'selected',
             headerName: '',
@@ -71,7 +72,6 @@ export const Table: FC<IProps> = observer(({ sportsmen, onUpdate, onDelete, onOp
                 />
             ]
         },
-        { field: 'num', headerName: '№', type: 'number', width: 60, align: 'center' },
         { field: 'lastName', editable: true, headerName: 'Last name', flex: 1 },
         { field: 'firstName', editable: true, headerName: 'First name', flex: 1 },
         { field: 'middleName', editable: true, headerName: 'Middle name', flex: 1 },

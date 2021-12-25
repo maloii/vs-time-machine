@@ -8,7 +8,7 @@ import { DialogFormRound } from '@/modules/rounds/components/DialogAddRound/Dial
 
 import styles from './styles.module.scss';
 import { IRound } from '@/types/IRound';
-import { loadCompetitionAction } from '@/actions/loadCompetitionAction';
+import { loadRoundsAction } from '@/actions/loadCompetitionAction';
 
 export const RoundsController: FC = observer(() => {
     const [openDialogAdd, setOpenDialogAdd] = useState(false);
@@ -26,7 +26,7 @@ export const RoundsController: FC = observer(() => {
                 { multi: true }
             );
             await db.round.update({ _id }, { $set: { selected: true } });
-            await loadCompetitionAction();
+            await loadRoundsAction(story.competition);
         }
     }, []);
 
@@ -62,7 +62,7 @@ export const RoundsController: FC = observer(() => {
                     sort: rounds.length,
                     selected: true
                 });
-                await loadCompetitionAction();
+                await loadRoundsAction(story.competition);
                 handleCloseDialog();
             }
         },
@@ -78,7 +78,7 @@ export const RoundsController: FC = observer(() => {
         ) => {
             if (story.competition && selectedRound && round.name) {
                 await db.round.update({ _id: selectedRound._id }, { $set: { ...round } });
-                await loadCompetitionAction();
+                await loadRoundsAction(story.competition);
                 handleCloseDialog();
             }
         },
@@ -87,17 +87,18 @@ export const RoundsController: FC = observer(() => {
 
     const handleDeleteRound = useCallback(
         async (_id: string) => {
-            await db.round.remove({ _id }, {});
-            await loadCompetitionAction();
-
-            if ((rounds || []).length > 1) {
-                const newSelectedRound = rounds[rounds.length - 2];
-                await db.round.update({ _id: newSelectedRound._id }, { $set: { selected: true } });
-                await loadCompetitionAction();
+            if (story.competition) {
+                await db.round.remove({ _id }, {});
+                const newRounds = await loadRoundsAction(story.competition);
+                if ((newRounds || []).length > 0) {
+                    const newSelectedRound = newRounds[newRounds.length - 1];
+                    await db.round.update({ _id: newSelectedRound._id }, { $set: { selected: true } });
+                    await loadRoundsAction(story.competition);
+                }
+                handleCloseDialog();
             }
-            handleCloseDialog();
         },
-        [handleCloseDialog, rounds]
+        [handleCloseDialog]
     );
 
     return (

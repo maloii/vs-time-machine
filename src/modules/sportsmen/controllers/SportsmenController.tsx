@@ -5,7 +5,7 @@ import { Table } from '@/modules/sportsmen/components/table/Table';
 import { story } from '@/story/story';
 import { db } from '@/repository/Repository';
 import { ISportsman } from '@/types/ISportsman';
-import { loadCompetitionAction } from '@/actions/loadCompetitionAction';
+import { loadSportsmenAction } from '@/actions/loadCompetitionAction';
 import { DialogSportsmanEdit } from '@/modules/sportsmen/components/DialogSportsmanEdit/DialogSportsmanEdit';
 import { Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -16,7 +16,7 @@ export const SportsmenController: FC = observer(() => {
     const [openDialogAdd, setOpenDialogAdd] = useState(false);
     const [sportsmanEdit, setSportsmanEdit] = useState<ISportsman>();
 
-    const sportsmen = [...story.sportsmen];
+    const sportsmen = _.sortBy(story.sportsmen, 'lastName');
 
     const handleClose = useCallback(() => {
         setOpenDialogAdd(false);
@@ -41,7 +41,7 @@ export const SportsmenController: FC = observer(() => {
                     ...sportsman,
                     competitionId: story.competition._id
                 });
-                await loadCompetitionAction();
+                await loadSportsmenAction(story.competition);
                 handleClose();
             }
         },
@@ -59,7 +59,7 @@ export const SportsmenController: FC = observer(() => {
                         }
                     }
                 );
-                await loadCompetitionAction();
+                await loadSportsmenAction(story.competition);
                 handleClose();
             }
         },
@@ -71,7 +71,7 @@ export const SportsmenController: FC = observer(() => {
             if (story.competition) {
                 if (window.confirm('Are you sure you want to remove the sportsman?')) {
                     await db.sportsman.remove({ _id }, {});
-                    await loadCompetitionAction();
+                    await loadSportsmenAction(story.competition);
                     handleClose();
                 }
             }

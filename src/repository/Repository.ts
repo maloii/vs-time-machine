@@ -21,3 +21,7 @@ export const db: IRepository = {
     round: dbFactory('round.db'),
     lap: dbFactory('lap.db')
 };
+
+db.competition.ensureIndex({ fieldName: 'selected' });
+db.sportsman.ensureIndex({ fieldName: 'competitionId' });
+db.round.ensureIndex({ fieldName: 'competitionId' });

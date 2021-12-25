@@ -1,29 +1,30 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
-import _ from 'lodash';
 import { Divider, FormControl, MenuItem, TextField } from '@mui/material';
 import { DialogCompetitionEdit } from '../../../competition/components/DialogCompetitionEdit/DialogCompetitionEdit';
-import { db } from '@/repository/Repository';
 import { story } from '@/story/story';
 import { loadCompetitionAction } from '@/actions/loadCompetitionAction';
+import { ICompetition } from '@/types/ICompetition';
 
 export const SelectCompetition: FC = observer(() => {
     const [open, setOpen] = useState(false);
+    const [openEditCompetition, setOpenEditCompetition] = useState<ICompetition | undefined>(undefined);
 
-    const handleChangeCompetition = useCallback(async (event) => {
-        if (event.target.value === 0) {
-            setOpen(true);
-            return;
-        }
-        await db.competition.update({ selected: true }, { $set: { selected: false } }, { multi: true });
-        const selectedCompetition = _.find(story.competitions, ['_id', event.target.value]);
-        if (selectedCompetition) {
-            await db.competition.update({ _id: selectedCompetition._id }, { $set: { selected: true } });
-            await loadCompetitionAction();
-        }
+    const handleClick = useCallback(
+        (competition?: ICompetition) => () => {
+            if (competition) {
+                setOpenEditCompetition(competition);
+            } else {
+                setOpen(true);
+            }
+        },
+        []
+    );
+
+    const handleClose = useCallback(() => {
+        setOpen(false);
+        setOpenEditCompetition(undefined);
     }, []);
-
-    const handleClose = useCallback(() => setOpen(false), []);
 
     useEffect(() => {
         (async function () {
@@ -34,25 +35,25 @@ export const SelectCompetition: FC = observer(() => {
     return (
         <>
             <FormControl variant="standard" sx={{ m: 1, minWidth: 300 }}>
-                <TextField
-                    select
-                    value={story.competition?._id || ''}
-                    onChange={handleChangeCompetition}
-                    label="Competition"
-                    size="small"
-                >
+                <TextField select value={story.competition?._id || ''} label="Competition" size="small">
                     {(story.competitions || []).map((item) => (
-                        <MenuItem key={item._id} value={item._id}>
+                        <MenuItem key={item._id} value={item._id} onClick={handleClick(item)}>
                             {item.name}
                         </MenuItem>
                     ))}
                     <Divider />
-                    <MenuItem value={0}>
+                    <MenuItem value={0} onClick={handleClick(undefined)}>
                         <em>Create new competition</em>
                     </MenuItem>
                 </TextField>
             </FormControl>
-            <DialogCompetitionEdit open={open} onClose={handleClose} />
+            {(open || !!openEditCompetition) && (
+                <DialogCompetitionEdit
+                    open={open || !!openEditCompetition}
+                    onClose={handleClose}
+                    competition={openEditCompetition}
+                />
+            )}
         </>
     );
 });
