@@ -1,3 +1,29 @@
 .tabPanel {
     padding-top: 15px;
 }
+
+.logoBlock {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px !important;
+    & > div {
+        position: relative;
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        margin: 0 auto;
+        align-items: center;
+
+        & > img {
+            height: 80px;
+            margin-bottom: 15px;
+        }
+    }
+}
+
+.deleteLogo {
+    cursor: pointer;
+    position: absolute;
+    top: -20px;
+    right: -20px;
+}

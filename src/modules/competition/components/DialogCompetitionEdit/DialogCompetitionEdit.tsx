@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { ChangeEvent, FC, useCallback, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import {
     Box,
@@ -22,6 +22,9 @@ import { PositionColor } from '@/modules/competition/components/DialogCompetitio
 import { Color } from '@/types/Color';
 import { Channel } from '@/types/VTXChannel';
 import { PositionChannel } from '@/modules/competition/components/DialogCompetitionEdit/PositionChannel';
+import { DEFAULT_COMPETITION_LOGO } from '@/constants/images';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import { copyFile, deleteFile, getFilePath } from '@/utils/fileUtils';
 
 interface IProps {
     open: boolean;
@@ -34,6 +37,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
     const [name, setName] = useState<string>(competition?.name || '');
     const [selected, setSelected] = useState(competition?.selected || false);
     const [skipFirstGate, setSkipFirstGate] = useState(competition?.skipFirstGate || false);
+    const [logo, setLogo] = useState(competition?.logo || DEFAULT_COMPETITION_LOGO);
 
     const [color1, setColor1] = useState<Color>(competition?.color1 || Color.BLUE);
     const [color2, setColor2] = useState<Color>(competition?.color2 || Color.RED);
@@ -53,6 +57,9 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
     const [channel7, setChannel7] = useState<Channel>(competition?.channel7 || Channel.R7);
     const [channel8, setChannel8] = useState<Channel>(competition?.channel8 || Channel.R8);
 
+    const inputFileRef = useRef<HTMLInputElement>(null);
+    const imageRef = useRef<HTMLImageElement>(null);
+
     const handleChangeTab = useCallback((event: React.SyntheticEvent, id: string) => {
         setTabSelected(id);
     }, []);
@@ -69,10 +76,27 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
         setSkipFirstGate((prev) => !prev);
     }, []);
 
+    const handleChangeLogo = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
+        if (inputFileRef.current && inputFileRef.current.files?.[0]?.path) {
+            setLogo(await copyFile(inputFileRef.current.files?.[0]?.path));
+        }
+    }, []);
+
+    const handleChangeDeletePhoto = useCallback(async () => {
+        await deleteFile(logo).then(async () => {
+            setLogo(DEFAULT_COMPETITION_LOGO);
+            if (competition) {
+                await db.competition.update({ _id: competition._id }, { $set: { logo: DEFAULT_COMPETITION_LOGO } });
+                await loadCompetitionAction();
+            }
+        });
+    }, [competition, logo]);
+
     const handleSave = useCallback(async () => {
         if (name) {
             const newValue = {
                 name,
+                logo,
                 gates: [],
                 selected,
                 skipFirstGate,
@@ -122,6 +146,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
         color7,
         color8,
         competition,
+        logo,
         name,
         onClose,
         selected,
@@ -162,7 +187,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                         </Tabs>
                     </Box>
                     <div hidden={tabSelected !== 'Data'} className={styles.tabPanel}>
-                        <Box component="form" noValidate autoComplete="off">
+                        <Box component="form" sx={{ '& > :not(style)': { m: 1 } }} noValidate autoComplete="off">
                             <TextField
                                 id="outlined-basic"
                                 label="Name competition"
@@ -172,6 +197,25 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                                 error={!name}
                                 onChange={handleChangeName}
                             />
+                            <div className={styles.logoBlock}>
+                                <div>
+                                    {!!logo && logo !== DEFAULT_COMPETITION_LOGO && (
+                                        <CancelOutlinedIcon
+                                            className={styles.deleteLogo}
+                                            onClick={handleChangeDeletePhoto}
+                                        />
+                                    )}
+                                    <img
+                                        ref={imageRef}
+                                        src={getFilePath(logo || DEFAULT_COMPETITION_LOGO)}
+                                        alt="logo"
+                                    />
+                                    <Button variant="contained" component="label">
+                                        Select logo
+                                        <input type="file" ref={inputFileRef} hidden onChange={handleChangeLogo} />
+                                    </Button>
+                                </div>
+                            </div>
                             <FormControlLabel
                                 control={<Switch checked={selected} onChange={handleChangeSelected} />}
                                 label="Select this competition"
@@ -185,14 +229,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                         />
                     </div>
                     <div hidden={tabSelected !== 'Channels'} className={styles.tabPanel}>
-                        <Box
-                            component="form"
-                            sx={{
-                                '& > :not(style)': { m: 1 }
-                            }}
-                            noValidate
-                            autoComplete="off"
-                        >
+                        <Box component="form" sx={{ '& > :not(style)': { m: 1 } }} noValidate autoComplete="off">
                             <PositionChannel label="Position 1" value={channel1} onChange={setChannel1} />
                             <PositionChannel label="Position 2" value={channel2} onChange={setChannel2} />
                             <PositionChannel label="Position 3" value={channel3} onChange={setChannel3} />

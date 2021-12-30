@@ -7,7 +7,7 @@ const remoteMain = require('@electron/remote/main');
 
 remoteMain.initialize();
 
-const PHOTO_FOLDER = 'photo';
+const IMAGES_FOLDER = 'images';
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
@@ -21,7 +21,7 @@ function createWindow() {
         icon: path.join(__dirname, 'AppIcon.icns')
     });
 
-    copyFileEmptyPerson();
+    copyDefaultImages();
     mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
 
     remoteMain.enable(mainWindow.webContents);
@@ -48,14 +48,25 @@ ipcMain.on('setMyGlobalVariable', (event, myGlobalVariableValue) => {
     global.myGlobalVariable = myGlobalVariableValue;
 });
 
-function copyFileEmptyPerson() {
-    const pathPhoto = `${app.getPath('userData')}/${PHOTO_FOLDER}`;
-    if (!fs.existsSync(pathPhoto)) {
-        fs.mkdirSync(pathPhoto);
+function copyDefaultImages() {
+    const pathImages = `${app.getPath('userData')}/${IMAGES_FOLDER}`;
+    if (!fs.existsSync(pathImages)) {
+        fs.mkdirSync(pathImages);
     }
-    if (!fs.existsSync(`${pathPhoto}/empty_person.png`)) {
+    if (!fs.existsSync(`${pathImages}/empty_person.png`)) {
         fsPromise
-            .copyFile(path.join(__dirname, '../build/photo/empty_person.png'), `${pathPhoto}/empty_person.png`)
+            .copyFile(
+                path.join(__dirname, `../build/${IMAGES_FOLDER}/empty_person.png`),
+                `${pathImages}/empty_person.png`
+            )
+            .then(() => {});
+    }
+    if (!fs.existsSync(`${pathImages}/default_competition_logo.png`)) {
+        fsPromise
+            .copyFile(
+                path.join(__dirname, `../build/${IMAGES_FOLDER}/default_competition_logo.png`),
+                `${pathImages}/default_competition_logo.png`
+            )
             .then(() => {});
     }
 }
