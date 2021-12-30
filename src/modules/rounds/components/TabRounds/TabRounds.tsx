@@ -27,7 +27,7 @@ export const TabRounds: FC<IProps> = observer(({ rounds, selectedId, onSelect, o
             <div className={styles.root}>
                 <Tabs value={selectedId} onChange={handleSelect} variant="scrollable" scrollButtons="auto">
                     {rounds.map((round) => (
-                        <Tab label={round.name} value={round._id} id={round._id} />
+                        <Tab key={round._id} label={round.name} value={round._id} id={round._id} />
                     ))}
                 </Tabs>
                 <div>
