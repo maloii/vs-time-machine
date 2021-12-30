@@ -1,4 +1,5 @@
 import React, { ChangeEvent, FC, useCallback, useRef, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { observer } from 'mobx-react';
 import {
     Box,
@@ -25,6 +26,12 @@ import { PositionChannel } from '@/modules/competition/components/DialogCompetit
 import { DEFAULT_COMPETITION_LOGO } from '@/constants/images';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { copyFile, deleteFile, getFilePath } from '@/utils/fileUtils';
+import { IGate } from '@/types/IGate';
+import { TableGates } from '@/modules/competition/components/DialogCompetitionEdit/TableGates';
+import { TypeGate } from '@/types/TypeGate';
+import AddIcon from '@mui/icons-material/Add';
+import { DialogGateEdit } from '@/modules/competition/components/DIalogGateEdit/DialogGateEdit';
+import _ from 'lodash';
 
 interface IProps {
     open: boolean;
@@ -56,6 +63,20 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
     const [channel6, setChannel6] = useState<Channel>(competition?.channel6 || Channel.R6);
     const [channel7, setChannel7] = useState<Channel>(competition?.channel7 || Channel.R7);
     const [channel8, setChannel8] = useState<Channel>(competition?.channel8 || Channel.R8);
+
+    const [openAddGate, setOpenAddGate] = useState(false);
+    const [openEditGate, setOpenEditGate] = useState<IGate | undefined>(undefined);
+
+    const [gates, setGates] = useState<Array<IGate>>(
+        competition?.gates || [
+            {
+                _id: uuidv4(),
+                type: TypeGate.FINISH,
+                position: 1,
+                delay: 10
+            }
+        ]
+    );
 
     const inputFileRef = useRef<HTMLInputElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
@@ -92,12 +113,62 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
         });
     }, [competition, logo]);
 
+    const handleOpenAddGate = useCallback(() => {
+        setOpenAddGate(true);
+    }, []);
+
+    const handleOpenEditGate = useCallback(
+        (id: string) => {
+            const gate = _.find(gates, ['_id', id]);
+            if (gate) {
+                setOpenEditGate(gate);
+            }
+        },
+        [gates]
+    );
+
+    const handleCloseGateEdit = useCallback(() => {
+        setOpenAddGate(false);
+        setOpenEditGate(undefined);
+    }, []);
+
+    const handleAddGate = useCallback(
+        (gate: Omit<IGate, '_id'>) => {
+            setGates([...gates, { ...gate, _id: uuidv4() }]);
+            handleCloseGateEdit();
+        },
+        [gates, handleCloseGateEdit]
+    );
+
+    const handleUpdateGate = useCallback(
+        (_id: string, gate: Omit<IGate, '_id'>) => {
+            const arrGates = [...gates];
+            var index = _.findIndex(arrGates, { _id });
+            if (index >= 0) {
+                arrGates.splice(index, 1, { ...gate, _id });
+                setGates(arrGates);
+                handleCloseGateEdit();
+            }
+        },
+        [gates, handleCloseGateEdit]
+    );
+
+    const handleDeleteGate = useCallback(
+        (id: string) => {
+            if (window.confirm('Are you sure you want to delete the gate?')) {
+                setGates((gates || []).filter((gate) => gate._id !== id));
+                handleCloseGateEdit();
+            }
+        },
+        [gates, handleCloseGateEdit]
+    );
+
     const handleSave = useCallback(async () => {
         if (name) {
             const newValue = {
                 name,
                 logo,
-                gates: [],
+                gates,
                 selected,
                 skipFirstGate,
                 color1,
@@ -145,6 +216,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
         color6,
         color7,
         color8,
+        gates,
         competition,
         logo,
         name,
@@ -220,13 +292,30 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                                 control={<Switch checked={selected} onChange={handleChangeSelected} />}
                                 label="Select this competition"
                             />
+                            <FormControlLabel
+                                control={<Switch checked={skipFirstGate} onChange={handleChangeSkipFirstGate} />}
+                                label="Skip the first gate"
+                            />
                         </Box>
                     </div>
                     <div hidden={tabSelected !== 'Gates'} className={styles.tabPanel}>
-                        <FormControlLabel
-                            control={<Switch checked={skipFirstGate} onChange={handleChangeSkipFirstGate} />}
-                            label="Skip the first gate"
-                        />
+                        <div className={styles.actions}>
+                            <Button color="primary" startIcon={<AddIcon />} onClick={handleOpenAddGate}>
+                                Add gate
+                            </Button>
+                        </div>
+                        <TableGates gates={gates} onUpdate={handleOpenEditGate} onDelete={handleDeleteGate} />
+                        {(!!openEditGate || openAddGate) && (
+                            <DialogGateEdit
+                                gate={openEditGate}
+                                gates={gates}
+                                onDelete={handleDeleteGate}
+                                onUpdate={handleUpdateGate}
+                                onSave={handleAddGate}
+                                onClose={handleCloseGateEdit}
+                                open={!!openEditGate || openAddGate}
+                            />
+                        )}
                     </div>
                     <div hidden={tabSelected !== 'Channels'} className={styles.tabPanel}>
                         <Box component="form" sx={{ '& > :not(style)': { m: 1 } }} noValidate autoComplete="off">

@@ -90,15 +90,15 @@ export const Table: FC<IProps> = observer(({ sportsmen, onUpdate, onDelete, onOp
             getActions: (params: GridRowParams) => {
                 return [
                     <GridActionsCellItem
-                        icon={<DeleteIcon />}
-                        label="Delete"
-                        onClick={handleDeleteClick(params.id as string)}
-                        color="inherit"
-                    />,
-                    <GridActionsCellItem
                         icon={<EditIcon />}
                         label="Edit"
                         onClick={handleEditClick(params.id as string)}
+                        color="inherit"
+                    />,
+                    <GridActionsCellItem
+                        icon={<DeleteIcon />}
+                        label="Delete"
+                        onClick={handleDeleteClick(params.id as string)}
                         color="inherit"
                     />
                 ];

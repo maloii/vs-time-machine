@@ -27,3 +27,17 @@
     top: -20px;
     right: -20px;
 }
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+}
+.actionsTableTd {
+    padding-left: 0;
+    padding-right: 0;
+}
+.actionsTable {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

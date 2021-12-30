@@ -1,9 +1,10 @@
+import { TypeGate } from '@/types/TypeGate';
+
 export interface IGate {
     _id: string;
-    number: number;
-    finish: boolean;
+    type: TypeGate;
+    number?: number;
     position: number;
-    distance: number;
+    distance?: number;
     delay: number;
-    speed: boolean;
 }
