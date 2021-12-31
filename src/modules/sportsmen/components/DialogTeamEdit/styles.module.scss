@@ -1,0 +1,25 @@
+.photoBlock {
+  display: flex;
+  justify-content: center;
+  margin-top: 25px !important;
+  & > div {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 auto;
+    align-items: center;
+
+    & > img {
+      width: 150px;
+      margin-bottom: 15px;
+    }
+  }
+}
+
+.deletePhoto {
+  cursor: pointer;
+  position: absolute;
+  top: -20px;
+  right: -20px;
+}

@@ -1,47 +1,46 @@
 import React, { FC, useCallback } from 'react';
-import { ISportsman } from '@/types/ISportsman';
-import { observer } from 'mobx-react';
-import { Checkbox } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import _ from 'lodash';
+import { ITeam } from '@/types/ITeam';
 import {
     DataGrid,
+    GridActionsCellItem,
     GridCellEditCommitParams,
     GridColumns,
-    GridActionsCellItem,
     GridRowParams,
     GridToolbar
 } from '@mui/x-data-grid';
+import { Checkbox } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import styles from './styles.module.scss';
-import _ from 'lodash';
 
 interface IProps {
-    sportsmen: ISportsman[];
-    onUpdate: (_id: string, sportsman: Omit<ISportsman, '_id' | 'competitionId' | 'dateCreate'>) => void;
+    teams: ITeam[];
+    onUpdate: (_id: string, team: Omit<ITeam, '_id' | 'competitionId'>) => void;
     onDelete: (id: string) => void;
     onOpenEdit: (id: string) => void;
 }
 
-export const Table: FC<IProps> = observer(({ sportsmen, onUpdate, onDelete, onOpenEdit }: IProps) => {
+export const TableTeams: FC<IProps> = ({ teams, onUpdate, onDelete, onOpenEdit }: IProps) => {
     const handleCellEditCommit = useCallback(
         (params: GridCellEditCommitParams) => {
-            const editSportsmen = _.find(sportsmen, ['_id', params.id]);
-            if (editSportsmen) {
-                onUpdate(editSportsmen._id, { ...editSportsmen, [params.field]: params.value });
+            const editTeam = _.find(teams, ['_id', params.id]);
+            if (editTeam) {
+                onUpdate(editTeam._id, { ...editTeam, [params.field]: params.value });
             }
         },
-        [onUpdate, sportsmen]
+        [onUpdate, teams]
     );
 
     const handleChangeSelected = useCallback(
         (_id: string) => () => {
-            const editSportsmen = _.find(sportsmen, ['_id', _id]);
-            if (editSportsmen) {
-                onUpdate(editSportsmen._id, { ...editSportsmen, selected: !editSportsmen.selected });
+            const editTeam = _.find(teams, ['_id', _id]);
+            if (editTeam) {
+                onUpdate(editTeam._id, { ...editTeam, selected: !editTeam.selected });
             }
         },
-        [onUpdate, sportsmen]
+        [onUpdate, teams]
     );
 
     const handleDeleteClick = useCallback(
@@ -72,15 +71,9 @@ export const Table: FC<IProps> = observer(({ sportsmen, onUpdate, onDelete, onOp
                 />
             ]
         },
-        { field: 'lastName', editable: true, headerName: 'Last name', flex: 1 },
-        { field: 'firstName', editable: true, headerName: 'First name', flex: 1 },
-        { field: 'middleName', editable: true, headerName: 'Middle name', flex: 1 },
-        { field: 'nick', editable: true, headerName: 'Nick', flex: 1 },
-        { field: 'team', editable: true, headerName: 'Team', flex: 1 },
-        { field: 'city', editable: true, headerName: 'City', flex: 1, hide: true },
+        { field: 'name', editable: true, headerName: 'Name', flex: 1 },
+        { field: 'city', editable: true, headerName: 'City', flex: 1 },
         { field: 'country', editable: true, headerName: 'Country', flex: 1, hide: true },
-        { field: 'age', editable: true, type: 'number', headerName: 'Age', hide: true },
-        { field: 'email', editable: true, headerName: 'Email', hide: true },
         {
             field: 'actions',
             type: 'actions',
@@ -110,7 +103,7 @@ export const Table: FC<IProps> = observer(({ sportsmen, onUpdate, onDelete, onOp
         <div className={styles.dataGrid}>
             <DataGrid
                 columns={columns}
-                rows={sportsmen.map((item, indx) => ({ ...item, num: indx + 1 }))}
+                rows={teams.map((item, indx) => ({ ...item, num: indx + 1 }))}
                 onCellEditCommit={handleCellEditCommit}
                 getRowId={(row) => row._id}
                 hideFooterPagination
@@ -120,4 +113,4 @@ export const Table: FC<IProps> = observer(({ sportsmen, onUpdate, onDelete, onOp
             />
         </div>
     );
-});
+};

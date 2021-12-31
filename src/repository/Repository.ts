@@ -11,6 +11,7 @@ const dbFactory = (fileName: string) =>
 interface IRepository {
     competition: Datastore;
     sportsman: Datastore;
+    team: Datastore;
     round: Datastore;
     lap: Datastore;
 }
@@ -18,10 +19,12 @@ interface IRepository {
 export const db: IRepository = {
     competition: dbFactory('competition.db'),
     sportsman: dbFactory('sportsman.db'),
+    team: dbFactory('team.db'),
     round: dbFactory('round.db'),
     lap: dbFactory('lap.db')
 };
 
 db.competition.ensureIndex({ fieldName: 'selected' });
 db.sportsman.ensureIndex({ fieldName: 'competitionId' });
+db.team.ensureIndex({ fieldName: 'competitionId' });
 db.round.ensureIndex({ fieldName: 'competitionId' });

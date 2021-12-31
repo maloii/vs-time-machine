@@ -284,7 +284,13 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                                     />
                                     <Button variant="contained" component="label">
                                         Select logo
-                                        <input type="file" ref={inputFileRef} hidden onChange={handleChangeLogo} />
+                                        <input
+                                            type="file"
+                                            accept="image/png, image/gif, image/jpeg"
+                                            ref={inputFileRef}
+                                            hidden
+                                            onChange={handleChangeLogo}
+                                        />
                                     </Button>
                                 </div>
                             </div>

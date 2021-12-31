@@ -27,8 +27,8 @@ interface IProps {
     open: boolean;
     onClose: () => void;
     sportsman?: ISportsman;
-    onSave: (sportsman: Omit<ISportsman, '_id' | 'competitionId' | 'dateCreate'>) => void;
-    onUpdate: (_id: string, sportsman: Omit<ISportsman, '_id' | 'competitionId' | 'dateCreate'>) => void;
+    onSave: (sportsman: Omit<ISportsman, '_id' | 'competitionId'>) => void;
+    onUpdate: (_id: string, sportsman: Omit<ISportsman, '_id' | 'competitionId'>) => void;
     onDelete: (_id: string) => void;
 }
 
@@ -226,7 +226,13 @@ export const DialogSportsmanEdit: FC<IProps> = observer(
                             <img ref={imageRef} src={getFilePath(photo || DEFAULT_PHOTO)} alt="sportsman" />
                             <Button variant="contained" component="label">
                                 Select photo
-                                <input type="file" ref={inputFileRef} hidden onChange={handleChangePhoto} />
+                                <input
+                                    type="file"
+                                    accept="image/png, image/gif, image/jpeg"
+                                    ref={inputFileRef}
+                                    hidden
+                                    onChange={handleChangePhoto}
+                                />
                             </Button>
                         </div>
                     </div>

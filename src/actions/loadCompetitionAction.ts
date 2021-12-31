@@ -3,6 +3,7 @@ import { db } from '@/repository/Repository';
 import { ICompetition } from '@/types/ICompetition';
 import { IRound } from '@/types/IRound';
 import { ISportsman } from '@/types/ISportsman';
+import { ITeam } from '@/types/ITeam';
 
 export const loadCompetitionAction = async (): Promise<Array<ICompetition>> => {
     const competitions: ICompetition[] = await db.competition.find({});
@@ -11,6 +12,7 @@ export const loadCompetitionAction = async (): Promise<Array<ICompetition>> => {
     if (competition) {
         story.setCompetition(competition);
         await loadSportsmenAction(competition);
+        await loadTeamsAction(competition);
         await loadRoundsAction(competition);
     }
     return competitions;
@@ -20,6 +22,12 @@ export const loadSportsmenAction = async (competition: ICompetition): Promise<Ar
     const sportsmen: ISportsman[] = await db.sportsman.find({ competitionId: competition._id });
     story.setSportsmen(sportsmen);
     return sportsmen;
+};
+
+export const loadTeamsAction = async (competition: ICompetition): Promise<Array<ITeam>> => {
+    const teams: ITeam[] = await db.team.find({ competitionId: competition._id });
+    story.setTeams(teams);
+    return teams;
 };
 
 export const loadRoundsAction = async (competition: ICompetition): Promise<Array<IRound>> => {

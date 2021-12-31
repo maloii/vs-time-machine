@@ -1,30 +1,49 @@
 import React, { FC, useCallback, useState } from 'react';
 import { observer } from 'mobx-react';
 import _ from 'lodash';
-import { Table } from '@/modules/sportsmen/components/table/Table';
+import { TableSportsmen } from '@/modules/sportsmen/components/TableSportsmen/TableSportsmen';
+import { TableTeams } from '@/modules/sportsmen/components/TableTeams/TableTeams';
 import { story } from '@/story/story';
-import { db } from '@/repository/Repository';
 import { ISportsman } from '@/types/ISportsman';
-import { loadSportsmenAction } from '@/actions/loadCompetitionAction';
+import { ITeam } from '@/types/ITeam';
+import { loadSportsmenAction, loadTeamsAction } from '@/actions/loadCompetitionAction';
 import { DialogSportsmanEdit } from '@/modules/sportsmen/components/DialogSportsmanEdit/DialogSportsmanEdit';
-import { Button } from '@mui/material';
+import { DialogTeamEdit } from '@/modules/sportsmen/components/DialogTeamEdit/DialogTeamEdit';
+import { Box, Button, Tab, Tabs } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { teamDelete, teamInsert, teamUpdate } from '@/repository/TeamRepository';
+import { sportsmanDelete, sportsmanInsert, sportsmanUpdate } from '@/repository/SportsmanRepository';
 
 import styles from './styles.module.scss';
 
 export const SportsmenController: FC = observer(() => {
-    const [openDialogAdd, setOpenDialogAdd] = useState(false);
+    const [tabSelected, setTabSelected] = useState('Sportsmen');
+
+    const [openDialogAddSportsman, setOpenDialogAddSportsman] = useState(false);
+    const [openDialogAddTeam, setOpenDialogAddTeam] = useState(false);
     const [sportsmanEdit, setSportsmanEdit] = useState<ISportsman>();
+    const [teamEdit, setTeamEdit] = useState<ITeam>();
 
     const sportsmen = _.sortBy(story.sportsmen, 'lastName');
+    const teams = _.sortBy(story.teams, 'name');
+
+    const handleChangeTab = useCallback((event: React.SyntheticEvent, id: string) => {
+        setTabSelected(id);
+    }, []);
 
     const handleClose = useCallback(() => {
-        setOpenDialogAdd(false);
+        setOpenDialogAddSportsman(false);
+        setOpenDialogAddTeam(false);
         setSportsmanEdit(undefined);
+        setTeamEdit(undefined);
     }, []);
 
     const handleOpenAddSportsman = useCallback(() => {
-        setOpenDialogAdd(true);
+        setOpenDialogAddSportsman(true);
+    }, []);
+
+    const handleOpenAddTeam = useCallback(() => {
+        setOpenDialogAddTeam(true);
     }, []);
 
     const handleOpenEditSportsman = useCallback(
@@ -34,10 +53,17 @@ export const SportsmenController: FC = observer(() => {
         [sportsmen]
     );
 
+    const handleOpenEditTeam = useCallback(
+        (_id: string) => {
+            setTeamEdit(_.find(teams, ['_id', _id]));
+        },
+        [teams]
+    );
+
     const handleSaveSportsman = useCallback(
-        async (sportsman: Omit<ISportsman, '_id' | 'competitionId' | 'dateCreate'>) => {
+        async (sportsman: Omit<ISportsman, '_id' | 'competitionId'>) => {
             if (story.competition) {
-                await db.sportsman.insert({
+                await sportsmanInsert({
                     ...sportsman,
                     competitionId: story.competition._id
                 });
@@ -49,16 +75,9 @@ export const SportsmenController: FC = observer(() => {
     );
 
     const handleUpdateSportsman = useCallback(
-        async (_id: string, sportsman: Omit<ISportsman, '_id' | 'competitionId' | 'dateCreate'>) => {
+        async (_id: string, sportsman: Omit<ISportsman, '_id' | 'competitionId'>) => {
             if (story.competition && _id) {
-                await db.sportsman.update(
-                    { _id },
-                    {
-                        $set: {
-                            ...sportsman
-                        }
-                    }
-                );
+                await sportsmanUpdate(_id, sportsman);
                 await loadSportsmenAction(story.competition);
                 handleClose();
             }
@@ -70,8 +89,46 @@ export const SportsmenController: FC = observer(() => {
         async (_id: string) => {
             if (story.competition) {
                 if (window.confirm('Are you sure you want to remove the sportsman?')) {
-                    await db.sportsman.remove({ _id }, {});
+                    await sportsmanDelete(_id);
                     await loadSportsmenAction(story.competition);
+                    handleClose();
+                }
+            }
+        },
+        [handleClose]
+    );
+
+    const handleSaveTeam = useCallback(
+        async (team: Omit<ITeam, '_id' | 'competitionId'>) => {
+            if (story.competition) {
+                await teamInsert({
+                    ...team,
+                    competitionId: story.competition._id
+                });
+                await loadTeamsAction(story.competition);
+                handleClose();
+            }
+        },
+        [handleClose]
+    );
+
+    const handleUpdateTeam = useCallback(
+        async (_id: string, team: Omit<ITeam, '_id' | 'competitionId'>) => {
+            if (story.competition && _id) {
+                await teamUpdate(_id, team);
+                await loadTeamsAction(story.competition);
+                handleClose();
+            }
+        },
+        [handleClose]
+    );
+
+    const handleDeleteTeam = useCallback(
+        async (_id: string) => {
+            if (story.competition) {
+                if (window.confirm('Are you sure you want to remove the team?')) {
+                    await teamDelete(_id);
+                    await loadTeamsAction(story.competition);
                     handleClose();
                 }
             }
@@ -83,25 +140,58 @@ export const SportsmenController: FC = observer(() => {
 
     return (
         <div className={styles.root}>
-            <div className={styles.actions}>
-                <Button color="primary" startIcon={<AddIcon />} onClick={handleOpenAddSportsman}>
-                    Add sportsman
-                </Button>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <Tabs variant="scrollable" scrollButtons="auto" value={tabSelected} onChange={handleChangeTab}>
+                    <Tab label="Sportsmen" value="Sportsmen" id="Sportsmen" />
+                    <Tab label="Teams" value="Teams" id="Teams" />
+                </Tabs>
+            </Box>
+            <div hidden={tabSelected !== 'Sportsmen'} className={styles.tabPanel}>
+                <div className={styles.actions}>
+                    <Button color="primary" startIcon={<AddIcon />} onClick={handleOpenAddSportsman}>
+                        Add sportsman
+                    </Button>
+                </div>
+                <TableSportsmen
+                    sportsmen={sportsmen}
+                    onUpdate={handleUpdateSportsman}
+                    onDelete={handleDeleteSportsmen}
+                    onOpenEdit={handleOpenEditSportsman}
+                />
             </div>
-            <Table
-                sportsmen={sportsmen}
-                onUpdate={handleUpdateSportsman}
-                onDelete={handleDeleteSportsmen}
-                onOpenEdit={handleOpenEditSportsman}
-            />
-            {(openDialogAdd || !!sportsmanEdit) && (
+            <div hidden={tabSelected !== 'Teams'} className={styles.tabPanel}>
+                <div className={styles.actions}>
+                    <Button color="primary" startIcon={<AddIcon />} onClick={handleOpenAddTeam}>
+                        Add team
+                    </Button>
+                </div>
+                <TableTeams
+                    teams={teams}
+                    onUpdate={handleUpdateTeam}
+                    onDelete={handleDeleteTeam}
+                    onOpenEdit={handleOpenEditTeam}
+                />
+            </div>
+            {(openDialogAddSportsman || !!sportsmanEdit) && (
                 <DialogSportsmanEdit
-                    open={openDialogAdd || !!sportsmanEdit}
+                    open={openDialogAddSportsman || !!sportsmanEdit}
                     sportsman={sportsmanEdit}
                     onClose={handleClose}
                     onSave={handleSaveSportsman}
                     onUpdate={handleUpdateSportsman}
                     onDelete={handleDeleteSportsmen}
+                />
+            )}
+            {(openDialogAddTeam || !!teamEdit) && (
+                <DialogTeamEdit
+                    open={openDialogAddTeam || !!teamEdit}
+                    team={teamEdit}
+                    teams={teams}
+                    sportsmen={sportsmen}
+                    onClose={handleClose}
+                    onSave={handleSaveTeam}
+                    onUpdate={handleUpdateTeam}
+                    onDelete={handleDeleteTeam}
                 />
             )}
         </div>
