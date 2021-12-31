@@ -2,7 +2,7 @@ import React, { FC, useCallback } from 'react';
 import _ from 'lodash';
 import { ISportsman } from '@/types/ISportsman';
 import { observer } from 'mobx-react';
-import { Checkbox } from '@mui/material';
+import { Avatar, Checkbox } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
@@ -15,6 +15,8 @@ import {
 } from '@mui/x-data-grid';
 
 import styles from './styles.module.scss';
+import { getFilePath } from '@/utils/fileUtils';
+import { DEFAULT_PHOTO } from '@/constants/images';
 
 interface IProps {
     sportsmen: ISportsman[];
@@ -81,6 +83,21 @@ export const TableSportsmen: FC<IProps> = observer(({ sportsmen, onUpdate, onDel
         { field: 'country', editable: true, headerName: 'Country', flex: 1, hide: true },
         { field: 'age', editable: true, type: 'number', headerName: 'Age', hide: true },
         { field: 'email', editable: true, headerName: 'Email', hide: true },
+        {
+            field: 'photo',
+            headerName: 'Photo',
+            type: 'actions',
+            width: 70,
+            getActions: (params: GridRowParams) => {
+                const photo = String(params.getValue(params.id, 'photo'));
+                return [
+                    <Avatar
+                        alt="Remy Sharp"
+                        src={!!photo && photo !== DEFAULT_PHOTO ? getFilePath(photo) : undefined}
+                    />
+                ];
+            }
+        },
         {
             field: 'actions',
             type: 'actions',

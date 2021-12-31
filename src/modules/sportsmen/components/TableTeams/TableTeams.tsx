@@ -9,7 +9,9 @@ import {
     GridRowParams,
     GridToolbar
 } from '@mui/x-data-grid';
-import { Checkbox } from '@mui/material';
+import { Avatar, Checkbox } from '@mui/material';
+import { DEFAULT_PHOTO } from '@/constants/images';
+import { getFilePath } from '@/utils/fileUtils';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -74,6 +76,21 @@ export const TableTeams: FC<IProps> = ({ teams, onUpdate, onDelete, onOpenEdit }
         { field: 'name', editable: true, headerName: 'Name', flex: 1 },
         { field: 'city', editable: true, headerName: 'City', flex: 1 },
         { field: 'country', editable: true, headerName: 'Country', flex: 1, hide: true },
+        {
+            field: 'photo',
+            headerName: 'Photo',
+            type: 'actions',
+            width: 70,
+            getActions: (params: GridRowParams) => {
+                const photo = String(params.getValue(params.id, 'photo'));
+                return [
+                    <Avatar
+                        alt="Remy Sharp"
+                        src={!!photo && photo !== DEFAULT_PHOTO ? getFilePath(photo) : undefined}
+                    />
+                ];
+            }
+        },
         {
             field: 'actions',
             type: 'actions',
