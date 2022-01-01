@@ -37,7 +37,7 @@ export const ListGroups: FC<IProps> = observer(
         return (
             <div>
                 {(groups || []).map((group) => (
-                    <Paper elevation={isSelected(group) ? 5 : 1} className={styles.paper}>
+                    <Paper key={group._id} elevation={isSelected(group) ? 5 : 1} className={styles.paper}>
                         <List
                             onClick={handleSelect(group._id)}
                             className={styles.group}
@@ -68,7 +68,7 @@ export const ListGroups: FC<IProps> = observer(
                                 )
                                 .filter((item) => !!item.sportsman)
                                 .map((item) => (
-                                    <ListItem divider selected={isSelected(group)}>
+                                    <ListItem key={item._id} divider selected={isSelected(group)}>
                                         <ListItemText
                                             primary={`${item?.sportsman?.lastName || ''}${
                                                 item?.sportsman?.firstName ? ` ${item?.sportsman?.firstName}` : ''
@@ -90,7 +90,7 @@ export const ListGroups: FC<IProps> = observer(
                                 )
                                 .filter((item) => !!item.team)
                                 .map((item) => (
-                                    <ListItem divider selected={isSelected(group)}>
+                                    <ListItem key={item._id} divider selected={isSelected(group)}>
                                         <ListItemText primary={item.team?.name} />
                                         {item.channel && item.color && (
                                             <ColorAndChannel channel={item.channel} color={item.color} />
