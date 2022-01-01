@@ -137,7 +137,7 @@ export const RoundsController: FC = observer(() => {
             }
             handleCloseDialog();
         },
-        [handleCloseDialog, rounds, selectedRound]
+        [groups, handleCloseDialog, selectedRound]
     );
     const handleEditGroup = useCallback(
         (
@@ -186,30 +186,32 @@ export const RoundsController: FC = observer(() => {
                 onAddRound={handleOpenAddRound}
                 onEditRound={handleOpenEditRound}
             />
-            <Grid container spacing={2} className={styles.container}>
-                <Grid item xs={4}>
-                    <div className={styles.actionGroups}>
-                        <Button color="primary" startIcon={<AddIcon />} onClick={handleOpenAddGroup}>
-                            Add group
-                        </Button>
-                    </div>
-                    <ListGroups
-                        groups={groups}
-                        sportsmen={sportsmen}
-                        teams={teams}
-                        competition={story.competition!}
-                        selectedGroup={selectedGroup}
-                        onSelect={handleSelectGroup}
-                        onDelete={handleDeleteGroup}
-                        onEdit={handleOpenEditGroup}
-                    />
+            {(rounds || []).length === 0 && <div className={styles.empty}>No groups</div>}
+            {selectedRound && (
+                <Grid container spacing={2} className={styles.container}>
+                    <Grid item xs={4}>
+                        <div className={styles.actionGroups}>
+                            <Button color="primary" startIcon={<AddIcon />} onClick={handleOpenAddGroup}>
+                                Add group
+                            </Button>
+                        </div>
+                        <ListGroups
+                            groups={groups}
+                            sportsmen={sportsmen}
+                            teams={teams}
+                            selectedGroup={selectedGroup}
+                            onSelect={handleSelectGroup}
+                            onDelete={handleDeleteGroup}
+                            onEdit={handleOpenEditGroup}
+                        />
+                    </Grid>
+                    <Grid item xs={8}>
+                        <Paper elevation={0} variant="outlined">
+                            <h4>Race</h4>
+                        </Paper>
+                    </Grid>
                 </Grid>
-                <Grid item xs={8}>
-                    <Paper elevation={0} variant="outlined">
-                        <h4>Race</h4>
-                    </Paper>
-                </Grid>
-            </Grid>
+            )}
             {(openDialogAddRound || openDialogEditRound) && (
                 <DialogFormRound
                     open={openDialogAddRound || openDialogEditRound}
@@ -232,6 +234,7 @@ export const RoundsController: FC = observer(() => {
                     groups={groups}
                     sportsmen={sportsmen}
                     teams={teams}
+                    competition={story.competition!}
                 />
             )}
         </div>

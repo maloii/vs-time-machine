@@ -1,4 +1,5 @@
 .paper {
+  margin-bottom: 15px;
   & > nav {
     padding-bottom: 0;
   }
@@ -9,6 +10,7 @@
   font-weight: bold;
 }
 .group {
+  cursor: pointer;
 }
 
 .actionsGroup {
@@ -20,4 +22,15 @@
   & > div:first-child {
     cursor: pointer;
   }
+}
+
+.roundColorAndChannel {
+  width: 15px;
+  height: 15px;
+  border-radius: 15px;
+}
+
+.empty {
+  margin-top: 25px;
+  text-align: center;
 }

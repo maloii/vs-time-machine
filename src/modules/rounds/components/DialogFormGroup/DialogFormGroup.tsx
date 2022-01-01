@@ -12,11 +12,13 @@ import {
     Select,
     TextField
 } from '@mui/material';
-import { IGroup } from '@/types/IGroup';
+import { IGroup, IMembersGroup } from '@/types/IGroup';
 import { ISportsman } from '@/types/ISportsman';
 import { ITeam } from '@/types/ITeam';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { TypeGroup } from '@/types/TypeGroup';
+import { ICompetition } from '@/types/ICompetition';
+import { competitionColorAndChannel } from '@/utils/competitionColorAndChannel';
 
 interface IProps {
     open: boolean;
@@ -31,6 +33,7 @@ interface IProps {
     groups: IGroup[];
     sportsmen: ISportsman[];
     teams: ITeam[];
+    competition: ICompetition;
 }
 
 export const DialogFormGroup: FC<IProps> = ({
@@ -42,12 +45,13 @@ export const DialogFormGroup: FC<IProps> = ({
     group,
     groups,
     sportsmen,
-    teams
+    teams,
+    competition
 }: IProps) => {
     const [name, setName] = useState(group?.name || `Group ${(groups || []).length > 0 ? groups.length + 1 : '1'}`);
     const [typeGroup, setTypeGroup] = useState(group?.typeGroup || TypeGroup.NONE);
-    const [sportsmenIds, setSportsmenIds] = useState<Array<string>>(group?.sportsmenIds || []);
-    const [teamsIds, setTeamsIds] = useState<Array<string>>(group?.teamsIds || []);
+    const [sportsmenMembers, setSportsmenMembers] = useState<Array<IMembersGroup>>(group?.sportsmen || []);
+    const [teamsMembers, setTeamsMembers] = useState<Array<IMembersGroup>>(group?.teams || []);
 
     const handleChangeName = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
@@ -55,26 +59,55 @@ export const DialogFormGroup: FC<IProps> = ({
     const handleChangeTypeGroup = useCallback((event: SelectChangeEvent<TypeGroup>) => {
         setTypeGroup(event.target.value as TypeGroup);
     }, []);
-    const handleChangeSportsmenIds = useCallback((event: SelectChangeEvent<Array<string>>) => {
-        setSportsmenIds(event.target.value as string[]);
-    }, []);
-    const handleChangeTeamsIds = useCallback((event: SelectChangeEvent<Array<string>>) => {
-        setTeamsIds(event.target.value as string[]);
-    }, []);
+    const handleChangeSportsmenIds = useCallback(
+        (event: SelectChangeEvent<Array<string>>) => {
+            setSportsmenMembers(
+                (event.target.value as string[]).map((_id, indx) => {
+                    const position = indx + 1;
+                    const colorAndChannel = competitionColorAndChannel(position, competition);
+                    return {
+                        _id,
+                        position,
+                        color: colorAndChannel?.color,
+                        channel: colorAndChannel?.channel
+                    };
+                })
+            );
+        },
+        [competition]
+    );
+
+    const handleChangeTeamsIds = useCallback(
+        (event: SelectChangeEvent<Array<string>>) => {
+            setTeamsMembers(
+                (event.target.value as string[]).map((_id, indx) => {
+                    const position = indx + 1;
+                    const colorAndChannel = competitionColorAndChannel(position, competition);
+                    return {
+                        _id,
+                        position,
+                        color: colorAndChannel?.color,
+                        channel: colorAndChannel?.channel
+                    };
+                })
+            );
+        },
+        [competition]
+    );
 
     const handleSave = useCallback(() => {
         const newDataGroup = {
             name,
             typeGroup,
-            sportsmenIds,
-            teamsIds
+            sportsmen: sportsmenMembers,
+            teams: teamsMembers
         };
         if (group?._id) {
             onUpdate(group?._id, { ...newDataGroup, selected: group.selected });
         } else {
             onSave({ ...newDataGroup, selected: true });
         }
-    }, [group?._id, group?.selected, name, typeGroup, onSave, onUpdate, sportsmenIds, teamsIds]);
+    }, [name, typeGroup, sportsmenMembers, teamsMembers, group?._id, group?.selected, onUpdate, onSave]);
 
     const handleDelete = useCallback(() => {
         if (group && window.confirm('Are you sure you want to delete the group? All laps will be deleted with him!')) {
@@ -114,7 +147,7 @@ export const DialogFormGroup: FC<IProps> = ({
                         <InputLabel id="sportsmen-label">Sportsmen</InputLabel>
                         <Select<Array<string>>
                             labelId="sportsmen-label"
-                            value={sportsmenIds}
+                            value={sportsmenMembers.map((item) => item._id)}
                             label="Sportsmen"
                             multiple
                             onChange={handleChangeSportsmenIds}
@@ -123,7 +156,7 @@ export const DialogFormGroup: FC<IProps> = ({
                                 <MenuItem
                                     key={sportsman._id}
                                     value={sportsman._id}
-                                    selected={sportsmenIds.includes(sportsman._id)}
+                                    selected={sportsmenMembers.map((item) => item._id).includes(sportsman._id)}
                                 >
                                     {`${sportsman.lastName || ''}${
                                         sportsman.firstName ? ` ${sportsman.firstName}` : ''
@@ -138,13 +171,17 @@ export const DialogFormGroup: FC<IProps> = ({
                         <InputLabel id="teams-label">Teams</InputLabel>
                         <Select<Array<string>>
                             labelId="teams-label"
-                            value={teamsIds}
+                            value={teamsMembers.map((item) => item._id)}
                             label="Teams"
                             multiple
                             onChange={handleChangeTeamsIds}
                         >
                             {(teams || []).map((team) => (
-                                <MenuItem key={team._id} value={team._id} selected={teamsIds.includes(team._id)}>
+                                <MenuItem
+                                    key={team._id}
+                                    value={team._id}
+                                    selected={teamsMembers.map((item) => item._id).includes(team._id)}
+                                >
                                     {team.name}
                                 </MenuItem>
                             ))}
