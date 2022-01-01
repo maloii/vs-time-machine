@@ -15,13 +15,13 @@ import { ListGroups } from '@/modules/rounds/components/ListGroups/ListGroups';
 import styles from './styles.module.scss';
 import { DialogFormGroup } from '@/modules/rounds/components/DialogFormGroup/DialogFormGroup';
 import { IGroup } from '@/types/IGroup';
-import { groupDelete, groupInsert, groupSelect } from '@/repository/GroupRepository';
+import { groupDelete, groupInsert, groupSelect, groupUpdate } from '@/repository/GroupRepository';
 
 export const RoundsController: FC = observer(() => {
     const [openDialogAddRound, setOpenDialogAddRound] = useState(false);
     const [openDialogEditRound, setOpenDialogEditRound] = useState(false);
     const [openDialogAddGroup, setOpenDialogAddGroup] = useState(false);
-    const [openDialogEditGroup, setOpenDialogEditGroup] = useState(false);
+    const [openDialogEditGroup, setOpenDialogEditGroup] = useState<IGroup>();
 
     const rounds = [...(story.rounds || [])].sort((a, b) => a.sort - b.sort);
     const groups = [...(story.groups || [])].sort((a, b) => a.sort - b.sort);
@@ -46,13 +46,18 @@ export const RoundsController: FC = observer(() => {
     const handleOpenAddRound = useCallback(() => setOpenDialogAddRound(true), []);
     const handleOpenEditRound = useCallback(() => setOpenDialogEditRound(true), []);
     const handleOpenAddGroup = useCallback(() => setOpenDialogAddGroup(true), []);
-    const handleOpenEditGroup = useCallback(() => setOpenDialogEditGroup(true), []);
+    const handleOpenEditGroup = useCallback(
+        (id: string) => {
+            setOpenDialogEditGroup(_.find(groups, ['_id', id]));
+        },
+        [groups]
+    );
 
     const handleCloseDialog = useCallback(() => {
         setOpenDialogAddRound(false);
         setOpenDialogEditRound(false);
         setOpenDialogAddGroup(false);
-        setOpenDialogEditGroup(false);
+        setOpenDialogEditGroup(undefined);
     }, []);
 
     const handleAddRound = useCallback(
@@ -140,11 +145,28 @@ export const RoundsController: FC = observer(() => {
         [groups, handleCloseDialog, selectedRound]
     );
     const handleEditGroup = useCallback(
-        (
+        async (
             _id: string,
             group: Omit<IGroup, '_id' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'>
-        ) => {},
-        []
+        ) => {
+            if (story.competition && selectedRound && group.name && openDialogEditGroup) {
+                await groupUpdate(_id, {
+                    ...group,
+                    close: openDialogEditGroup.close,
+                    roundId: openDialogEditGroup.roundId,
+                    sort: openDialogEditGroup.sort
+                });
+                await loadGroupsAction(selectedRound);
+            }
+            handleCloseDialog();
+        },
+        [
+            handleCloseDialog,
+            openDialogEditGroup?.close,
+            openDialogEditGroup?.roundId,
+            openDialogEditGroup?.sort,
+            selectedRound
+        ]
     );
 
     const handleSelectGroup = useCallback(
@@ -225,12 +247,12 @@ export const RoundsController: FC = observer(() => {
             )}
             {(openDialogAddGroup || openDialogEditGroup) && (
                 <DialogFormGroup
-                    open={openDialogAddGroup || openDialogEditGroup}
+                    open={openDialogAddGroup || !!openDialogEditGroup}
                     onClose={handleCloseDialog}
                     onSave={handleAddGroup}
                     onUpdate={handleEditGroup}
                     onDelete={handleDeleteGroup}
-                    group={openDialogEditGroup ? selectedGroup : undefined}
+                    group={openDialogEditGroup}
                     groups={groups}
                     sportsmen={sportsmen}
                     teams={teams}
