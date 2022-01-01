@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import _ from 'lodash';
 
@@ -30,34 +30,30 @@ export const RoundsController: FC = observer(() => {
     const teams = _.sortBy(story.teams, 'name');
 
     const rounds = [...(story.rounds || [])].sort((a, b) => a.sort - b.sort);
-    const groups = useMemo(
-        () =>
-            [...(story.groups || [])]
-                .sort((a, b) => a.sort - b.sort)
-                .map((group) => ({
-                    ...group,
-                    sportsmen: group.sportsmen
-                        .map(
-                            (item): IMembersGroup => ({
-                                ...item,
-                                sportsman: _.find<ISportsman>(story.sportsmen, ['_id', item._id])
-                            })
-                        )
-                        .filter((item) => !!item.sportsman),
-                    teams: group.teams
-                        .map(
-                            (item): IMembersGroup => ({
-                                ...item,
-                                team: _.find<ITeam>(story.teams, ['_id', item._id])
-                            })
-                        )
-                        .filter((item) => !!item.team)
-                })),
-        []
-    );
+    const groups = [...(story.groups || [])]
+        .sort((a, b) => a.sort - b.sort)
+        .map((group) => ({
+            ...group,
+            sportsmen: group.sportsmen
+                .map(
+                    (item): IMembersGroup => ({
+                        ...item,
+                        sportsman: _.find<ISportsman>(story.sportsmen, ['_id', item._id])
+                    })
+                )
+                .filter((item) => !!item.sportsman),
+            teams: group.teams
+                .map(
+                    (item): IMembersGroup => ({
+                        ...item,
+                        team: _.find<ITeam>(story.teams, ['_id', item._id])
+                    })
+                )
+                .filter((item) => !!item.team)
+        }));
 
-    const selectedRound = useMemo(() => rounds.find((round) => round.selected), [rounds]);
-    const selectedGroup = useMemo(() => groups.find((group) => group.selected), [groups]);
+    const selectedRound = rounds.find((round) => round.selected);
+    const selectedGroup = groups.find((group) => group.selected);
 
     const handleSelectRound = useCallback(async (_id: string) => {
         if (story.competition) {
@@ -262,7 +258,7 @@ export const RoundsController: FC = observer(() => {
                                         START
                                     </Button>
                                 </div>
-                                <TableLaps laps={story.laps || []} group={selectedGroup} />
+                                <TableLaps group={selectedGroup} />
                             </div>
                         )}
                     </Grid>

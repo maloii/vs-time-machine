@@ -29,7 +29,7 @@ export const ListGroups: FC<IProps> = observer(({ groups, selectedGroup, onEdit,
         return <div className={styles.empty}>No groups</div>;
     }
     return (
-        <div>
+        <div className={styles.root}>
             {(groups || []).map((group) => (
                 <Paper key={group._id} elevation={isSelected(group) ? 5 : 1} className={styles.paper}>
                     <List
