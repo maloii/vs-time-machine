@@ -21,7 +21,14 @@ export const ColorAndChannel: FC<IProps> = ({ color, channel }: IProps) => {
     };
     return (
         <Tooltip title={`${ChannelFrequencies[channel]} MHz`} arrow>
-            <div style={{ background: ColorCss[color], color: colorText() }} className={styles.roundColorAndChannel}>
+            <div
+                style={{
+                    background: ColorCss[color],
+                    color: colorText(),
+                    border: `${color === Color.WHITE ? 1 : 0}px solid black`
+                }}
+                className={styles.roundColorAndChannel}
+            >
                 {channel}
             </div>
         </Tooltip>

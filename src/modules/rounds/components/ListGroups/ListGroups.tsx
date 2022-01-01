@@ -58,7 +58,7 @@ export const ListGroups: FC<IProps> = observer(({ groups, selectedGroup, onEdit,
                                 {item.position}
                                 &nbsp;-&nbsp;
                                 <ListItemText primary={sportsmanName(item?.sportsman!)} />
-                                {item.channel && item.color && (
+                                {item.channel !== undefined && item.color !== undefined && (
                                     <ColorAndChannel channel={item.channel} color={item.color} />
                                 )}
                             </ListItem>
@@ -68,7 +68,7 @@ export const ListGroups: FC<IProps> = observer(({ groups, selectedGroup, onEdit,
                                 {item.position}
                                 &nbsp;-&nbsp;
                                 <ListItemText primary={item.team?.name} />
-                                {item.channel && item.color && (
+                                {item.channel !== undefined && item.color !== undefined && (
                                     <ColorAndChannel channel={item.channel} color={item.color} />
                                 )}
                             </ListItem>

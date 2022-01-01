@@ -1,5 +1,6 @@
 .root {
   height: 100%;
+  overflow: auto;
 }
 
 .container {
@@ -32,7 +33,7 @@
   position: relative;
 }
 .startStop {
-  position: absolute;
+  position: absolute !important;
   right: 0;
 }
 
