@@ -1,0 +1,23 @@
+.paper {
+  & > nav {
+    padding-bottom: 0;
+  }
+}
+
+.selected {
+  background-color: rgba(25, 118, 210, 0.08) !important;
+  font-weight: bold;
+}
+.group {
+}
+
+.actionsGroup {
+  margin-left: auto;
+}
+
+.headerGroup {
+  display: flex;
+  & > div:first-child {
+    cursor: pointer;
+  }
+}

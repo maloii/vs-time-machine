@@ -24,5 +24,4 @@ export interface IRound {
     typeRaceElimination: TypeRaceElimination;
     parentEntity?: string;
     countNextGo: number;
-    groups: IGroup[];
 }

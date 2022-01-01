@@ -133,10 +133,7 @@ export const DialogFormRound: FC<IProps> = ({ open, onClose, onSave, onUpdate, o
     );
 
     const handleDelete = useCallback(() => {
-        if (
-            round &&
-            window.confirm('Are you sure you want to delete the round? All groups and laps will be deleted with him!')
-        ) {
+        if (round) {
             onDelete(round._id);
         }
     }, [onDelete, round]);

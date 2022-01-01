@@ -3,6 +3,7 @@ import { ICompetition } from '@/types/ICompetition';
 import { IRound } from '@/types/IRound';
 import { ISportsman } from '@/types/ISportsman';
 import { ITeam } from '@/types/ITeam';
+import { IGroup } from '@/types/IGroup';
 
 export class Story {
     public competitions: Array<ICompetition> = [];
@@ -10,6 +11,7 @@ export class Story {
     public teams: Array<ITeam> = [];
     public competition: ICompetition | undefined = undefined;
     public rounds: Array<IRound> = [];
+    public groups: Array<IGroup> = [];
 
     public constructor() {
         makeAutoObservable(this);
@@ -33,6 +35,10 @@ export class Story {
 
     public setRounds = (newRounds: IRound[]): void => {
         this.rounds = newRounds;
+    };
+
+    public setGroups = (newGroups: IGroup[]): void => {
+        this.groups = newGroups;
     };
 }
 

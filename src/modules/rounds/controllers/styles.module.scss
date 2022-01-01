@@ -1,3 +1,26 @@
 .root {
   height: 100%;
 }
+
+.container {
+  margin-top: 10px !important;
+
+  fieldset {
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  legend {
+    color: rgba(0, 0, 0, 0.6);
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.4375em;
+    letter-spacing: 0.00938em;
+  }
+}
+
+.actionGroups {
+  display: flex;
+  justify-content: flex-end;
+}
