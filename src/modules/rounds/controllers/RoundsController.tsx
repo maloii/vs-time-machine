@@ -160,13 +160,7 @@ export const RoundsController: FC = observer(() => {
             }
             handleCloseDialog();
         },
-        [
-            handleCloseDialog,
-            openDialogEditGroup?.close,
-            openDialogEditGroup?.roundId,
-            openDialogEditGroup?.sort,
-            selectedRound
-        ]
+        [handleCloseDialog, openDialogEditGroup, selectedRound]
     );
 
     const handleSelectGroup = useCallback(
