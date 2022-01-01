@@ -6,16 +6,19 @@ import { TabRounds } from '@/modules/rounds/components/TabRounds/TabRounds';
 import { story } from '@/story/story';
 import { db } from '@/repository/Repository';
 import { IRound } from '@/types/IRound';
-import { loadGroupsAction, loadRoundsAction } from '@/actions/loadCompetitionAction';
+import { loadGroupsAction, loadLapsForGroupAction, loadRoundsAction } from '@/actions/loadCompetitionAction';
 import { Button, Grid, Paper } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { DialogFormRound } from '@/modules/rounds/components/DialogFormRound/DialogFormRound';
 import { ListGroups } from '@/modules/rounds/components/ListGroups/ListGroups';
+import { DialogFormGroup } from '@/modules/rounds/components/DialogFormGroup/DialogFormGroup';
+import { IGroup, IMembersGroup } from '@/types/IGroup';
+import { groupDelete, groupInsert, groupSelect, groupUpdate } from '@/repository/GroupRepository';
+import { ISportsman } from '@/types/ISportsman';
+import { ITeam } from '@/types/ITeam';
+import { TableLaps } from '@/modules/rounds/components/TableLaps/TableLaps';
 
 import styles from './styles.module.scss';
-import { DialogFormGroup } from '@/modules/rounds/components/DialogFormGroup/DialogFormGroup';
-import { IGroup } from '@/types/IGroup';
-import { groupDelete, groupInsert, groupSelect, groupUpdate } from '@/repository/GroupRepository';
 
 export const RoundsController: FC = observer(() => {
     const [openDialogAddRound, setOpenDialogAddRound] = useState(false);
@@ -23,10 +26,31 @@ export const RoundsController: FC = observer(() => {
     const [openDialogAddGroup, setOpenDialogAddGroup] = useState(false);
     const [openDialogEditGroup, setOpenDialogEditGroup] = useState<IGroup>();
 
-    const rounds = [...(story.rounds || [])].sort((a, b) => a.sort - b.sort);
-    const groups = [...(story.groups || [])].sort((a, b) => a.sort - b.sort);
     const sportsmen = _.sortBy(story.sportsmen, 'lastName');
     const teams = _.sortBy(story.teams, 'name');
+
+    const rounds = [...(story.rounds || [])].sort((a, b) => a.sort - b.sort);
+    const groups = [...(story.groups || [])]
+        .sort((a, b) => a.sort - b.sort)
+        .map((group) => ({
+            ...group,
+            sportsmen: group.sportsmen
+                .map(
+                    (item): IMembersGroup => ({
+                        ...item,
+                        sportsman: _.find<ISportsman>(sportsmen, ['_id', item._id])
+                    })
+                )
+                .filter((item) => !!item.sportsman),
+            teams: group.teams
+                .map(
+                    (item): IMembersGroup => ({
+                        ...item,
+                        team: _.find<ITeam>(teams, ['_id', item._id])
+                    })
+                )
+                .filter((item) => !!item.team)
+        }));
 
     const selectedRound = useMemo(() => rounds.find((round) => round.selected), [rounds]);
     const selectedGroup = useMemo(() => groups.find((group) => group.selected), [groups]);
@@ -193,6 +217,12 @@ export const RoundsController: FC = observer(() => {
         }
     }, [selectedRound]);
 
+    useEffect(() => {
+        if (selectedGroup) {
+            loadLapsForGroupAction(selectedGroup);
+        }
+    }, [selectedGroup]);
+
     return (
         <div className={styles.root}>
             <TabRounds
@@ -213,8 +243,6 @@ export const RoundsController: FC = observer(() => {
                         </div>
                         <ListGroups
                             groups={groups}
-                            sportsmen={sportsmen}
-                            teams={teams}
                             selectedGroup={selectedGroup}
                             onSelect={handleSelectGroup}
                             onDelete={handleDeleteGroup}
@@ -222,9 +250,17 @@ export const RoundsController: FC = observer(() => {
                         />
                     </Grid>
                     <Grid item xs={8}>
-                        <Paper elevation={0} variant="outlined">
-                            <h4>Race</h4>
-                        </Paper>
+                        {selectedGroup && (
+                            <div>
+                                <div className={styles.actionRace}>
+                                    <Paper className={styles.timer}>00:00</Paper>
+                                    <Button variant="contained" color="success" className={styles.startStop}>
+                                        START
+                                    </Button>
+                                </div>
+                                <TableLaps laps={story.laps || []} group={selectedGroup} />
+                            </div>
+                        )}
                     </Grid>
                 </Grid>
             )}

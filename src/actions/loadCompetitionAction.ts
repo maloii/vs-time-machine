@@ -4,8 +4,10 @@ import { ICompetition } from '@/types/ICompetition';
 import { IRound } from '@/types/IRound';
 import { ISportsman } from '@/types/ISportsman';
 import { ITeam } from '@/types/ITeam';
+import { ILap } from '@/types/ILap';
 import { IGroup } from '@/types/IGroup';
 import { groupsFindByRoundId } from '@/repository/GroupRepository';
+import { lapsFindByGroupId } from '@/repository/LapRepository';
 
 export const loadCompetitionAction = async (): Promise<Array<ICompetition>> => {
     const competitions: ICompetition[] = await db.competition.find({});
@@ -42,4 +44,10 @@ export const loadGroupsAction = async (round: IRound): Promise<Array<IGroup>> =>
     const groups: IGroup[] = await groupsFindByRoundId(round._id);
     story.setGroups(groups);
     return groups;
+};
+
+export const loadLapsForGroupAction = async (group: IGroup): Promise<Array<ILap>> => {
+    const laps: ILap[] = await lapsFindByGroupId(group._id);
+    story.setLaps(laps);
+    return laps;
 };
