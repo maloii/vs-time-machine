@@ -126,6 +126,7 @@ export const TableSportsmen: FC<IProps> = observer(({ sportsmen, onUpdate, onDel
     return (
         <div className={styles.dataGrid}>
             <DataGrid
+                hideFooter
                 columns={columns}
                 rows={sportsmen.map((item, indx) => ({ ...item, num: indx + 1 }))}
                 onCellEditCommit={handleCellEditCommit}

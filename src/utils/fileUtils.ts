@@ -1,7 +1,7 @@
 import { randomId } from '@mui/x-data-grid-generator';
 import { DEFAULT_COMPETITION_LOGO, DEFAULT_PHOTO } from '@/constants/images';
 
-const remote = window.require('electron').remote;
+const remote = window.require('@electron/remote');
 const { app } = remote;
 const fs = remote.require('fs');
 const fsPromise = window.require('fs').promises;

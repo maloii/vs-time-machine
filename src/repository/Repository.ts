@@ -1,4 +1,4 @@
-const { app } = window.require('electron').remote;
+const { app } = window.require('@electron/remote');
 const Datastore = window.require('nedb-promises');
 
 const dbFactory = (fileName: string) =>
