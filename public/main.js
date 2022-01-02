@@ -4,6 +4,7 @@ const isDev = require('electron-is-dev');
 const remoteMain = require('@electron/remote/main');
 const { init } = require('./main/init');
 require('./main/hardware/serialport');
+require('./main/ipcMessages');
 
 remoteMain.initialize();
 
@@ -12,7 +13,6 @@ function createWindow() {
         width: 1024,
         height: 1024,
         webPreferences: {
-            enableRemoteModule: true,
             nodeIntegration: true,
             contextIsolation: false
         },

@@ -8,6 +8,8 @@ const { ipcRenderer } = window.require('electron');
 export const Footer: FC = observer(() => {
     const [message, setMessage] = useState<string>();
     useEffect(() => {
+        ipcRenderer.removeAllListeners('connector-message');
+        ipcRenderer.removeAllListeners('status-serial-port');
         ipcRenderer.on('connector-message', (e, res: string) => {
             setMessage(res);
         });

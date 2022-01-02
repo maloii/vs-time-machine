@@ -29,7 +29,11 @@ export const TableTeams: FC<IProps> = ({ teams, onUpdate, onDelete, onOpenEdit }
         (params: GridCellEditCommitParams) => {
             const editTeam = _.find(teams, ['_id', params.id]);
             if (editTeam) {
-                onUpdate(editTeam._id, { ...editTeam, [params.field]: params.value });
+                onUpdate(editTeam._id, {
+                    ...editTeam,
+                    sportsmenIds: [...editTeam.sportsmenIds],
+                    [params.field]: params.value
+                });
             }
         },
         [onUpdate, teams]

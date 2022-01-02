@@ -30,7 +30,11 @@ export const TableSportsmen: FC<IProps> = observer(({ sportsmen, onUpdate, onDel
         (params: GridCellEditCommitParams) => {
             const editSportsman = _.find(sportsmen, ['_id', params.id]);
             if (editSportsman) {
-                onUpdate(editSportsman._id, { ...editSportsman, [params.field]: params.value });
+                onUpdate(editSportsman._id, {
+                    ...editSportsman,
+                    transponders: [...editSportsman.transponders],
+                    [params.field]: params.value
+                });
             }
         },
         [onUpdate, sportsmen]

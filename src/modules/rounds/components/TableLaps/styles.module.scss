@@ -1,0 +1,5 @@
+.root {
+  th:not(:first-child), td:not(:first-child) {
+    border-left: 1px solid rgba(224, 224, 224, 1);
+  }
+}

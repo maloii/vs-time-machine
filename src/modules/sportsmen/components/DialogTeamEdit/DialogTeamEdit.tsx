@@ -20,7 +20,7 @@ import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { copyFile, deleteFile, getFilePath } from '@/utils/fileUtils';
 import { story } from '@/story/story';
 import { db } from '@/repository/Repository';
-import { loadTeamsAction } from '@/actions/loadCompetitionAction';
+import { loadTeamsAction } from '@/actions/actionRequest';
 
 import styles from './styles.module.scss';
 

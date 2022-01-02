@@ -4,21 +4,35 @@ import _ from 'lodash';
 
 import { TabRounds } from '@/modules/rounds/components/TabRounds/TabRounds';
 import { story } from '@/story/story';
-import { db } from '@/repository/Repository';
 import { IRound } from '@/types/IRound';
-import { loadGroupsAction, loadLapsForGroupAction, loadRoundsAction } from '@/actions/loadCompetitionAction';
+import {
+    groupDeleteAction,
+    groupInsertAction,
+    groupSelectAction,
+    groupUpdateAction,
+    loadGroupsAction,
+    loadLapsForGroupAction,
+    loadRoundsAction
+} from '@/actions/actionRequest';
 import { Button, Grid, Paper } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { DialogFormRound } from '@/modules/rounds/components/DialogFormRound/DialogFormRound';
 import { ListGroups } from '@/modules/rounds/components/ListGroups/ListGroups';
 import { DialogFormGroup } from '@/modules/rounds/components/DialogFormGroup/DialogFormGroup';
 import { IGroup, IMembersGroup } from '@/types/IGroup';
-import { groupDelete, groupInsert, groupSelect, groupUpdate } from '@/repository/GroupRepository';
 import { ISportsman } from '@/types/ISportsman';
 import { ITeam } from '@/types/ITeam';
 import { TableLaps } from '@/modules/rounds/components/TableLaps/TableLaps';
 
 import styles from './styles.module.scss';
+import {
+    roundDeleteAction,
+    roundInsertAction,
+    roundSelectAction,
+    roundUpdateAction
+} from '@/actions/actionRoundRequest';
+
+const { ipcRenderer } = window.require('electron');
 
 export const RoundsController: FC = observer(() => {
     const [openDialogAddRound, setOpenDialogAddRound] = useState(false);
@@ -57,13 +71,7 @@ export const RoundsController: FC = observer(() => {
 
     const handleSelectRound = useCallback(async (_id: string) => {
         if (story.competition) {
-            await db.round.update(
-                { competitionId: story.competition._id, selected: true },
-                { $set: { selected: false } },
-                { multi: true }
-            );
-            await db.round.update({ _id }, { $set: { selected: true } });
-            await loadRoundsAction(story.competition);
+            roundSelectAction(story.competition._id, _id);
         }
     }, []);
 
@@ -86,46 +94,22 @@ export const RoundsController: FC = observer(() => {
 
     const handleAddRound = useCallback(
         async (
-            round: Omit<
-                IRound,
-                '_id' | 'competitionId' | 'selected' | 'dateCreate' | 'minTimeLap' | 'close' | 'sort' | 'groups'
-            >
+            round: Omit<IRound, '_id' | 'competitionId' | 'selected' | 'dateCreate' | 'minTimeLap' | 'close' | 'sort'>
         ) => {
             if (story.competition && round.name) {
-                await Promise.all(
-                    rounds.map(async (item, indx) => {
-                        return await db.round.update(
-                            { _id: item._id },
-                            {
-                                $set: { selected: false, sort: indx }
-                            }
-                        );
-                    })
-                );
-
-                await db.round.insert({
-                    ...round,
-                    competitionId: story.competition._id,
-                    sort: rounds.length,
-                    selected: true
-                });
-                await loadRoundsAction(story.competition);
+                roundInsertAction(story.competition._id, round);
                 handleCloseDialog();
             }
         },
-        [rounds, handleCloseDialog]
+        [handleCloseDialog]
     );
 
     const handleEditRound = useCallback(
         async (
-            round: Omit<
-                IRound,
-                '_id' | 'competitionId' | 'selected' | 'dateCreate' | 'minTimeLap' | 'close' | 'sort' | 'groups'
-            >
+            round: Omit<IRound, '_id' | 'competitionId' | 'selected' | 'dateCreate' | 'minTimeLap' | 'close' | 'sort'>
         ) => {
             if (story.competition && selectedRound && round.name) {
-                await db.round.update({ _id: selectedRound._id }, { $set: { ...round } });
-                await loadRoundsAction(story.competition);
+                roundUpdateAction(selectedRound._id, round);
                 handleCloseDialog();
             }
         },
@@ -140,13 +124,7 @@ export const RoundsController: FC = observer(() => {
                     'Are you sure you want to delete the round? All groups and laps will be deleted with him!'
                 )
             ) {
-                await db.round.remove({ _id }, {});
-                const newRounds = await loadRoundsAction(story.competition);
-                if ((newRounds || []).length > 0) {
-                    const newSelectedRound = newRounds[newRounds.length - 1];
-                    await db.round.update({ _id: newSelectedRound._id }, { $set: { selected: true } });
-                    await loadRoundsAction(story.competition);
-                }
+                roundDeleteAction(_id);
                 handleCloseDialog();
             }
         },
@@ -154,33 +132,28 @@ export const RoundsController: FC = observer(() => {
     );
 
     const handleAddGroup = useCallback(
-        async (group: Omit<IGroup, '_id' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'>) => {
+        (group: Omit<IGroup, '_id' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'>) => {
             if (story.competition && selectedRound && group.name) {
-                await groupInsert({
+                groupInsertAction({
                     ...group,
                     close: false,
                     roundId: selectedRound._id,
                     sort: (groups || []).length > 0 ? groups[groups.length - 1].sort + 1 : 1
                 });
-                await loadGroupsAction(selectedRound);
             }
             handleCloseDialog();
         },
         [groups, handleCloseDialog, selectedRound]
     );
     const handleEditGroup = useCallback(
-        async (
-            _id: string,
-            group: Omit<IGroup, '_id' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'>
-        ) => {
+        (_id: string, group: Omit<IGroup, '_id' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'>) => {
             if (story.competition && selectedRound && group.name && openDialogEditGroup) {
-                await groupUpdate(_id, {
+                groupUpdateAction(_id, {
                     ...group,
                     close: openDialogEditGroup.close,
                     roundId: openDialogEditGroup.roundId,
                     sort: openDialogEditGroup.sort
                 });
-                await loadGroupsAction(selectedRound);
             }
             handleCloseDialog();
         },
@@ -188,32 +161,49 @@ export const RoundsController: FC = observer(() => {
     );
 
     const handleSelectGroup = useCallback(
-        async (_id: string) => {
+        (_id: string) => {
             if (story.competition && selectedRound) {
-                await groupSelect(selectedRound._id, _id);
-                await loadGroupsAction(selectedRound);
+                groupSelectAction(selectedRound._id, _id);
             }
         },
         [selectedRound]
     );
 
     const handleDeleteGroup = useCallback(
-        async (_id: string) => {
+        (_id: string) => {
             if (
                 story.competition &&
                 selectedRound &&
                 window.confirm('Are you sure you want to delete the group? All  laps will be deleted with him!')
             ) {
-                await groupDelete(_id);
-                await loadGroupsAction(selectedRound);
+                groupDeleteAction(_id);
             }
         },
         [selectedRound]
     );
 
     useEffect(() => {
+        ipcRenderer.removeAllListeners('round-insert-response');
+        ipcRenderer.removeAllListeners('round-update-response');
+        ipcRenderer.removeAllListeners('round-select-response');
+        ipcRenderer.removeAllListeners('round-delete-response');
+        ipcRenderer.on('round-insert-response', () => loadRoundsAction(story.competition!));
+        ipcRenderer.on('round-update-response', () => loadRoundsAction(story.competition!));
+        ipcRenderer.on('round-select-response', () => loadRoundsAction(story.competition!));
+        ipcRenderer.on('round-delete-response', () => loadRoundsAction(story.competition!));
+    }, []);
+
+    useEffect(() => {
         if (selectedRound) {
             loadGroupsAction(selectedRound);
+            ipcRenderer.removeAllListeners('group-insert-response');
+            ipcRenderer.removeAllListeners('group-update-response');
+            ipcRenderer.removeAllListeners('group-select-response');
+            ipcRenderer.removeAllListeners('group-delete-response');
+            ipcRenderer.on('group-insert-response', () => loadGroupsAction(selectedRound));
+            ipcRenderer.on('group-update-response', () => loadGroupsAction(selectedRound));
+            ipcRenderer.on('group-select-response', () => loadGroupsAction(selectedRound));
+            ipcRenderer.on('group-delete-response', () => loadGroupsAction(selectedRound));
         }
     }, [selectedRound]);
 

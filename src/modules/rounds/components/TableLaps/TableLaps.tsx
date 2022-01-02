@@ -5,13 +5,15 @@ import { sportsmanName } from '@/utils/sportsmanName';
 import { story } from '@/story/story';
 import { observer } from 'mobx-react';
 
+import styles from './styles.module.scss';
+
 interface IProps {
     group: IGroup;
 }
 
 export const TableLaps: FC<IProps> = observer(({ group }: IProps) => {
     return (
-        <TableContainer component={Paper} variant="outlined">
+        <TableContainer component={Paper} variant="outlined" className={styles.root}>
             <Table>
                 <TableHead>
                     <TableRow>

@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { ICompetition } from '@/types/ICompetition';
 import { db } from '@/repository/Repository';
-import { loadCompetitionAction } from '@/actions/loadCompetitionAction';
+import { actionRequest } from '@/actions/actionRequest';
 
 import styles from './styles.module.scss';
 import { PositionColor } from '@/modules/competition/components/DialogCompetitionEdit/PositionColor';
@@ -108,7 +108,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
             setLogo(DEFAULT_COMPETITION_LOGO);
             if (competition) {
                 await db.competition.update({ _id: competition._id }, { $set: { logo: DEFAULT_COMPETITION_LOGO } });
-                await loadCompetitionAction();
+                await actionRequest();
             }
         });
     }, [competition, logo]);
@@ -196,7 +196,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
             } else {
                 await db.competition.insert(newValue);
             }
-            await loadCompetitionAction();
+            await actionRequest();
             onClose();
         }
     }, [
@@ -235,11 +235,11 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
             await db.sportsman.remove({ competitionId: competition._id }, {});
             await db.round.remove({ competitionId: competition._id }, {});
             await db.competition.remove({ _id: competition._id }, {});
-            const competitions = await loadCompetitionAction();
+            const competitions = await actionRequest();
             if ((competitions || []).length > 0) {
                 const newSelectedCompetitions = competitions[competitions.length - 1];
                 await db.competition.update({ _id: newSelectedCompetitions._id }, { $set: { selected: true } });
-                await loadCompetitionAction();
+                await actionRequest();
             }
             onClose();
         }

@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { Divider, FormControl, MenuItem, TextField } from '@mui/material';
 import { DialogCompetitionEdit } from '../../../competition/components/DialogCompetitionEdit/DialogCompetitionEdit';
 import { story } from '@/story/story';
-import { loadCompetitionAction } from '@/actions/loadCompetitionAction';
+import { actionRequest } from '@/actions/actionRequest';
 import { ICompetition } from '@/types/ICompetition';
 
 export const SelectCompetition: FC = observer(() => {
@@ -28,7 +28,7 @@ export const SelectCompetition: FC = observer(() => {
 
     useEffect(() => {
         (async function () {
-            await loadCompetitionAction();
+            await actionRequest();
         })();
     }, []);
 

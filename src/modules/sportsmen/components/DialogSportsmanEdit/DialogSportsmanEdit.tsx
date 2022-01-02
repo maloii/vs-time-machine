@@ -13,7 +13,7 @@ import {
     AutocompleteValue
 } from '@mui/material';
 import { db } from '@/repository/Repository';
-import { loadSportsmenAction } from '@/actions/loadCompetitionAction';
+import { loadSportsmenAction } from '@/actions/actionRequest';
 import { story } from '@/story/story';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { ISportsman } from '@/types/ISportsman';

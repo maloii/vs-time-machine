@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import _ from 'lodash';
 import { TableSportsmen } from '@/modules/sportsmen/components/TableSportsmen/TableSportsmen';
@@ -6,15 +6,24 @@ import { TableTeams } from '@/modules/sportsmen/components/TableTeams/TableTeams
 import { story } from '@/story/story';
 import { ISportsman } from '@/types/ISportsman';
 import { ITeam } from '@/types/ITeam';
-import { loadSportsmenAction, loadTeamsAction } from '@/actions/loadCompetitionAction';
+import {
+    loadSportsmenAction,
+    loadTeamsAction,
+    sportsmanDeleteAction,
+    sportsmanInsertAction,
+    sportsmanUpdateAction,
+    teamDeleteAction,
+    teamInsertAction,
+    teamUpdateAction
+} from '@/actions/actionRequest';
 import { DialogSportsmanEdit } from '@/modules/sportsmen/components/DialogSportsmanEdit/DialogSportsmanEdit';
 import { DialogTeamEdit } from '@/modules/sportsmen/components/DialogTeamEdit/DialogTeamEdit';
 import { Box, Button, Tab, Tabs } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { teamDelete, teamInsert, teamUpdate } from '@/repository/TeamRepository';
-import { sportsmanDelete, sportsmanInsert, sportsmanUpdate } from '@/repository/SportsmanRepository';
 
 import styles from './styles.module.scss';
+
+const { ipcRenderer } = window.require('electron');
 
 export const SportsmenController: FC = observer(() => {
     const [tabSelected, setTabSelected] = useState('Sportsmen');
@@ -61,13 +70,12 @@ export const SportsmenController: FC = observer(() => {
     );
 
     const handleSaveSportsman = useCallback(
-        async (sportsman: Omit<ISportsman, '_id' | 'competitionId'>) => {
+        (sportsman: Omit<ISportsman, '_id' | 'competitionId'>) => {
             if (story.competition) {
-                await sportsmanInsert({
+                sportsmanInsertAction({
                     ...sportsman,
                     competitionId: story.competition._id
                 });
-                await loadSportsmenAction(story.competition);
                 handleClose();
             }
         },
@@ -75,10 +83,9 @@ export const SportsmenController: FC = observer(() => {
     );
 
     const handleUpdateSportsman = useCallback(
-        async (_id: string, sportsman: Omit<ISportsman, '_id' | 'competitionId'>) => {
+        (_id: string, sportsman: Omit<ISportsman, '_id' | 'competitionId'>) => {
             if (story.competition && _id) {
-                await sportsmanUpdate(_id, sportsman);
-                await loadSportsmenAction(story.competition);
+                sportsmanUpdateAction(_id, sportsman);
                 handleClose();
             }
         },
@@ -86,11 +93,10 @@ export const SportsmenController: FC = observer(() => {
     );
 
     const handleDeleteSportsmen = useCallback(
-        async (_id: string) => {
+        (_id: string) => {
             if (story.competition) {
                 if (window.confirm('Are you sure you want to remove the sportsman?')) {
-                    await sportsmanDelete(_id);
-                    await loadSportsmenAction(story.competition);
+                    sportsmanDeleteAction(_id);
                     handleClose();
                 }
             }
@@ -99,13 +105,12 @@ export const SportsmenController: FC = observer(() => {
     );
 
     const handleSaveTeam = useCallback(
-        async (team: Omit<ITeam, '_id' | 'competitionId'>) => {
+        (team: Omit<ITeam, '_id' | 'competitionId'>) => {
             if (story.competition) {
-                await teamInsert({
+                teamInsertAction({
                     ...team,
                     competitionId: story.competition._id
                 });
-                await loadTeamsAction(story.competition);
                 handleClose();
             }
         },
@@ -113,10 +118,9 @@ export const SportsmenController: FC = observer(() => {
     );
 
     const handleUpdateTeam = useCallback(
-        async (_id: string, team: Omit<ITeam, '_id' | 'competitionId'>) => {
+        (_id: string, team: Omit<ITeam, '_id' | 'competitionId'>) => {
             if (story.competition && _id) {
-                await teamUpdate(_id, team);
-                await loadTeamsAction(story.competition);
+                teamUpdateAction(_id, team);
                 handleClose();
             }
         },
@@ -124,18 +128,30 @@ export const SportsmenController: FC = observer(() => {
     );
 
     const handleDeleteTeam = useCallback(
-        async (_id: string) => {
+        (_id: string) => {
             if (story.competition) {
                 if (window.confirm('Are you sure you want to remove the team?')) {
-                    await teamDelete(_id);
-                    await loadTeamsAction(story.competition);
+                    teamDeleteAction(_id);
                     handleClose();
                 }
             }
         },
         [handleClose]
     );
-
+    useEffect(() => {
+        ipcRenderer.removeAllListeners('team-insert-response');
+        ipcRenderer.removeAllListeners('team-update-response');
+        ipcRenderer.removeAllListeners('team-delete-response');
+        ipcRenderer.removeAllListeners('sportsman-insert-response');
+        ipcRenderer.removeAllListeners('sportsman-update-response');
+        ipcRenderer.removeAllListeners('sportsman-delete-response');
+        ipcRenderer.on('team-insert-response', () => loadTeamsAction(story.competition!));
+        ipcRenderer.on('team-update-response', () => loadTeamsAction(story.competition!));
+        ipcRenderer.on('team-delete-response', () => loadTeamsAction(story.competition!));
+        ipcRenderer.on('sportsman-insert-response', () => loadSportsmenAction(story.competition!));
+        ipcRenderer.on('sportsman-update-response', () => loadSportsmenAction(story.competition!));
+        ipcRenderer.on('sportsman-delete-response', () => loadSportsmenAction(story.competition!));
+    }, []);
     if (!story.competition) return null;
 
     return (
