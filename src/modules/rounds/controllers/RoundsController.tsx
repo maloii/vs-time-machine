@@ -32,8 +32,6 @@ import {
     roundUpdateAction
 } from '@/actions/actionRoundRequest';
 
-const { ipcRenderer } = window.require('electron');
-
 export const RoundsController: FC = observer(() => {
     const [openDialogAddRound, setOpenDialogAddRound] = useState(false);
     const [openDialogEditRound, setOpenDialogEditRound] = useState(false);
@@ -183,27 +181,27 @@ export const RoundsController: FC = observer(() => {
     );
 
     useEffect(() => {
-        ipcRenderer.removeAllListeners('round-insert-response');
-        ipcRenderer.removeAllListeners('round-update-response');
-        ipcRenderer.removeAllListeners('round-select-response');
-        ipcRenderer.removeAllListeners('round-delete-response');
-        ipcRenderer.on('round-insert-response', () => loadRoundsAction(story.competition!));
-        ipcRenderer.on('round-update-response', () => loadRoundsAction(story.competition!));
-        ipcRenderer.on('round-select-response', () => loadRoundsAction(story.competition!));
-        ipcRenderer.on('round-delete-response', () => loadRoundsAction(story.competition!));
+        window.api.ipcRenderer.removeAllListeners('round-insert-response');
+        window.api.ipcRenderer.removeAllListeners('round-update-response');
+        window.api.ipcRenderer.removeAllListeners('round-select-response');
+        window.api.ipcRenderer.removeAllListeners('round-delete-response');
+        window.api.ipcRenderer.on('round-insert-response', () => loadRoundsAction(story.competition!));
+        window.api.ipcRenderer.on('round-update-response', () => loadRoundsAction(story.competition!));
+        window.api.ipcRenderer.on('round-select-response', () => loadRoundsAction(story.competition!));
+        window.api.ipcRenderer.on('round-delete-response', () => loadRoundsAction(story.competition!));
     }, []);
 
     useEffect(() => {
         if (selectedRound) {
             loadGroupsAction(selectedRound);
-            ipcRenderer.removeAllListeners('group-insert-response');
-            ipcRenderer.removeAllListeners('group-update-response');
-            ipcRenderer.removeAllListeners('group-select-response');
-            ipcRenderer.removeAllListeners('group-delete-response');
-            ipcRenderer.on('group-insert-response', () => loadGroupsAction(selectedRound));
-            ipcRenderer.on('group-update-response', () => loadGroupsAction(selectedRound));
-            ipcRenderer.on('group-select-response', () => loadGroupsAction(selectedRound));
-            ipcRenderer.on('group-delete-response', () => loadGroupsAction(selectedRound));
+            window.api.ipcRenderer.removeAllListeners('group-insert-response');
+            window.api.ipcRenderer.removeAllListeners('group-update-response');
+            window.api.ipcRenderer.removeAllListeners('group-select-response');
+            window.api.ipcRenderer.removeAllListeners('group-delete-response');
+            window.api.ipcRenderer.on('group-insert-response', () => loadGroupsAction(selectedRound));
+            window.api.ipcRenderer.on('group-update-response', () => loadGroupsAction(selectedRound));
+            window.api.ipcRenderer.on('group-select-response', () => loadGroupsAction(selectedRound));
+            window.api.ipcRenderer.on('group-delete-response', () => loadGroupsAction(selectedRound));
         }
     }, [selectedRound]);
 

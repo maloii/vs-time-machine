@@ -15,8 +15,6 @@ import {
 } from '@mui/x-data-grid';
 
 import styles from './styles.module.scss';
-import { getFilePath } from '@/utils/fileUtils';
-import { DEFAULT_PHOTO } from '@/constants/images';
 
 interface IProps {
     sportsmen: ISportsman[];
@@ -101,7 +99,7 @@ export const TableSportsmen: FC<IProps> = observer(({ sportsmen, onUpdate, onDel
                 return [
                     <Avatar
                         alt="Remy Sharp"
-                        src={!!photo && photo !== DEFAULT_PHOTO ? getFilePath(photo) : undefined}
+                        src={!!photo && photo !== window.api.DEFAULT_PHOTO ? window.api.getFilePath(photo) : undefined}
                     />
                 ];
             }

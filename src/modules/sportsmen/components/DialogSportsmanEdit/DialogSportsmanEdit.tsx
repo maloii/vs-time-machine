@@ -16,8 +16,6 @@ import { sportsmanUpdateAction } from '@/actions/actionRequest';
 import { story } from '@/story/story';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { ISportsman } from '@/types/ISportsman';
-import { getFilePath, copyFile, deleteFile } from '@/utils/fileUtils';
-import { DEFAULT_PHOTO } from '@/constants/images';
 
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react';
@@ -45,7 +43,7 @@ export const DialogSportsmanEdit: FC<IProps> = observer(
         const [email, setEmail] = useState(sportsman?.email || '');
         const [country, setCountry] = useState(sportsman?.country || '');
         const [position, setPosition] = useState(sportsman?.position || '');
-        const [photo, setPhoto] = useState(sportsman?.photo || DEFAULT_PHOTO);
+        const [photo, setPhoto] = useState(sportsman?.photo || window.api.DEFAULT_PHOTO);
         const [transponders, setTransponders] = useState(sportsman?.transponders || []);
 
         const inputFileRef = useRef<HTMLInputElement>(null);
@@ -86,14 +84,14 @@ export const DialogSportsmanEdit: FC<IProps> = observer(
         }, []);
         const handleChangePhoto = useCallback(async (_event: ChangeEvent<HTMLInputElement>) => {
             if (inputFileRef.current && inputFileRef.current.files?.[0]?.path) {
-                setPhoto(await copyFile(inputFileRef.current.files?.[0]?.path));
+                setPhoto(await window.api.copyFile(inputFileRef.current.files?.[0]?.path));
             }
         }, []);
         const handleChangeDeletePhoto = useCallback(async () => {
-            await deleteFile(photo).then(async () => {
-                setPhoto(DEFAULT_PHOTO);
+            await window.api.deleteFile(photo).then(async () => {
+                setPhoto(window.api.DEFAULT_PHOTO);
                 if (sportsman && story.competition) {
-                    sportsmanUpdateAction(sportsman._id, { photo: DEFAULT_PHOTO });
+                    sportsmanUpdateAction(sportsman._id, { photo: window.api.DEFAULT_PHOTO });
                 }
             });
         }, [photo, sportsman]);
@@ -218,10 +216,14 @@ export const DialogSportsmanEdit: FC<IProps> = observer(
                     </Box>
                     <div className={styles.photoBlock}>
                         <div>
-                            {!!photo && photo !== DEFAULT_PHOTO && (
+                            {!!photo && photo !== window.api.DEFAULT_PHOTO && (
                                 <CancelOutlinedIcon className={styles.deletePhoto} onClick={handleChangeDeletePhoto} />
                             )}
-                            <img ref={imageRef} src={getFilePath(photo || DEFAULT_PHOTO)} alt="sportsman" />
+                            <img
+                                ref={imageRef}
+                                src={window.api.getFilePath(photo || window.api.DEFAULT_PHOTO)}
+                                alt="sportsman"
+                            />
                             <Button variant="contained" component="label">
                                 Select photo
                                 <input

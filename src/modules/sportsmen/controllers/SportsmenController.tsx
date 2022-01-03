@@ -23,8 +23,6 @@ import AddIcon from '@mui/icons-material/Add';
 
 import styles from './styles.module.scss';
 
-const { ipcRenderer } = window.require('electron');
-
 export const SportsmenController: FC = observer(() => {
     const [tabSelected, setTabSelected] = useState('Sportsmen');
 
@@ -139,18 +137,18 @@ export const SportsmenController: FC = observer(() => {
         [handleClose]
     );
     useEffect(() => {
-        ipcRenderer.removeAllListeners('team-insert-response');
-        ipcRenderer.removeAllListeners('team-update-response');
-        ipcRenderer.removeAllListeners('team-delete-response');
-        ipcRenderer.removeAllListeners('sportsman-insert-response');
-        ipcRenderer.removeAllListeners('sportsman-update-response');
-        ipcRenderer.removeAllListeners('sportsman-delete-response');
-        ipcRenderer.on('team-insert-response', () => loadTeamsAction(story.competition!));
-        ipcRenderer.on('team-update-response', () => loadTeamsAction(story.competition!));
-        ipcRenderer.on('team-delete-response', () => loadTeamsAction(story.competition!));
-        ipcRenderer.on('sportsman-insert-response', () => loadSportsmenAction(story.competition!));
-        ipcRenderer.on('sportsman-update-response', () => loadSportsmenAction(story.competition!));
-        ipcRenderer.on('sportsman-delete-response', () => loadSportsmenAction(story.competition!));
+        window.api.ipcRenderer.removeAllListeners('team-insert-response');
+        window.api.ipcRenderer.removeAllListeners('team-update-response');
+        window.api.ipcRenderer.removeAllListeners('team-delete-response');
+        window.api.ipcRenderer.removeAllListeners('sportsman-insert-response');
+        window.api.ipcRenderer.removeAllListeners('sportsman-update-response');
+        window.api.ipcRenderer.removeAllListeners('sportsman-delete-response');
+        window.api.ipcRenderer.on('team-insert-response', () => loadTeamsAction(story.competition!));
+        window.api.ipcRenderer.on('team-update-response', () => loadTeamsAction(story.competition!));
+        window.api.ipcRenderer.on('team-delete-response', () => loadTeamsAction(story.competition!));
+        window.api.ipcRenderer.on('sportsman-insert-response', () => loadSportsmenAction(story.competition!));
+        window.api.ipcRenderer.on('sportsman-update-response', () => loadSportsmenAction(story.competition!));
+        window.api.ipcRenderer.on('sportsman-delete-response', () => loadSportsmenAction(story.competition!));
     }, []);
     if (!story.competition) return null;
 

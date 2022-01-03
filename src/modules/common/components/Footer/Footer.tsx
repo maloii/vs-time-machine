@@ -3,17 +3,15 @@ import { observer } from 'mobx-react';
 
 import styles from './styles.module.scss';
 
-const { ipcRenderer } = window.require('electron');
-
 export const Footer: FC = observer(() => {
     const [message, setMessage] = useState<string>();
     useEffect(() => {
-        ipcRenderer.removeAllListeners('connector-message');
-        ipcRenderer.removeAllListeners('status-serial-port');
-        ipcRenderer.on('connector-message', (e, res: string) => {
+        window.api.ipcRenderer.removeAllListeners('connector-message');
+        window.api.ipcRenderer.removeAllListeners('status-serial-port');
+        window.api.ipcRenderer.on('connector-message', (e: any, res: string) => {
             setMessage(res);
         });
-        ipcRenderer.on('status-serial-port', (e, res: { isOpen: boolean; path?: string }) => {
+        window.api.ipcRenderer.on('status-serial-port', (e: any, res: { isOpen: boolean; path?: string }) => {
             if (!res.isOpen) {
                 setMessage('Disconnected');
             }

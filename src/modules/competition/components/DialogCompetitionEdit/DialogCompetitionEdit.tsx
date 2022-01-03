@@ -22,9 +22,7 @@ import { PositionColor } from '@/modules/competition/components/DialogCompetitio
 import { Color } from '@/types/Color';
 import { Channel } from '@/types/VTXChannel';
 import { PositionChannel } from '@/modules/competition/components/DialogCompetitionEdit/PositionChannel';
-import { DEFAULT_COMPETITION_LOGO } from '@/constants/images';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
-import { copyFile, deleteFile, getFilePath } from '@/utils/fileUtils';
 import { IGate } from '@/types/IGate';
 import { TableGates } from '@/modules/competition/components/DialogCompetitionEdit/TableGates';
 import { TypeGate } from '@/types/TypeGate';
@@ -37,8 +35,6 @@ import {
     loadCompetitionsAction
 } from '@/actions/actionCompetitionRequest';
 
-const { ipcRenderer } = window.require('electron');
-
 interface IProps {
     open: boolean;
     onClose: () => void;
@@ -50,7 +46,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
     const [name, setName] = useState<string>(competition?.name || '');
     const [selected, setSelected] = useState(competition?.selected || false);
     const [skipFirstGate, setSkipFirstGate] = useState(competition?.skipFirstGate || false);
-    const [logo, setLogo] = useState(competition?.logo || DEFAULT_COMPETITION_LOGO);
+    const [logo, setLogo] = useState(competition?.logo || window.api.DEFAULT_COMPETITION_LOGO);
 
     const [color1, setColor1] = useState<Color>(competition?.color1 || Color.BLUE);
     const [color2, setColor2] = useState<Color>(competition?.color2 || Color.RED);
@@ -105,15 +101,15 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
 
     const handleChangeLogo = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
         if (inputFileRef.current && inputFileRef.current.files?.[0]?.path) {
-            setLogo(await copyFile(inputFileRef.current.files?.[0]?.path));
+            setLogo(await window.api.copyFile(inputFileRef.current.files?.[0]?.path));
         }
     }, []);
 
     const handleChangeDeletePhoto = useCallback(async () => {
-        await deleteFile(logo).then(async () => {
-            setLogo(DEFAULT_COMPETITION_LOGO);
+        await window.api.deleteFile(logo).then(async () => {
+            setLogo(window.api.DEFAULT_COMPETITION_LOGO);
             if (competition) {
-                competitionUpdateAction(competition._id, { logo: DEFAULT_COMPETITION_LOGO });
+                competitionUpdateAction(competition._id, { logo: window.api.DEFAULT_COMPETITION_LOGO });
             }
         });
     }, [competition, logo]);
@@ -239,12 +235,12 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
     }, [competition, onClose]);
 
     useEffect(() => {
-        ipcRenderer.removeAllListeners('competition-insert-response');
-        ipcRenderer.removeAllListeners('competition-update-response');
-        ipcRenderer.removeAllListeners('competition-delete-response');
-        ipcRenderer.on('competition-insert-response', () => loadCompetitionsAction());
-        ipcRenderer.on('competition-update-response', () => loadCompetitionsAction());
-        ipcRenderer.on('competition-delete-response', () => loadCompetitionsAction());
+        window.api.ipcRenderer.removeAllListeners('competition-insert-response');
+        window.api.ipcRenderer.removeAllListeners('competition-update-response');
+        window.api.ipcRenderer.removeAllListeners('competition-delete-response');
+        window.api.ipcRenderer.on('competition-insert-response', () => loadCompetitionsAction());
+        window.api.ipcRenderer.on('competition-update-response', () => loadCompetitionsAction());
+        window.api.ipcRenderer.on('competition-delete-response', () => loadCompetitionsAction());
     }, []);
 
     return (
@@ -273,7 +269,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                             />
                             <div className={styles.logoBlock}>
                                 <div>
-                                    {!!logo && logo !== DEFAULT_COMPETITION_LOGO && (
+                                    {!!logo && logo !== window.api.DEFAULT_COMPETITION_LOGO && (
                                         <CancelOutlinedIcon
                                             className={styles.deleteLogo}
                                             onClick={handleChangeDeletePhoto}
@@ -281,7 +277,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                                     )}
                                     <img
                                         ref={imageRef}
-                                        src={getFilePath(logo || DEFAULT_COMPETITION_LOGO)}
+                                        src={window.api.getFilePath(logo || window.api.DEFAULT_COMPETITION_LOGO)}
                                         alt="logo"
                                     />
                                     <Button variant="contained" component="label">

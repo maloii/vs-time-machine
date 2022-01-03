@@ -10,8 +10,6 @@ import {
     GridToolbar
 } from '@mui/x-data-grid';
 import { Avatar, Checkbox } from '@mui/material';
-import { DEFAULT_PHOTO } from '@/constants/images';
-import { getFilePath } from '@/utils/fileUtils';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -94,7 +92,7 @@ export const TableTeams: FC<IProps> = ({ teams, onUpdate, onDelete, onOpenEdit }
                 return [
                     <Avatar
                         alt="Remy Sharp"
-                        src={!!photo && photo !== DEFAULT_PHOTO ? getFilePath(photo) : undefined}
+                        src={!!photo && photo !== window.api.DEFAULT_PHOTO ? window.api.getFilePath(photo) : undefined}
                     />
                 ];
             }

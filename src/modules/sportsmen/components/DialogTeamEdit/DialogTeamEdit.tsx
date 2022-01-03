@@ -15,9 +15,7 @@ import {
     Select,
     TextField
 } from '@mui/material';
-import { DEFAULT_PHOTO } from '@/constants/images';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
-import { copyFile, deleteFile, getFilePath } from '@/utils/fileUtils';
 import { story } from '@/story/story';
 import { teamUpdateAction } from '@/actions/actionRequest';
 
@@ -79,14 +77,14 @@ export const DialogTeamEdit: FC<IProps> = ({
     }, []);
     const handleChangePhoto = useCallback(async (_event: ChangeEvent<HTMLInputElement>) => {
         if (inputFileRef.current && inputFileRef.current.files?.[0]?.path) {
-            setPhoto(await copyFile(inputFileRef.current.files?.[0]?.path));
+            setPhoto(await window.api.copyFile(inputFileRef.current.files?.[0]?.path));
         }
     }, []);
     const handleChangeDeletePhoto = useCallback(async () => {
-        await deleteFile(photo).then(async () => {
-            setPhoto(DEFAULT_PHOTO);
+        await window.api.deleteFile(photo).then(async () => {
+            setPhoto(window.api.DEFAULT_PHOTO);
             if (team && story.competition) {
-                teamUpdateAction(team._id, { photo: DEFAULT_PHOTO });
+                teamUpdateAction(team._id, { photo: window.api.DEFAULT_PHOTO });
             }
         });
     }, [photo, team]);
@@ -154,10 +152,14 @@ export const DialogTeamEdit: FC<IProps> = ({
                     </FormControl>
                     <div className={styles.photoBlock}>
                         <div>
-                            {!!photo && photo !== DEFAULT_PHOTO && (
+                            {!!photo && photo !== window.api.DEFAULT_PHOTO && (
                                 <CancelOutlinedIcon className={styles.deletePhoto} onClick={handleChangeDeletePhoto} />
                             )}
-                            <img ref={imageRef} src={getFilePath(photo || DEFAULT_PHOTO)} alt="sportsman" />
+                            <img
+                                ref={imageRef}
+                                src={window.api.getFilePath(photo || window.api.DEFAULT_PHOTO)}
+                                alt="sportsman"
+                            />
                             <Button variant="contained" component="label">
                                 Select photo
                                 <input

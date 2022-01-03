@@ -1,22 +1,21 @@
 import { ICompetition } from '@/types/ICompetition';
 import { ITeam } from '@/types/ITeam';
-const { ipcRenderer } = window.require('electron');
 
 export const loadTeamsAction = (competition: ICompetition): void => {
-    ipcRenderer.send('load-teams-for-competition-request', competition._id);
+    window.api.ipcRenderer.send('load-teams-for-competition-request', competition._id);
 };
 
 export const teamInsertAction = (team: Omit<ITeam, '_id'>): void => {
-    ipcRenderer.send('team-insert-request', team);
+    window.api.ipcRenderer.send('team-insert-request', team);
 };
 
 export const teamUpdateAction = (
     _id: string,
     team: Omit<ITeam, '_id' | 'competitionId'> | Pick<ITeam, 'photo'>
 ): void => {
-    ipcRenderer.send('team-update-request', _id, team);
+    window.api.ipcRenderer.send('team-update-request', _id, team);
 };
 
 export const teamDeleteAction = (_id: string): void => {
-    ipcRenderer.send('team-delete-request', _id);
+    window.api.ipcRenderer.send('team-delete-request', _id);
 };

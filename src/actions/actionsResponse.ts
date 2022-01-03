@@ -10,9 +10,7 @@ import { loadSportsmenAction } from '@/actions/actionSportsmanRequest';
 import { loadTeamsAction } from '@/actions/actionTeamRequest';
 import { loadRoundsAction } from '@/actions/actionRoundRequest';
 
-const { ipcRenderer } = window.require('electron');
-
-ipcRenderer.on('load-competitions-response', (e, competitions: ICompetition[]) => {
+window.api.ipcRenderer.on('load-competitions-response', (e: any, competitions: ICompetition[]) => {
     story.setCompetitions(competitions);
     const competition = _.find(competitions, ['selected', true]);
     if (competition) {
@@ -23,22 +21,22 @@ ipcRenderer.on('load-competitions-response', (e, competitions: ICompetition[]) =
     }
 });
 
-ipcRenderer.on('load-sportsmen-for-competition-response', (e, sportsmen: ISportsman[]) => {
+window.api.ipcRenderer.on('load-sportsmen-for-competition-response', (e: any, sportsmen: ISportsman[]) => {
     story.setSportsmen(sportsmen);
 });
 
-ipcRenderer.on('load-teams-for-competition-response', (e, teams: ITeam[]) => {
+window.api.ipcRenderer.on('load-teams-for-competition-response', (e: any, teams: ITeam[]) => {
     story.setTeams(teams);
 });
 
-ipcRenderer.on('load-rounds-for-competition-response', (e, rounds: IRound[]) => {
+window.api.ipcRenderer.on('load-rounds-for-competition-response', (e: any, rounds: IRound[]) => {
     story.setRounds(rounds);
 });
 
-ipcRenderer.on('load-groups-for-round-response', (e, groups: IGroup[]) => {
+window.api.ipcRenderer.on('load-groups-for-round-response', (e: any, groups: IGroup[]) => {
     story.setGroups(groups);
 });
 
-ipcRenderer.on('load-laps-for-group-response', (e, laps: ILap[]) => {
+window.api.ipcRenderer.on('load-laps-for-group-response', (e: any, laps: ILap[]) => {
     story.setLaps(laps);
 });
