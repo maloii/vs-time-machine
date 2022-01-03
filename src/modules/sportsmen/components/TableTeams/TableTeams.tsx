@@ -43,7 +43,11 @@ export const TableTeams: FC<IProps> = ({ teams, onUpdate, onDelete, onOpenEdit }
         (_id: string) => () => {
             const editTeam = _.find(teams, ['_id', _id]);
             if (editTeam) {
-                onUpdate(editTeam._id, { ...editTeam, selected: !editTeam.selected });
+                onUpdate(editTeam._id, {
+                    ...editTeam,
+                    sportsmenIds: [...editTeam.sportsmenIds],
+                    selected: !editTeam.selected
+                });
             }
         },
         [onUpdate, teams]

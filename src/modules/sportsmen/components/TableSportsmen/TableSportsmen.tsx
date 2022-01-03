@@ -42,9 +42,13 @@ export const TableSportsmen: FC<IProps> = observer(({ sportsmen, onUpdate, onDel
 
     const handleChangeSelected = useCallback(
         (_id: string) => () => {
-            const editSportsmen = _.find(sportsmen, ['_id', _id]);
-            if (editSportsmen) {
-                onUpdate(editSportsmen._id, { ...editSportsmen, selected: !editSportsmen.selected });
+            const editSportsman = _.find(sportsmen, ['_id', _id]);
+            if (editSportsman) {
+                onUpdate(editSportsman._id, {
+                    ...editSportsman,
+                    transponders: [...editSportsman.transponders],
+                    selected: !editSportsman.selected
+                });
             }
         },
         [onUpdate, sportsmen]
