@@ -1,8 +1,7 @@
-import Datastore from 'nedb-promises';
+export {};
 
 declare global {
     interface Window {
         api: any;
-        require(moduleSpecifier: 'nedb-promises'): typeof Datastore;
     }
 }

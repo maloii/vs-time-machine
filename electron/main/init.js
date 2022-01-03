@@ -12,16 +12,13 @@ const copyDefaultImages = () => {
     }
     if (!fs.existsSync(`${pathImages}/empty_person.png`)) {
         fsPromise
-            .copyFile(
-                path.join(__dirname, `../build/${IMAGES_FOLDER}/empty_person.png`),
-                `${pathImages}/empty_person.png`
-            )
+            .copyFile(path.join(__dirname, `../../assets/empty_person.png`), `${pathImages}/empty_person.png`)
             .then(() => {});
     }
     if (!fs.existsSync(`${pathImages}/default_competition_logo.png`)) {
         fsPromise
             .copyFile(
-                path.join(__dirname, `../build/${IMAGES_FOLDER}/default_competition_logo.png`),
+                path.join(__dirname, `../../assets/default_competition_logo.png`),
                 `${pathImages}/default_competition_logo.png`
             )
             .then(() => {});
