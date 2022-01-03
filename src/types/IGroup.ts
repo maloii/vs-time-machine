@@ -2,8 +2,8 @@ import { DateTime } from 'luxon';
 import { TypeGroup } from './TypeGroup';
 import { Channel } from '@/types/VTXChannel';
 import { Color } from '@/types/Color';
-import {ITeam} from "@/types/ITeam";
-import {ISportsman} from "@/types/ISportsman";
+import { ITeam } from '@/types/ITeam';
+import { ISportsman } from '@/types/ISportsman';
 
 export interface IMembersGroup {
     _id: string;

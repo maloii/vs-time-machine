@@ -1,16 +1,16 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const isDev = require('electron-is-dev');
-const { init } = require('./main/init');
-require('./main/hardware/serialport');
-require('./main/ipcMessages');
+const { init } = require('./init');
+require('./hardware/serialport');
+require('./ipcMessages');
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
         width: 1024,
         height: 1024,
         webPreferences: {
-            preload: path.join(__dirname, './main/preload.js'),
+            preload: path.join(__dirname, './preload.js'),
             contextIsolation: true
         },
         icon: path.join(__dirname, 'AppIcon.icns')

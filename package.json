@@ -32,7 +32,8 @@
     "serialport": "~9.2.8",
     "ts-enum-util": "~4.0.2",
     "uuid": "~8.3.2",
-    "web-vitals": "~2.1.2"
+    "web-vitals": "~2.1.2",
+    "sound-play": "~1.1.0"
   },
   "devDependencies": {
     "@types/jest": "~26.0.24",

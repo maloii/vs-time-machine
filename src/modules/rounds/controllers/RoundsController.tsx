@@ -31,6 +31,8 @@ import {
     roundSelectAction,
     roundUpdateAction
 } from '@/actions/actionRoundRequest';
+import { startRaceAction, stopRaceAction } from '@/actions/actionRaceRequest';
+import { TypeRaceStatus } from '@/types/TypeRaceStatus';
 
 export const RoundsController: FC = observer(() => {
     const [openDialogAddRound, setOpenDialogAddRound] = useState(false);
@@ -66,6 +68,7 @@ export const RoundsController: FC = observer(() => {
 
     const selectedRound = rounds.find((round) => round.selected);
     const selectedGroup = groups.find((group) => group.selected);
+    const raceReadyToStart = !story.raceStatus || story.raceStatus === TypeRaceStatus.STOP;
 
     const handleSelectRound = useCallback(async (_id: string) => {
         if (story.competition) {
@@ -180,6 +183,16 @@ export const RoundsController: FC = observer(() => {
         [selectedRound]
     );
 
+    const handleStartRace = useCallback(() => {
+        if (selectedGroup) {
+            if (raceReadyToStart) {
+                startRaceAction(_.cloneDeep(selectedGroup));
+            } else {
+                stopRaceAction();
+            }
+        }
+    }, [raceReadyToStart, selectedGroup]);
+
     useEffect(() => {
         window.api.ipcRenderer.removeAllListeners('round-insert-response');
         window.api.ipcRenderer.removeAllListeners('round-update-response');
@@ -242,8 +255,13 @@ export const RoundsController: FC = observer(() => {
                             <div>
                                 <div className={styles.actionRace}>
                                     <Paper className={styles.timer}>00:00</Paper>
-                                    <Button variant="contained" color="success" className={styles.startStop}>
-                                        START
+                                    <Button
+                                        variant="contained"
+                                        color={raceReadyToStart ? 'success' : 'error'}
+                                        className={styles.startStop}
+                                        onClick={handleStartRace}
+                                    >
+                                        {raceReadyToStart ? 'START' : 'STOP'}
                                     </Button>
                                 </div>
                                 <TableLaps group={selectedGroup} />

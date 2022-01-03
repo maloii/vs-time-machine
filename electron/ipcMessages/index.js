@@ -5,6 +5,7 @@ const teamMessages = require('./teamMessages');
 const sportsmanMessages = require('./sportsmanMessages');
 const competitionMessage = require('./competitionMessage');
 const fileMessage = require('./fileMessage');
+const raceMessages = require('./raceMessages');
 
 module.exports = {
     lapsMessages,
@@ -13,5 +14,6 @@ module.exports = {
     teamMessages,
     sportsmanMessages,
     competitionMessage,
-    fileMessage
+    fileMessage,
+    raceMessages
 };

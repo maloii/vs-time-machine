@@ -9,6 +9,7 @@ import { ICompetition } from '@/types/ICompetition';
 import { loadSportsmenAction } from '@/actions/actionSportsmanRequest';
 import { loadTeamsAction } from '@/actions/actionTeamRequest';
 import { loadRoundsAction } from '@/actions/actionRoundRequest';
+import { TypeRaceStatus } from '@/types/TypeRaceStatus';
 
 window.api.ipcRenderer.on('load-competitions-response', (e: any, competitions: ICompetition[]) => {
     story.setCompetitions(competitions);
@@ -39,4 +40,8 @@ window.api.ipcRenderer.on('load-groups-for-round-response', (e: any, groups: IGr
 
 window.api.ipcRenderer.on('load-laps-for-group-response', (e: any, laps: ILap[]) => {
     story.setLaps(laps);
+});
+
+window.api.ipcRenderer.on('race-status-message', (e: any, raceStatus: TypeRaceStatus) => {
+    story.setRaceStatus(raceStatus);
 });

@@ -23,4 +23,8 @@ const lapDelete = (_id) => {
     return db.lap.remove({ _id }, {});
 };
 
-module.exports = { lapsFindByGroupId, lapInsert, lapUpdate, lapDelete };
+const lapDeleteByGroupId = (groupId) => {
+    return db.lap.remove({ groupId }, {});
+};
+
+module.exports = { lapsFindByGroupId, lapInsert, lapUpdate, lapDelete, lapDeleteByGroupId };
