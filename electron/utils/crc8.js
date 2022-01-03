@@ -1,4 +1,4 @@
-export const crc8 = (data: string | Buffer): number => {
+const crc8 = (data) => {
     if (!Buffer.isBuffer(data)) data = Buffer.from(data);
     let crc = 0;
 
@@ -15,3 +15,5 @@ export const crc8 = (data: string | Buffer): number => {
 
     return crc & 0xff;
 };
+
+module.exports = { crc8 };

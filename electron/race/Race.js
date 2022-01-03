@@ -2,6 +2,7 @@ const { lapDeleteByGroupId } = require('../repository/lapRepository');
 const sound = require('sound-play');
 const path = require('path');
 const { DateTime } = require('luxon');
+const { connector } = require('../Connector');
 
 // const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -19,6 +20,8 @@ class Race {
 
     start = async (group) => {
         if (this.raceStatus === 'STOP') {
+            connector.sendSyncTime();
+
             this.selectedGroup = { ...group };
             await lapDeleteByGroupId(this.selectedGroup._id);
 

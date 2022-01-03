@@ -1,21 +1,28 @@
-// import { parseMessage } from './vs/parseMessage';
-
 const SerialPort = require('serialport');
 
 class SerialPortConnector {
     port;
 
-    connection = (path) => {
-        this.port = new SerialPort(path, { baudRate: 115200 });
-        // this.port?.on('data', (data) => {
-        //     parseMessage(data.toString());
-        // });
+    constructor() {}
+
+    connect = (receive, path) => {
+        try {
+            this.port = new SerialPort(path, { baudRate: 115200 });
+            this.port?.on('data', (data) => {
+                receive(data.toString());
+            });
+        } catch (e) {
+            return false;
+        }
+        return true;
     };
 
     disconnect = () => {
-        if (this.port) {
+        if (this.port && this.port.isOpen) {
             this.port.close();
+            return true;
         }
+        return false;
     };
 
     send = (message) => {

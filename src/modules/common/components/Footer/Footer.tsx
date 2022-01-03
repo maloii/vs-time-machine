@@ -7,7 +7,6 @@ export const Footer: FC = observer(() => {
     const [message, setMessage] = useState<string>();
     useEffect(() => {
         window.api.ipcRenderer.removeAllListeners('connector-message');
-        window.api.ipcRenderer.removeAllListeners('status-serial-port');
         window.api.ipcRenderer.on('connector-message', (e: any, res: string) => {
             setMessage(res);
         });
