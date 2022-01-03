@@ -10,7 +10,10 @@ export const sportsmanInsertAction = (sportsman: Omit<ISportsman, '_id'>): void 
     ipcRenderer.send('sportsman-insert-request', sportsman);
 };
 
-export const sportsmanUpdateAction = (_id: string, sportsman: Omit<ISportsman, '_id' | 'competitionId'>): void => {
+export const sportsmanUpdateAction = (
+    _id: string,
+    sportsman: Omit<ISportsman, '_id' | 'competitionId'> | Pick<ISportsman, 'photo'>
+): void => {
     ipcRenderer.send('sportsman-update-request', _id, sportsman);
 };
 

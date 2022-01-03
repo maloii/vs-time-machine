@@ -1,4 +1,5 @@
-import React, { ChangeEvent, FC, useCallback, useRef, useState } from 'react';
+import React, { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
+import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { observer } from 'mobx-react';
 import {
@@ -15,8 +16,6 @@ import {
     TextField
 } from '@mui/material';
 import { ICompetition } from '@/types/ICompetition';
-import { db } from '@/repository/Repository';
-import { actionRequest } from '@/actions/actionRequest';
 
 import styles from './styles.module.scss';
 import { PositionColor } from '@/modules/competition/components/DialogCompetitionEdit/PositionColor';
@@ -31,7 +30,14 @@ import { TableGates } from '@/modules/competition/components/DialogCompetitionEd
 import { TypeGate } from '@/types/TypeGate';
 import AddIcon from '@mui/icons-material/Add';
 import { DialogGateEdit } from '@/modules/competition/components/DIalogGateEdit/DialogGateEdit';
-import _ from 'lodash';
+import {
+    competitionDeleteAction,
+    competitionInsertAction,
+    competitionUpdateAction,
+    loadCompetitionsAction
+} from '@/actions/actionCompetitionRequest';
+
+const { ipcRenderer } = window.require('electron');
 
 interface IProps {
     open: boolean;
@@ -107,8 +113,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
         await deleteFile(logo).then(async () => {
             setLogo(DEFAULT_COMPETITION_LOGO);
             if (competition) {
-                await db.competition.update({ _id: competition._id }, { $set: { logo: DEFAULT_COMPETITION_LOGO } });
-                await actionRequest();
+                competitionUpdateAction(competition._id, { logo: DEFAULT_COMPETITION_LOGO });
             }
         });
     }, [competition, logo]);
@@ -163,12 +168,12 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
         [gates, handleCloseGateEdit]
     );
 
-    const handleSave = useCallback(async () => {
+    const handleSave = useCallback(() => {
         if (name) {
             const newValue = {
                 name,
                 logo,
-                gates,
+                gates: _.cloneDeep(gates),
                 selected,
                 skipFirstGate,
                 color1,
@@ -188,15 +193,11 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                 channel7,
                 channel8
             };
-            if (selected) {
-                await db.competition.update({ selected: true }, { $set: { selected: false } }, { multi: true });
-            }
             if (competition) {
-                await db.competition.update({ _id: competition._id }, { $set: newValue });
+                competitionUpdateAction(competition._id, newValue);
             } else {
-                await db.competition.insert(newValue);
+                competitionInsertAction(newValue);
             }
-            await actionRequest();
             onClose();
         }
     }, [
@@ -225,25 +226,26 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
         skipFirstGate
     ]);
 
-    const handleDelete = useCallback(async () => {
+    const handleDelete = useCallback(() => {
         if (
             competition &&
             window.confirm(
                 'Are you sure you want to delete the competition? All sportsmen and groups and laps will be deleted with him!'
             )
         ) {
-            await db.sportsman.remove({ competitionId: competition._id }, {});
-            await db.round.remove({ competitionId: competition._id }, {});
-            await db.competition.remove({ _id: competition._id }, {});
-            const competitions = await actionRequest();
-            if ((competitions || []).length > 0) {
-                const newSelectedCompetitions = competitions[competitions.length - 1];
-                await db.competition.update({ _id: newSelectedCompetitions._id }, { $set: { selected: true } });
-                await actionRequest();
-            }
+            competitionDeleteAction(competition._id);
             onClose();
         }
     }, [competition, onClose]);
+
+    useEffect(() => {
+        ipcRenderer.removeAllListeners('competition-insert-response');
+        ipcRenderer.removeAllListeners('competition-update-response');
+        ipcRenderer.removeAllListeners('competition-delete-response');
+        ipcRenderer.on('competition-insert-response', () => loadCompetitionsAction());
+        ipcRenderer.on('competition-update-response', () => loadCompetitionsAction());
+        ipcRenderer.on('competition-delete-response', () => loadCompetitionsAction());
+    }, []);
 
     return (
         <Dialog open={open} onClose={onClose}>

@@ -19,8 +19,7 @@ import { DEFAULT_PHOTO } from '@/constants/images';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { copyFile, deleteFile, getFilePath } from '@/utils/fileUtils';
 import { story } from '@/story/story';
-import { db } from '@/repository/Repository';
-import { loadTeamsAction } from '@/actions/actionRequest';
+import { teamUpdateAction } from '@/actions/actionRequest';
 
 import styles from './styles.module.scss';
 
@@ -87,8 +86,7 @@ export const DialogTeamEdit: FC<IProps> = ({
         await deleteFile(photo).then(async () => {
             setPhoto(DEFAULT_PHOTO);
             if (team && story.competition) {
-                await db.team.update({ _id: team._id }, { $set: { photo: DEFAULT_PHOTO } });
-                await loadTeamsAction(story.competition);
+                teamUpdateAction(team._id, { photo: DEFAULT_PHOTO });
             }
         });
     }, [photo, team]);
@@ -100,7 +98,7 @@ export const DialogTeamEdit: FC<IProps> = ({
             city,
             country,
             position: Number(position) || undefined,
-            sportsmenIds
+            sportsmenIds: [...sportsmenIds]
         };
         if (team?._id) {
             onUpdate(team?._id, { ...newDataTeam, selected: team.selected });

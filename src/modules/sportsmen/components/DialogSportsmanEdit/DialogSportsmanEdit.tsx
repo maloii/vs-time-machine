@@ -12,8 +12,7 @@ import {
     Chip,
     AutocompleteValue
 } from '@mui/material';
-import { db } from '@/repository/Repository';
-import { loadSportsmenAction } from '@/actions/actionRequest';
+import { sportsmanUpdateAction } from '@/actions/actionRequest';
 import { story } from '@/story/story';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { ISportsman } from '@/types/ISportsman';
@@ -94,8 +93,7 @@ export const DialogSportsmanEdit: FC<IProps> = observer(
             await deleteFile(photo).then(async () => {
                 setPhoto(DEFAULT_PHOTO);
                 if (sportsman && story.competition) {
-                    await db.sportsman.update({ _id: sportsman._id }, { $set: { photo: DEFAULT_PHOTO } });
-                    await loadSportsmenAction(story.competition);
+                    sportsmanUpdateAction(sportsman._id, { photo: DEFAULT_PHOTO });
                 }
             });
         }, [photo, sportsman]);
@@ -120,7 +118,7 @@ export const DialogSportsmanEdit: FC<IProps> = observer(
                 phone,
                 email,
                 country,
-                transponders,
+                transponders: [...transponders],
                 position: Number(position) || undefined
             };
             if (sportsman?._id) {

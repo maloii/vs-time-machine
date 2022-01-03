@@ -3,8 +3,8 @@ import { observer } from 'mobx-react';
 import { Divider, FormControl, MenuItem, TextField } from '@mui/material';
 import { DialogCompetitionEdit } from '../../../competition/components/DialogCompetitionEdit/DialogCompetitionEdit';
 import { story } from '@/story/story';
-import { actionRequest } from '@/actions/actionRequest';
 import { ICompetition } from '@/types/ICompetition';
+import { loadCompetitionsAction } from '@/actions/actionCompetitionRequest';
 
 export const SelectCompetition: FC = observer(() => {
     const [open, setOpen] = useState(false);
@@ -27,9 +27,7 @@ export const SelectCompetition: FC = observer(() => {
     }, []);
 
     useEffect(() => {
-        (async function () {
-            await actionRequest();
-        })();
+        loadCompetitionsAction();
     }, []);
 
     return (

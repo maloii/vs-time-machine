@@ -10,7 +10,10 @@ export const teamInsertAction = (team: Omit<ITeam, '_id'>): void => {
     ipcRenderer.send('team-insert-request', team);
 };
 
-export const teamUpdateAction = (_id: string, team: Omit<ITeam, '_id' | 'competitionId'>): void => {
+export const teamUpdateAction = (
+    _id: string,
+    team: Omit<ITeam, '_id' | 'competitionId'> | Pick<ITeam, 'photo'>
+): void => {
     ipcRenderer.send('team-update-request', _id, team);
 };
 
