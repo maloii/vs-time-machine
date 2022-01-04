@@ -12,7 +12,7 @@ const lapMessage = (message, connector, race) => {
     // const startNumber = message[START_NUMBER];
 
     if (race) {
-        race.newLap(lapTime, transponder, numberPackage);
+        race.newLap(Number(lapTime), transponder, numberPackage, gateNumber);
     }
 
     connector.send(`lapreceived:${numberPackage},${gateNumber}`);

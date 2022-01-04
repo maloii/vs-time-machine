@@ -19,6 +19,7 @@ export class Story {
     public raceStatus: TypeRaceStatus | undefined = undefined;
     public serialPortStatus: ISerialPortStatus | undefined = undefined;
     public connected: boolean = false;
+    public startTime: number | undefined = undefined;
 
     public constructor() {
         makeAutoObservable(this);
@@ -62,6 +63,10 @@ export class Story {
 
     public setConnected = (newConnected: boolean): void => {
         this.connected = newConnected;
+    };
+
+    public setStartTime = (newStartTime: number | undefined): void => {
+        this.startTime = newStartTime;
     };
 }
 

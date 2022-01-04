@@ -1,4 +1,5 @@
 const _ = require('lodash');
+
 const getAllTranspondersAndColorInGroup = (group) => {
     return [
         ...(group.sportsmen || [])
@@ -63,9 +64,26 @@ const isAllSearchedTransponderInGroup = (group) => {
     );
 };
 
+const findMembersGroupByTransponder = (group, transponder) => {
+    const sportsmanMembersGroup = _.find(
+        group.sportsmen || [],
+        (membersGroup) =>
+            membersGroup.sportsman && ((membersGroup.sportsman || {}).transponders || []).includes(transponder)
+    );
+    if (sportsmanMembersGroup) return sportsmanMembersGroup;
+
+    const teamMembersGroup = _.find(group.teams || [], (membersGroup) => {
+        const sportsmenInTeam = ((membersGroup.team || {}).sportsmen || []).filter((item) => !!item);
+        return !!_.find(sportsmenInTeam, (item) => (item.transponders || []).includes(transponder));
+    });
+    if (teamMembersGroup) return teamMembersGroup;
+    return undefined;
+};
+
 module.exports = {
     getAllTranspondersAndColorInGroup,
     clearSearchTransponderInGroup,
     searchAndMarkTransponderInGroup,
-    isAllSearchedTransponderInGroup
+    isAllSearchedTransponderInGroup,
+    findMembersGroupByTransponder
 };

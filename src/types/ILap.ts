@@ -9,4 +9,5 @@ export interface ILap {
     roundId: string;
     groupId: string;
     gateId: string;
+    memberGroupId: string;
 }

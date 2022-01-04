@@ -43,9 +43,13 @@ window.api.ipcRenderer.on('load-laps-for-group-response', (e: any, laps: ILap[])
     story.setLaps(laps);
 });
 
-window.api.ipcRenderer.on('race-status-message', (e: any, raceStatus: TypeRaceStatus) => {
-    story.setRaceStatus(raceStatus);
-});
+window.api.ipcRenderer.on(
+    'race-status-message',
+    (e: any, raceStatus: TypeRaceStatus, startTime: number | undefined) => {
+        story.setRaceStatus(raceStatus);
+        story.setStartTime(startTime);
+    }
+);
 
 window.api.ipcRenderer.on('status-serial-port', (e: any, serialPortStatus: ISerialPortStatus) => {
     story.setSerialPortStatus(serialPortStatus);

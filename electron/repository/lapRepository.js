@@ -4,6 +4,10 @@ const lapsFindByGroupId = (groupId) => {
     return db.lap.find({ groupId });
 };
 
+const lapsFindByMemberGroupId = (memberGroupId, groupId) => {
+    return db.lap.find({ memberGroupId, groupId });
+};
+
 const lapInsert = (lap) => {
     return db.lap.insert(lap);
 };
@@ -24,7 +28,7 @@ const lapDelete = (_id) => {
 };
 
 const lapDeleteByGroupId = (groupId) => {
-    return db.lap.remove({ groupId }, {});
+    return db.lap.remove({ groupId }, { multi: true });
 };
 
-module.exports = { lapsFindByGroupId, lapInsert, lapUpdate, lapDelete, lapDeleteByGroupId };
+module.exports = { lapsFindByGroupId, lapsFindByMemberGroupId, lapInsert, lapUpdate, lapDelete, lapDeleteByGroupId };

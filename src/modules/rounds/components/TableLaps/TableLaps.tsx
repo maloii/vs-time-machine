@@ -1,19 +1,50 @@
 import React, { FC } from 'react';
+import _ from 'lodash';
+import cn from 'classnames';
 import { IGroup } from '@/types/IGroup';
+import { ILap } from '@/types/ILap';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
 import { sportsmanName } from '@/utils/sportsmanName';
 import { story } from '@/story/story';
 import { observer } from 'mobx-react';
 
 import styles from './styles.module.scss';
-import cn from 'classnames';
-import { ChannelFrequencies } from '@/types/VTXChannel';
+import { TypeLap } from '@/types/TypeLap';
+import { millisecondsToTimeString } from '@/utils/millisecondsToTimeString';
 
 interface IProps {
     group: IGroup;
 }
 
 export const TableLaps: FC<IProps> = observer(({ group }: IProps) => {
+    const laps: Record<string, ILap[]> = {};
+    [...group.sportsmen, ...group.teams].forEach((item) => {
+        laps[item._id] = _.sortBy(
+            (story.laps || []).filter(
+                (lap) => lap.memberGroupId === item._id && [TypeLap.START, TypeLap.OK].includes(lap.typeLap)
+            ),
+            ['millisecond']
+        );
+    });
+    const maxCountLap = [...group.sportsmen, ...group.teams].reduce(
+        (count, item) => (laps[item._id].length > count ? laps[item._id].length : count),
+        0
+    );
+
+    const Cell: FC<{ memberGroupId: string; indx: number }> = ({
+        memberGroupId,
+        indx
+    }: {
+        memberGroupId: string;
+        indx: number;
+    }) => {
+        const lap = laps[memberGroupId][indx];
+        let textLap = '';
+        if (lap?.typeLap === TypeLap.START) textLap = 'Start';
+        if (lap?.typeLap === TypeLap.OK) textLap = millisecondsToTimeString(lap.timeLap);
+        return <TableCell>{textLap}</TableCell>;
+    };
+
     return (
         <TableContainer component={Paper} variant="outlined" className={styles.root}>
             <Table>
@@ -59,11 +90,16 @@ export const TableLaps: FC<IProps> = observer(({ group }: IProps) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {story.laps.map((lap) => (
-                        <TableRow key={lap._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                            <TableCell />
-                        </TableRow>
-                    ))}
+                    {Array(maxCountLap)
+                        .fill(0)
+                        .map((_, indx) => (
+                            <TableRow key={indx}>
+                                <TableCell>{indx + 1}</TableCell>
+                                {[...group.sportsmen, ...group.teams].map((item) => (
+                                    <Cell key={item._id} memberGroupId={item._id} indx={indx} />
+                                ))}
+                            </TableRow>
+                        ))}
                 </TableBody>
             </Table>
         </TableContainer>

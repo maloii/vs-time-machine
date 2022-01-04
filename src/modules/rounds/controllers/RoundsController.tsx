@@ -14,7 +14,7 @@ import {
     loadLapsForGroupAction,
     loadRoundsAction
 } from '@/actions/actionRequest';
-import { Button, Grid, Paper } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { DialogFormRound } from '@/modules/rounds/components/DialogFormRound/DialogFormRound';
 import { ListGroups } from '@/modules/rounds/components/ListGroups/ListGroups';
@@ -23,8 +23,6 @@ import { IGroup, IMembersGroup } from '@/types/IGroup';
 import { ISportsman } from '@/types/ISportsman';
 import { ITeam } from '@/types/ITeam';
 import { TableLaps } from '@/modules/rounds/components/TableLaps/TableLaps';
-
-import styles from './styles.module.scss';
 import {
     roundDeleteAction,
     roundInsertAction,
@@ -33,6 +31,9 @@ import {
 } from '@/actions/actionRoundRequest';
 import { startRaceAction, startSearchAction, stopRaceAction } from '@/actions/actionRaceRequest';
 import { TypeRaceStatus } from '@/types/TypeRaceStatus';
+import { StopWatch } from '@/modules/rounds/components/StopWatch/StopWatch';
+
+import styles from './styles.module.scss';
 
 export const RoundsController: FC = observer(() => {
     const [openDialogAddRound, setOpenDialogAddRound] = useState(false);
@@ -197,12 +198,16 @@ export const RoundsController: FC = observer(() => {
     const handleStartRace = useCallback(() => {
         if (selectedGroup) {
             if (raceReadyToStart) {
-                startRaceAction(_.cloneDeep(selectedGroup));
+                startRaceAction({
+                    ..._.cloneDeep(selectedGroup),
+                    competition: _.cloneDeep(story.competition),
+                    round: _.cloneDeep(selectedRound)
+                });
             } else {
                 stopRaceAction();
             }
         }
-    }, [raceReadyToStart, selectedGroup]);
+    }, [raceReadyToStart, selectedGroup, selectedRound]);
 
     const handleStartSearch = useCallback(() => {
         if (selectedGroup) {
@@ -283,12 +288,17 @@ export const RoundsController: FC = observer(() => {
                                     >
                                         SEARCH
                                     </Button>
-                                    <Paper className={styles.timer}>00:00</Paper>
+                                    <StopWatch
+                                        raceStatus={story.raceStatus}
+                                        round={selectedRound}
+                                        startTime={story.startTime}
+                                    />
                                     <Button
                                         variant="contained"
                                         color={raceReadyToStart ? 'success' : 'error'}
                                         className={styles.startStop}
                                         onClick={handleStartRace}
+                                        disabled={!story.connected}
                                     >
                                         {raceReadyToStart ? 'START' : 'STOP'}
                                     </Button>
