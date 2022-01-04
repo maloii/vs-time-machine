@@ -31,7 +31,7 @@ import {
     roundSelectAction,
     roundUpdateAction
 } from '@/actions/actionRoundRequest';
-import { startRaceAction, stopRaceAction } from '@/actions/actionRaceRequest';
+import { startRaceAction, startSearchAction, stopRaceAction } from '@/actions/actionRaceRequest';
 import { TypeRaceStatus } from '@/types/TypeRaceStatus';
 
 export const RoundsController: FC = observer(() => {
@@ -61,6 +61,17 @@ export const RoundsController: FC = observer(() => {
                     (item): IMembersGroup => ({
                         ...item,
                         team: _.find<ITeam>(story.teams, ['_id', item._id])
+                    })
+                )
+                .map(
+                    (item): IMembersGroup => ({
+                        ...item,
+                        team: {
+                            ...item.team!,
+                            sportsmen: (item?.team?.sportsmenIds || []).map<ISportsman>(
+                                (sportsmanId) => _.find<ISportsman>(story.sportsmen, ['_id', sportsmanId])!
+                            )
+                        }
                     })
                 )
                 .filter((item) => !!item.team)
@@ -193,6 +204,16 @@ export const RoundsController: FC = observer(() => {
         }
     }, [raceReadyToStart, selectedGroup]);
 
+    const handleStartSearch = useCallback(() => {
+        if (selectedGroup) {
+            if (raceReadyToStart) {
+                startSearchAction(_.cloneDeep(selectedGroup));
+            } else {
+                stopRaceAction();
+            }
+        }
+    }, [raceReadyToStart, selectedGroup]);
+
     useEffect(() => {
         window.api.ipcRenderer.removeAllListeners('round-insert-response');
         window.api.ipcRenderer.removeAllListeners('round-update-response');
@@ -254,6 +275,13 @@ export const RoundsController: FC = observer(() => {
                         {selectedGroup && (
                             <div>
                                 <div className={styles.actionRace}>
+                                    <Button
+                                        variant="contained"
+                                        className={styles.startSearch}
+                                        onClick={handleStartSearch}
+                                    >
+                                        SEARCH
+                                    </Button>
                                     <Paper className={styles.timer}>00:00</Paper>
                                     <Button
                                         variant="contained"

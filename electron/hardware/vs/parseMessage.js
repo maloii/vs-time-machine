@@ -1,20 +1,23 @@
 const { crc8 } = require('../../utils/crc8');
 const { timeSynchOkMessage } = require('./timeSynchOkMessage');
+const { lapMessage } = require('./lapMessage');
+const { echoTransMessage } = require('./echoTransMessage');
+const { pingMessage } = require('./pingMessage');
 
-const parseMessage = (message, connector) => {
+const parseMessage = (message, connector, race) => {
     if (!message || message.length < 3 || message.indexOf(':') < 0 || message.indexOf(',') < 0) return;
     const arrMessage = message.split(':');
     if (arrMessage.length > 1) {
         const arrDataMessage = arrMessage[1].split(',');
         if (crc8(message.slice(0, message.lastIndexOf(','))) === Number(arrDataMessage[arrDataMessage.length - 1])) {
             if (arrMessage[0] === 'lap') {
-                // new LapMessage(arrDataMessage, lapRepository, raceService, connectorService).parse();
+                lapMessage(arrDataMessage, connector, race);
             } else if (arrMessage[0] === 'ping') {
-                // new PingMessage(arrDataMessage).parse();
+                pingMessage(arrDataMessage, connector, race);
             } else if (arrMessage[0] === 'timesynchok') {
-                timeSynchOkMessage(arrDataMessage, connector);
+                timeSynchOkMessage(arrDataMessage, connector, race);
             } else if (arrMessage[0] === 'echotrans') {
-                // new EchoTransMessage(arrDataMessage, raceService, connectorService).parse();
+                echoTransMessage(arrDataMessage, connector, race);
             }
 
             //"systime:%lld,%d,%d,%s,%d,%d,%d,%d",getRealTime(), sensitivity, gate, VERSION, frequencyIndex, capacitorCalbr, frequencyOffset1, frequencyOffset2)

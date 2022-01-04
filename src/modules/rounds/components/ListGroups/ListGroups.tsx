@@ -55,7 +55,7 @@ export const ListGroups: FC<IProps> = observer(({ groups, selectedGroup, onEdit,
                     >
                         {group.sportsmen.map((item) => (
                             <ListItem key={item._id} divider selected={isSelected(group)}>
-                                {item.position}
+                                {item.startNumber}
                                 &nbsp;-&nbsp;
                                 <ListItemText primary={sportsmanName(item?.sportsman!)} />
                                 {item.channel !== undefined && item.color !== undefined && (
@@ -65,7 +65,7 @@ export const ListGroups: FC<IProps> = observer(({ groups, selectedGroup, onEdit,
                         ))}
                         {group.teams.map((item) => (
                             <ListItem key={item._id} divider selected={isSelected(group)}>
-                                {item.position}
+                                {item.startNumber}
                                 &nbsp;-&nbsp;
                                 <ListItemText primary={item.team?.name} />
                                 {item.channel !== undefined && item.color !== undefined && (

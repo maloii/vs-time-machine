@@ -63,11 +63,11 @@ export const DialogFormGroup: FC<IProps> = ({
         (event: SelectChangeEvent<Array<string>>) => {
             setSportsmenMembers(
                 (event.target.value as string[]).map((_id, indx) => {
-                    const position = indx + 1;
-                    const colorAndChannel = competitionColorAndChannel(position, competition);
+                    const startNumber = indx + 1;
+                    const colorAndChannel = competitionColorAndChannel(startNumber, competition);
                     return {
                         _id,
-                        position,
+                        startNumber,
                         color: colorAndChannel?.color,
                         channel: colorAndChannel?.channel
                     };
@@ -81,11 +81,11 @@ export const DialogFormGroup: FC<IProps> = ({
         (event: SelectChangeEvent<Array<string>>) => {
             setTeamsMembers(
                 (event.target.value as string[]).map((_id, indx) => {
-                    const position = indx + 1;
-                    const colorAndChannel = competitionColorAndChannel(position, competition);
+                    const startNumber = indx + 1;
+                    const colorAndChannel = competitionColorAndChannel(startNumber, competition);
                     return {
                         _id,
-                        position,
+                        startNumber,
                         color: colorAndChannel?.color,
                         channel: colorAndChannel?.channel
                     };

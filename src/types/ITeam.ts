@@ -1,3 +1,5 @@
+import { ISportsman } from '@/types/ISportsman';
+
 export interface ITeam {
     _id: string;
     competitionId: string;
@@ -8,4 +10,5 @@ export interface ITeam {
     position?: number;
     selected: boolean;
     sportsmenIds: string[];
+    sportsmen?: ISportsman[];
 }

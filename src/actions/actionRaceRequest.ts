@@ -4,6 +4,10 @@ export const startRaceAction = (group: IGroup): void => {
     window.api.ipcRenderer.send('race-start-request', group);
 };
 
+export const startSearchAction = (group: IGroup): void => {
+    window.api.ipcRenderer.send('search-start-request', group);
+};
+
 export const stopRaceAction = (): void => {
     window.api.ipcRenderer.send('race-stop-request');
 };

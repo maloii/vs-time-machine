@@ -1,3 +1,4 @@
+const Race = require('./race/Race');
 const { SerialPortConnector } = require('./hardware/SerialPortConnector');
 const { WlanConnector } = require('./hardware/WlanConnector');
 const { parseMessage } = require('./hardware/vs/parseMessage');
@@ -7,6 +8,7 @@ class Connector {
     connector = undefined;
     isConnect = false;
     isSyncTime = false;
+    race;
 
     connect = (type, ...params) => {
         if (!this.connector) {
@@ -33,7 +35,7 @@ class Connector {
 
     receive = (message) => {
         console.log(message);
-        parseMessage(message, this);
+        parseMessage(message, this, this.race);
         if (global.mainWindow) {
             global.mainWindow.webContents.send('connector-message', message.toString());
         }
@@ -53,6 +55,10 @@ class Connector {
 
     syncTimeSuccess = () => {
         this.isSyncTime = true;
+    };
+
+    setRace = (newRace) => {
+        this.race = newRace;
     };
 }
 

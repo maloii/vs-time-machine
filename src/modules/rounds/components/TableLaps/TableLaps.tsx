@@ -1,11 +1,13 @@
 import React, { FC } from 'react';
 import { IGroup } from '@/types/IGroup';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
 import { sportsmanName } from '@/utils/sportsmanName';
 import { story } from '@/story/story';
 import { observer } from 'mobx-react';
 
 import styles from './styles.module.scss';
+import cn from 'classnames';
+import { ChannelFrequencies } from '@/types/VTXChannel';
 
 interface IProps {
     group: IGroup;
@@ -19,13 +21,23 @@ export const TableLaps: FC<IProps> = observer(({ group }: IProps) => {
                     <TableRow>
                         <TableCell>Lap</TableCell>
                         {group.sportsmen.map((item) => (
-                            <TableCell key={item._id}>
+                            <TableCell key={item._id} className={cn({ [styles.searched]: item?.searchTransponder })}>
                                 <b>{sportsmanName(item?.sportsman!)}</b>
                             </TableCell>
                         ))}
                         {group.teams.map((item) => (
-                            <TableCell key={item._id}>
-                                <b>{item?.team?.name}</b>
+                            <TableCell key={item._id} className={cn({ [styles.searched]: item?.searchTransponder })}>
+                                <Tooltip
+                                    title={
+                                        item.team?.sportsmen
+                                            ?.filter((sportsman) => !!sportsman)
+                                            ?.map((sportsman) => sportsmanName(sportsman))
+                                            .join(',') || ''
+                                    }
+                                    arrow
+                                >
+                                    <b>{item?.team?.name}</b>
+                                </Tooltip>
                             </TableCell>
                         ))}
                     </TableRow>

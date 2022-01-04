@@ -7,11 +7,14 @@ import { ISportsman } from '@/types/ISportsman';
 
 export interface IMembersGroup {
     _id: string;
-    position: number;
+    startNumber: number;
+    position?: number;
     color?: Color;
     channel?: Channel;
     sportsman?: ISportsman;
     team?: ITeam;
+    searchTransponder?: boolean;
+    searchTeamTransponder?: string[];
 }
 export interface IGroup {
     _id: string;
