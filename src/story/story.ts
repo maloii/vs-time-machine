@@ -6,6 +6,7 @@ import { ITeam } from '@/types/ITeam';
 import { IGroup } from '@/types/IGroup';
 import { ILap } from '@/types/ILap';
 import { TypeRaceStatus } from '@/types/TypeRaceStatus';
+import { ISerialPortStatus } from '@/types/ISerialPortStatus';
 
 export class Story {
     public competitions: Array<ICompetition> = [];
@@ -16,6 +17,8 @@ export class Story {
     public groups: Array<IGroup> = [];
     public laps: Array<ILap> = [];
     public raceStatus: TypeRaceStatus | undefined = undefined;
+    public serialPortStatus: ISerialPortStatus | undefined = undefined;
+    public connected: boolean = false;
 
     public constructor() {
         makeAutoObservable(this);
@@ -51,6 +54,14 @@ export class Story {
 
     public setRaceStatus = (RaceStatus: TypeRaceStatus): void => {
         this.raceStatus = RaceStatus;
+    };
+
+    public setSerialPortStatus = (newSerialPortStatus: ISerialPortStatus): void => {
+        this.serialPortStatus = newSerialPortStatus;
+    };
+
+    public setConnected = (newConnected: boolean): void => {
+        this.connected = newConnected;
     };
 }
 

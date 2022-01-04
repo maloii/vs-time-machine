@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const getAllTranspondersAndColorInGroup = (group) => {
     return [
         ...(group.sportsmen || [])
@@ -27,7 +28,7 @@ const clearSearchTransponderInGroup = (group) => {
     return {
         ...group,
         sportsmen: (group.sportsmen || []).map((item) => ({ ...item, searchTransponder: false })),
-        teams: (group.teams || []).map((item) => ({ ...item, searchTransponder: false }))
+        teams: (group.teams || []).map((item) => ({ ...item, searchTransponder: false, searchTeamSportsmenIds: [] }))
     };
 };
 
@@ -41,15 +42,14 @@ const searchAndMarkTransponderInGroup = (group, transponder) => {
             return membersGroup;
         }),
         teams: (group.teams || []).map((membersGroup) => {
-            if (
-                membersGroup.team &&
-                (
-                    ((membersGroup.team || {}).sportsmen || []).flatMap(
-                        (sportsman) => (sportsman || {}).transponders
-                    ) || []
-                ).includes(transponder)
-            ) {
-                return { ...membersGroup, searchTransponder: true };
+            const sportsmenInTeam = ((membersGroup.team || {}).sportsmen || []).filter((item) => !!item);
+            const sportsman = _.find(sportsmenInTeam, (item) => (item.transponders || []).includes(transponder));
+
+            if (sportsman) {
+                const searchTeamSportsmenIds = [...(membersGroup.searchTeamSportsmenIds || []), sportsman._id];
+                const allSportsmenIds = sportsmenInTeam.map((item) => item._id);
+                const searchTransponder = allSportsmenIds.every((val) => searchTeamSportsmenIds.includes(val));
+                return { ...membersGroup, searchTeamSportsmenIds, searchTransponder };
             }
             return membersGroup;
         })

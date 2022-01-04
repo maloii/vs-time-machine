@@ -22,17 +22,33 @@ export const TableLaps: FC<IProps> = observer(({ group }: IProps) => {
                         <TableCell>Lap</TableCell>
                         {group.sportsmen.map((item) => (
                             <TableCell key={item._id} className={cn({ [styles.searched]: item?.searchTransponder })}>
-                                <b>{sportsmanName(item?.sportsman!)}</b>
+                                <b>{`${sportsmanName(item?.sportsman!)} - ${(item?.sportsman?.transponders || []).join(
+                                    ','
+                                )}`}</b>
                             </TableCell>
                         ))}
                         {group.teams.map((item) => (
                             <TableCell key={item._id} className={cn({ [styles.searched]: item?.searchTransponder })}>
                                 <Tooltip
                                     title={
-                                        item.team?.sportsmen
-                                            ?.filter((sportsman) => !!sportsman)
-                                            ?.map((sportsman) => sportsmanName(sportsman))
-                                            .join(',') || ''
+                                        <>
+                                            {item.team?.sportsmen
+                                                ?.filter((sportsman) => !!sportsman)
+                                                ?.map((sportsman) => (
+                                                    <div
+                                                        key={sportsman._id}
+                                                        className={cn({
+                                                            [styles.searchedTeamSportsmen]: (
+                                                                item.searchTeamSportsmenIds || []
+                                                            ).includes(sportsman._id)
+                                                        })}
+                                                    >
+                                                        {`${sportsmanName(sportsman)} - ${(
+                                                            sportsman.transponders || []
+                                                        ).join(',')}`}
+                                                    </div>
+                                                ))}
+                                        </>
                                     }
                                     arrow
                                 >

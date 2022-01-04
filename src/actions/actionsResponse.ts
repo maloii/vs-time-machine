@@ -10,6 +10,7 @@ import { loadSportsmenAction } from '@/actions/actionSportsmanRequest';
 import { loadTeamsAction } from '@/actions/actionTeamRequest';
 import { loadRoundsAction } from '@/actions/actionRoundRequest';
 import { TypeRaceStatus } from '@/types/TypeRaceStatus';
+import { ISerialPortStatus } from '@/types/ISerialPortStatus';
 
 window.api.ipcRenderer.on('load-competitions-response', (e: any, competitions: ICompetition[]) => {
     story.setCompetitions(competitions);
@@ -44,4 +45,9 @@ window.api.ipcRenderer.on('load-laps-for-group-response', (e: any, laps: ILap[])
 
 window.api.ipcRenderer.on('race-status-message', (e: any, raceStatus: TypeRaceStatus) => {
     story.setRaceStatus(raceStatus);
+});
+
+window.api.ipcRenderer.on('status-serial-port', (e: any, serialPortStatus: ISerialPortStatus) => {
+    story.setSerialPortStatus(serialPortStatus);
+    story.setConnected(serialPortStatus.isOpen);
 });

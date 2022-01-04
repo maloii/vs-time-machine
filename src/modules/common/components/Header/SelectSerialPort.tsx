@@ -1,14 +1,14 @@
 import React, { useCallback, useState, FC, useEffect } from 'react';
 import { observer } from 'mobx-react';
 import { Button, FormControl, MenuItem, TextField } from '@mui/material';
+import { useInterval } from '@/hooks/useInterval';
+import { story } from '@/story/story';
 
 import styles from './styles.module.scss';
-import { useInterval } from '@/hooks/useInterval';
 
 export const SelectSerialPort: FC = observer(() => {
     const [portPath, setPortPath] = useState<string>('');
     const [listPorts, setListPorts] = useState<Array<string>>([]);
-    const [isOpen, setIsOpen] = useState(false);
 
     const handleChangePort = useCallback((event) => {
         setPortPath(event.target.value);
@@ -35,12 +35,6 @@ export const SelectSerialPort: FC = observer(() => {
         window.api.ipcRenderer.on('list-serial-ports-response', (e: any, list: string[]) => {
             setListPorts(list);
         });
-        window.api.ipcRenderer.on('status-serial-port', (e: any, res: { isOpen: boolean; path?: string }) => {
-            setIsOpen(res.isOpen);
-            if (res.isOpen) {
-                setPortPath(res.path || '');
-            }
-        });
     }, []);
 
     return (
@@ -48,11 +42,11 @@ export const SelectSerialPort: FC = observer(() => {
             <FormControl variant="standard" sx={{ m: 1, minWidth: 200 }}>
                 <TextField
                     select
-                    value={portPath}
+                    value={story.serialPortStatus?.isOpen ? story.serialPortStatus?.path : portPath}
                     onChange={handleChangePort}
                     label="Serial port"
                     size="small"
-                    disabled={isOpen}
+                    disabled={story.serialPortStatus?.isOpen}
                 >
                     {listPorts.map((port) => (
                         <MenuItem key={port} value={port}>
@@ -61,7 +55,7 @@ export const SelectSerialPort: FC = observer(() => {
                     ))}
                 </TextField>
             </FormControl>
-            {isOpen ? (
+            {story.serialPortStatus?.isOpen ? (
                 <Button size="small" variant="outlined" onClick={handleClose}>
                     Disconnect
                 </Button>

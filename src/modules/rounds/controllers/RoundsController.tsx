@@ -279,6 +279,7 @@ export const RoundsController: FC = observer(() => {
                                         variant="contained"
                                         className={styles.startSearch}
                                         onClick={handleStartSearch}
+                                        disabled={!raceReadyToStart || !story.connected}
                                     >
                                         SEARCH
                                     </Button>

@@ -2,6 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 
 import styles from './styles.module.scss';
+import { story } from '@/story/story';
 
 export const Footer: FC = observer(() => {
     const [message, setMessage] = useState<string>();
@@ -10,11 +11,6 @@ export const Footer: FC = observer(() => {
         window.api.ipcRenderer.on('connector-message', (e: any, res: string) => {
             setMessage(res);
         });
-        window.api.ipcRenderer.on('status-serial-port', (e: any, res: { isOpen: boolean; path?: string }) => {
-            if (!res.isOpen) {
-                setMessage('Disconnected');
-            }
-        });
     }, []);
-    return <div className={styles.footer}>{message}</div>;
+    return <div className={styles.footer}>{story.connected ? message : 'Disconnected'}</div>;
 });

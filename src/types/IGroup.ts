@@ -14,7 +14,7 @@ export interface IMembersGroup {
     sportsman?: ISportsman;
     team?: ITeam;
     searchTransponder?: boolean;
-    searchTeamTransponder?: string[];
+    searchTeamSportsmenIds?: string[];
 }
 export interface IGroup {
     _id: string;
