@@ -303,7 +303,7 @@ export const RoundsController: FC = observer(() => {
                                         {raceReadyToStart ? 'START' : 'STOP'}
                                     </Button>
                                 </div>
-                                <TableLaps group={selectedGroup} />
+                                <TableLaps round={selectedRound} group={selectedGroup} />
                             </div>
                         )}
                     </Grid>

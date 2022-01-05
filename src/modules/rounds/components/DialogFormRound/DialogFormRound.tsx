@@ -20,6 +20,7 @@ import { TypeGenerateRound } from '@/types/TypeGenerateRound';
 import { IRound } from '@/types/IRound';
 import { TypeParentEntity } from '@/types/TypeParentEntity';
 import { TypeRaceElimination } from '@/types/TypeRaceElimination';
+import { TypeStartRace } from '@/types/TypeStartRace';
 
 interface IProps {
     open: boolean;
@@ -45,6 +46,7 @@ export const DialogFormRound: FC<IProps> = ({ open, onClose, onSave, onUpdate, o
     const [name, setName] = useState(round?.name || '');
     const [typeRound, setTypeRound] = useState(round?.typeRound || TypeRound.PRACTICE);
     const [typeRace, setTypeRace] = useState(round?.typeRace || TypeRace.FIXED_COUNT_LAPS);
+    const [typeStartRace, setTypeStartRace] = useState(round?.typeStartRace || TypeStartRace.START_AFTER_SIGNAL);
     const [countLap, setCountLap] = useState(round?.countLap || 5);
     const [maxTimeRace, setMaxTimeRace] = useState(round?.maxTimeRace || 180);
     //
@@ -68,6 +70,9 @@ export const DialogFormRound: FC<IProps> = ({ open, onClose, onSave, onUpdate, o
     }, []);
     const handleChangeTypeRace = useCallback((event: SelectChangeEvent<TypeRace>) => {
         setTypeRace(event.target.value as TypeRace);
+    }, []);
+    const handleChangeTypeStartRace = useCallback((event: SelectChangeEvent<TypeStartRace>) => {
+        setTypeStartRace(event.target.value as TypeStartRace);
     }, []);
     const handleChangeCountLap = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setCountLap(Number(event.target.value));
@@ -103,6 +108,7 @@ export const DialogFormRound: FC<IProps> = ({ open, onClose, onSave, onUpdate, o
                 name,
                 typeRound,
                 typeRace,
+                typeStartRace,
                 countLap,
                 maxTimeRace,
                 typeGenerateRound,
@@ -120,6 +126,7 @@ export const DialogFormRound: FC<IProps> = ({ open, onClose, onSave, onUpdate, o
             name,
             typeRound,
             typeRace,
+            typeStartRace,
             countLap,
             maxTimeRace,
             typeGenerateRound,
@@ -160,6 +167,21 @@ export const DialogFormRound: FC<IProps> = ({ open, onClose, onSave, onUpdate, o
                             onChange={handleChangeTypeRound}
                         >
                             {Object.keys(TypeRound).map((key) => (
+                                <MenuItem key={key} value={key}>
+                                    {key}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <FormControl sx={{ m: 1, minWidth: 120 }}>
+                        <InputLabel id="start-race-label">Type start race</InputLabel>
+                        <Select<TypeStartRace>
+                            labelId="start-race-label"
+                            value={typeStartRace}
+                            label="Type start race"
+                            onChange={handleChangeTypeStartRace}
+                        >
+                            {Object.keys(TypeStartRace).map((key) => (
                                 <MenuItem key={key} value={key}>
                                     {key}
                                 </MenuItem>

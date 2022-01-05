@@ -152,10 +152,17 @@ class Race {
                     if (laps.filter((lap) => lap.typeLap === 'OK').length >= Number(round.countLap)) typeLap = 'HIDDEN';
                 }
 
-                if (competition.skipFirstGate && laps.length === 0) {
+                if (
+                    competition.skipFirstGate &&
+                    laps.length === 0 &&
+                    round.typeStartRace !== 'START_AFTER_FIRST_GATE'
+                ) {
+                    typeLap = 'SKIP_FIRST_GATE';
+                }
+                if (laps.length === 0 && round.typeStartRace === 'START_AFTER_FIRST_GATE') {
                     typeLap = 'START';
                 }
-                if (['OK', 'START'].includes(typeLap)) {
+                if (['OK', 'START', 'SKIP_FIRST_GATE'].includes(typeLap)) {
                     this.lastTimeLap[membersGroup._id] = millisecond;
                     setTimeout(() => {
                         sound.play(path.join(__dirname, `../../assets/short_beep.wav`));
