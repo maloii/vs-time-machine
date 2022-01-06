@@ -11,24 +11,33 @@ const positionCalculation = (round, group, groupedLaps) => {
             }
             return m2Laps.length - m1Laps.length;
         });
-        return {
-            ...group,
-            sportsmen: group.sportsmen.map((sportsman) => ({
-                ...sportsman,
-                position:
-                    groupedLaps[sportsman._id]?.length > 0
-                        ? _.findIndex(memberGroup, ['_id', sportsman._id]) + 1
-                        : undefined
-            })),
-            teams: group.teams.map((team) => ({
-                ...team,
-                position:
-                    groupedLaps[team._id]?.length > 0 ? _.findIndex(memberGroup, ['_id', team._id]) + 1 : undefined
-            }))
-        };
+    }
+    if (round.typeRace === 'FIXED_COUNT_LAPS') {
+        memberGroup.sort((m1, m2) => {
+            const m1Laps = groupedLaps?.[m1._id] || [];
+            const m2Laps = groupedLaps?.[m2._id] || [];
+            // Если колличество кругов одинакого то кто раньше прилетел
+            if (m1Laps.length === m2Laps.length && m2Laps.length > 0) {
+                return m1Laps[m1Laps.length - 1]?.millisecond - m2Laps[m2Laps.length - 1]?.millisecond;
+            }
+            return m2Laps.length - m1Laps.length;
+        });
     }
 
-    return group;
+    return {
+        ...group,
+        sportsmen: group.sportsmen.map((sportsman) => ({
+            ...sportsman,
+            position:
+                groupedLaps[sportsman._id]?.length > 0
+                    ? _.findIndex(memberGroup, ['_id', sportsman._id]) + 1
+                    : undefined
+        })),
+        teams: group.teams.map((team) => ({
+            ...team,
+            position: groupedLaps[team._id]?.length > 0 ? _.findIndex(memberGroup, ['_id', team._id]) + 1 : undefined
+        }))
+    };
 };
 
 const groupLapsByMemberGroup = (group, laps) => {
