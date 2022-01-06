@@ -237,10 +237,14 @@ export const RoundsController: FC = observer(() => {
             window.api.ipcRenderer.removeAllListeners('group-update-response');
             window.api.ipcRenderer.removeAllListeners('group-select-response');
             window.api.ipcRenderer.removeAllListeners('group-delete-response');
+            window.api.ipcRenderer.removeAllListeners('lap-update-response');
+            window.api.ipcRenderer.removeAllListeners('lap-delete-response');
             window.api.ipcRenderer.on('group-insert-response', () => loadGroupsAction(selectedRound));
             window.api.ipcRenderer.on('group-update-response', () => loadGroupsAction(selectedRound));
             window.api.ipcRenderer.on('group-select-response', () => loadGroupsAction(selectedRound));
             window.api.ipcRenderer.on('group-delete-response', () => loadGroupsAction(selectedRound));
+            window.api.ipcRenderer.on('lap-update-response', () => loadGroupsAction(selectedRound));
+            window.api.ipcRenderer.on('lap-delete-response', () => loadGroupsAction(selectedRound));
         }
     }, [selectedRound]);
 

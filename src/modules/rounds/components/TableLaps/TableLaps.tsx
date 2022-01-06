@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 import cn from 'classnames';
 import _ from 'lodash';
 import { observer } from 'mobx-react';
@@ -26,6 +26,7 @@ import { ListAllLaps } from '@/modules/rounds/components/ListAllLaps/ListAllLaps
 
 import styles from './styles.module.scss';
 import { TypeStartRace } from '@/types/TypeStartRace';
+import { lapDeleteAction, lapUpdateAction } from '@/actions/actionLapRequest';
 
 interface IProps {
     round: IRound;
@@ -33,7 +34,7 @@ interface IProps {
 }
 
 export const TableLaps: FC<IProps> = observer(({ round, group }: IProps) => {
-    const [allLaps, setAllLaps] = useState<ILap[] | undefined>(undefined);
+    const [openLapsMember, setOpenLapsMember] = useState<string | undefined>(undefined);
     const laps = window.api.groupLapsByMemberGroup(_.cloneDeep(group), _.cloneDeep(story.laps));
     const groupWithPositions = window.api.positionCalculation(_.cloneDeep(round), _.cloneDeep(group), laps);
     const maxCountLap = [...groupWithPositions.sportsmen, ...groupWithPositions.teams].reduce(
@@ -77,20 +78,14 @@ export const TableLaps: FC<IProps> = observer(({ round, group }: IProps) => {
         (g1, g2) => (g1.position || 9999) - (g2.position || 9999)
     );
 
-    const handleOpenAllLaps = useCallback(
-        (id: string) => () => {
-            setAllLaps(
-                _.sortBy((story.laps || []).filter((lap: ILap) => lap.memberGroupId === id) || [], ['millisecond'])
-            );
-        },
-        []
-    );
+    const handleOpenAllLaps = useCallback((id: string) => () => setOpenLapsMember(id), []);
 
     const handleCloseAllLaps = useCallback(() => {
-        setAllLaps(undefined);
+        setOpenLapsMember(undefined);
     }, []);
 
-    const handleDeleteLap = useCallback((id: string) => {}, []);
+    const handleDeleteLap = useCallback((id: string) => lapDeleteAction(id), []);
+    const handleUpdateLap = useCallback((id: string, lap: Pick<ILap, 'typeLap'>) => lapUpdateAction(id, lap), []);
 
     return (
         <TableContainer component={Paper} variant="outlined" className={styles.root}>
@@ -165,8 +160,17 @@ export const TableLaps: FC<IProps> = observer(({ round, group }: IProps) => {
                     </TableRow>
                 </TableBody>
             </Table>
-            {!!allLaps && (
-                <ListAllLaps laps={allLaps} open={!!allLaps} onClose={handleCloseAllLaps} onDelete={handleDeleteLap} />
+            {!!openLapsMember && (
+                <ListAllLaps
+                    laps={_.sortBy(
+                        (story.laps || []).filter((lap: ILap) => lap.memberGroupId === openLapsMember) || [],
+                        ['millisecond']
+                    )}
+                    open={!!openLapsMember}
+                    onClose={handleCloseAllLaps}
+                    onDelete={handleDeleteLap}
+                    onUpdate={handleUpdateLap}
+                />
             )}
         </TableContainer>
     );

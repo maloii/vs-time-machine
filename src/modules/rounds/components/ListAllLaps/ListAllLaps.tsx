@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 import { ILap } from '@/types/ILap';
 import { DateTime } from 'luxon';
 import {
@@ -19,15 +19,20 @@ import {
 import { TypeLap } from '@/types/TypeLap';
 import { millisecondsToTimeString } from '@/utils/millisecondsToTimeString';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import { DialogFormLap } from '@/modules/rounds/components/DialogFormLap/DialogFormLap';
 
 interface IProps {
     open: boolean;
     onClose: () => void;
     laps: ILap[];
     onDelete: (id: string) => void;
+    onUpdate: (_id: string, lap: Pick<ILap, 'typeLap'>) => void;
 }
 
-export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, onDelete }: IProps) => {
+export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, onDelete, onUpdate }: IProps) => {
+    const [editLap, setEditLap] = useState<ILap | undefined>(undefined);
+
     const lapsWithPos = useMemo<ILap[]>(() => {
         let pos = 1;
         return (laps || []).map((lap) => {
@@ -35,7 +40,25 @@ export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, onDelete }: IProp
             return lap;
         });
     }, [laps]);
-    const handleDelete = useCallback((id: string) => () => onDelete(id), [onDelete]);
+    const handleDelete = useCallback(
+        (id: string) => () => {
+            if (window.confirm('Are you sure you want to delete the lap?')) {
+                onDelete(id);
+                setEditLap(undefined);
+            }
+        },
+        [onDelete]
+    );
+    const handleOpenEdit = useCallback((lap: ILap) => () => setEditLap(lap), [setEditLap]);
+    const handleCloseEdit = useCallback(() => setEditLap(undefined), [setEditLap]);
+    const handleSave = useCallback(
+        (id: string, lap: Pick<ILap, 'typeLap'>) => {
+            onUpdate(id, lap);
+            setEditLap(undefined);
+        },
+        [onUpdate]
+    );
+
     const Row: FC<{ lap: ILap }> = ({ lap }: { lap: ILap }) => {
         return (
             <TableRow>
@@ -44,6 +67,9 @@ export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, onDelete }: IProp
                 <TableCell>{millisecondsToTimeString(lap.timeLap)}</TableCell>
                 <TableCell>{lap.typeLap}</TableCell>
                 <TableCell>
+                    <IconButton onClick={handleOpenEdit(lap)}>
+                        <EditIcon />
+                    </IconButton>
                     <IconButton onClick={handleDelete(lap._id)}>
                         <DeleteIcon />
                     </IconButton>
@@ -51,32 +77,45 @@ export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, onDelete }: IProp
             </TableRow>
         );
     };
+
     return (
-        <Dialog open={open} onClose={onClose}>
-            <DialogTitle>All laps</DialogTitle>
-            <DialogContent>
-                <TableContainer component={Paper} variant="outlined">
-                    <Table size="small">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Lap</TableCell>
-                                <TableCell>DateTime</TableCell>
-                                <TableCell>Time</TableCell>
-                                <TableCell>Type</TableCell>
-                                <TableCell />
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {lapsWithPos.map((lap, indx) => (
-                                <Row key={lap._id} lap={lap} />
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={onClose}>Close</Button>
-            </DialogActions>
-        </Dialog>
+        <>
+            <Dialog open={open} onClose={onClose}>
+                <DialogTitle>All laps</DialogTitle>
+                <DialogContent>
+                    <TableContainer component={Paper} variant="outlined">
+                        <Table size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Lap</TableCell>
+                                    <TableCell>DateTime</TableCell>
+                                    <TableCell>Time</TableCell>
+                                    <TableCell>Type</TableCell>
+                                    <TableCell />
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {lapsWithPos.map((lap, indx) => (
+                                    <Row key={lap._id} lap={lap} />
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={onClose}>Close</Button>
+                </DialogActions>
+            </Dialog>
+
+            {!!editLap && (
+                <DialogFormLap
+                    lap={editLap}
+                    open={!!editLap}
+                    onDelete={handleDelete}
+                    onClose={handleCloseEdit}
+                    onUpdate={handleSave}
+                />
+            )}
+        </>
     );
 };
