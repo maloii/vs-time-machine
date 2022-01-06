@@ -14,7 +14,9 @@ export const roundInsertAction = (
 
 export const roundUpdateAction = (
     _id: string,
-    round: Omit<IRound, '_id' | 'competitionId' | 'selected' | 'dateCreate' | 'minTimeLap' | 'close' | 'sort'>
+    round:
+        | Omit<IRound, '_id' | 'competitionId' | 'selected' | 'dateCreate' | 'minTimeLap' | 'close' | 'sort'>
+        | Pick<IRound, 'sort'>
 ): void => {
     window.api.ipcRenderer.send('round-update-request', _id, round);
 };

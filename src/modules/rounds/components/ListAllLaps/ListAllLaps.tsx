@@ -22,6 +22,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { DialogFormLap } from '@/modules/rounds/components/DialogFormLap/DialogFormLap';
 
+import styles from './styles.module.scss';
+
 interface IProps {
     open: boolean;
     onClose: () => void;
@@ -67,12 +69,14 @@ export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, onDelete, onUpdat
                 <TableCell>{millisecondsToTimeString(lap.timeLap)}</TableCell>
                 <TableCell>{lap.typeLap}</TableCell>
                 <TableCell>
-                    <IconButton onClick={handleOpenEdit(lap)}>
-                        <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={handleDelete(lap._id)}>
-                        <DeleteIcon />
-                    </IconButton>
+                    <div className={styles.actions}>
+                        <IconButton onClick={handleOpenEdit(lap)}>
+                            <EditIcon />
+                        </IconButton>
+                        <IconButton onClick={handleDelete(lap._id)}>
+                            <DeleteIcon />
+                        </IconButton>
+                    </div>
                 </TableCell>
             </TableRow>
         );
