@@ -10,4 +10,5 @@ export interface ILap {
     groupId: string;
     gateId: string;
     memberGroupId: string;
+    position?: number;
 }

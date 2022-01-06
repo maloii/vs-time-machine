@@ -7,7 +7,13 @@
 
 .container {
   width: 100% !important;
+  height: calc(100% - 60px) !important;
   margin-top: 10px !important;
+}
+
+.groupsContainer {
+  height: 100% !important;
+  overflow-y: auto;
 }
 
 .actionGroups {

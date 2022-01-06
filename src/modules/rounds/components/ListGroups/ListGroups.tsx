@@ -33,11 +33,13 @@ export const ListGroups: FC<IProps> = observer(({ groups, selectedGroup, onEdit,
             {(groups || []).map((group) => (
                 <Paper key={group._id} elevation={isSelected(group) ? 5 : 1} className={styles.paper}>
                     <List
+                        dense
                         onClick={handleSelect(group._id)}
                         className={styles.group}
                         component="nav"
                         subheader={
                             <ListSubheader
+                                disableSticky
                                 component="div"
                                 className={cn(styles.headerGroup, { [styles.selected]: isSelected(group) })}
                             >

@@ -262,7 +262,7 @@ export const RoundsController: FC = observer(() => {
             {(rounds || []).length === 0 && <div className={styles.empty}>No groups</div>}
             {selectedRound && (
                 <Grid container spacing={2} className={styles.container}>
-                    <Grid item xs={4}>
+                    <Grid item xs={4} className={styles.groupsContainer}>
                         <div className={styles.actionGroups}>
                             <Button color="primary" startIcon={<AddIcon />} onClick={handleOpenAddGroup}>
                                 Add group

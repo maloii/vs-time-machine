@@ -1,5 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron');
-
+const { positionCalculation, groupLapsByMemberGroup } = require("./race/positionCalculation");
 const {
     IMAGES_FOLDER,
     DEFAULT_PHOTO,
@@ -21,7 +21,9 @@ const API = {
         send: (channel, ...data) => ipcRenderer.send(channel, ...data),
         removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel),
         invoke: (channel, ...data) => ipcRenderer.invoke(channel, ...data)
-    }
+    },
+    positionCalculation: (round, group, groupedLaps) => positionCalculation(round, group, groupedLaps),
+    groupLapsByMemberGroup: (group, laps) => groupLapsByMemberGroup(group, laps)
 };
 
 contextBridge.exposeInMainWorld('api', API);
