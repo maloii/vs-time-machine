@@ -1,4 +1,3 @@
-const Race = require('./race/Race');
 const { SerialPortConnector } = require('./hardware/SerialPortConnector');
 const { WlanConnector } = require('./hardware/WlanConnector');
 const { parseMessage } = require('./hardware/vs/parseMessage');
@@ -13,7 +12,7 @@ class Connector {
     connect = (type, ...params) => {
         if (!this.connector) {
             if (type === 'WLAN') {
-                this.connector = new WlanConnector(this);
+                this.connector = new WlanConnector();
             } else if (type === 'SERIAL_PORT') {
                 this.connector = new SerialPortConnector();
             }

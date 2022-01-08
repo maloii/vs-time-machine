@@ -6,7 +6,7 @@ const sportsmanMessages = require('./sportsmanMessages');
 const competitionMessage = require('./competitionMessage');
 const fileMessage = require('./fileMessage');
 const raceMessages = require('./raceMessages');
-const serialportMessages = require('./serialportMessages');
+const connectMessages = require('./connectMessages');
 
 module.exports = {
     lapsMessages,
@@ -17,5 +17,5 @@ module.exports = {
     competitionMessage,
     fileMessage,
     raceMessages,
-    serialportMessages
+    connectMessages
 };

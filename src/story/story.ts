@@ -7,6 +7,7 @@ import { IGroup } from '@/types/IGroup';
 import { ILap } from '@/types/ILap';
 import { TypeRaceStatus } from '@/types/TypeRaceStatus';
 import { ISerialPortStatus } from '@/types/ISerialPortStatus';
+import { IWlanStatus } from '@/types/IWlanStatus';
 
 export class Story {
     public competitions: Array<ICompetition> = [];
@@ -18,6 +19,7 @@ export class Story {
     public laps: Array<ILap> = [];
     public raceStatus: TypeRaceStatus | undefined = undefined;
     public serialPortStatus: ISerialPortStatus | undefined = undefined;
+    public wlanStatus: IWlanStatus | undefined = undefined;
     public connected: boolean = false;
     public startTime: number | undefined = undefined;
 
@@ -59,6 +61,10 @@ export class Story {
 
     public setSerialPortStatus = (newSerialPortStatus: ISerialPortStatus): void => {
         this.serialPortStatus = newSerialPortStatus;
+    };
+
+    public setWlanStatus = (newWlanStatus: IWlanStatus): void => {
+        this.wlanStatus = newWlanStatus;
     };
 
     public setConnected = (newConnected: boolean): void => {

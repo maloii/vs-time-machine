@@ -3,8 +3,6 @@ const SerialPort = require('serialport');
 class SerialPortConnector {
     port;
 
-    constructor() {}
-
     connect = (receive, path) => {
         try {
             this.port = new SerialPort(path, { baudRate: 115200 });

@@ -6,7 +6,7 @@ import { story } from '@/story/story';
 
 import styles from './styles.module.scss';
 
-export const SelectSerialPort: FC = observer(() => {
+export const Connect: FC = observer(() => {
     const [portPath, setPortPath] = useState<string>('');
     const [listPorts, setListPorts] = useState<Array<string>>([]);
 
@@ -20,15 +20,20 @@ export const SelectSerialPort: FC = observer(() => {
         }
     }, [portPath]);
 
+    const handleOpenWlan = useCallback(() => {
+        window.api.ipcRenderer.send('connect-wlan-request', '192.168.197.255', 8889, 8888);
+    }, []);
+
     const handleClose = useCallback(() => {
-        if (window.confirm('Are you sure you want to disconnect the connection serial port?')) {
+        if (window.confirm('Are you sure you want to disconnect?')) {
             window.api.ipcRenderer.send('disconnect-serial-ports-request');
+            window.api.ipcRenderer.send('disconnect-wlan-request');
         }
     }, []);
 
     useInterval(() => {
         window.api.ipcRenderer.send('list-serial-ports-request');
-        window.api.ipcRenderer.send('status-serial-port-request');
+        window.api.ipcRenderer.send('status-connect-request');
     }, 1000);
 
     useEffect(() => {
@@ -37,8 +42,23 @@ export const SelectSerialPort: FC = observer(() => {
         });
     }, []);
 
+    console.log(story.serialPortStatus?.isOpen, story.wlanStatus?.isOpen);
     return (
         <div className={styles.selectSerialPort}>
+            {story.wlanStatus?.isOpen ? (
+                <Button size="small" variant="outlined" onClick={handleClose}>
+                    WLAN Disconnect
+                </Button>
+            ) : (
+                <Button
+                    size="small"
+                    variant="outlined"
+                    disabled={story.serialPortStatus?.isOpen}
+                    onClick={handleOpenWlan}
+                >
+                    WLAN Connect
+                </Button>
+            )}
             <FormControl variant="standard" sx={{ m: 1, minWidth: 200 }}>
                 <TextField
                     select
@@ -46,7 +66,7 @@ export const SelectSerialPort: FC = observer(() => {
                     onChange={handleChangePort}
                     label="Serial port"
                     size="small"
-                    disabled={story.serialPortStatus?.isOpen}
+                    disabled={story.serialPortStatus?.isOpen || story.wlanStatus?.isOpen}
                 >
                     {listPorts.map((port) => (
                         <MenuItem key={port} value={port}>
@@ -60,7 +80,12 @@ export const SelectSerialPort: FC = observer(() => {
                     Disconnect
                 </Button>
             ) : (
-                <Button size="small" variant="outlined" disabled={!portPath} onClick={handleOpen}>
+                <Button
+                    size="small"
+                    variant="outlined"
+                    disabled={!portPath || story.wlanStatus?.isOpen}
+                    onClick={handleOpen}
+                >
                     Connect
                 </Button>
             )}

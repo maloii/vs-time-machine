@@ -11,6 +11,7 @@ import { loadTeamsAction } from '@/actions/actionTeamRequest';
 import { loadRoundsAction } from '@/actions/actionRoundRequest';
 import { TypeRaceStatus } from '@/types/TypeRaceStatus';
 import { ISerialPortStatus } from '@/types/ISerialPortStatus';
+import { IWlanStatus } from '@/types/IWlanStatus';
 
 window.api.ipcRenderer.on('load-competitions-response', (e: any, competitions: ICompetition[]) => {
     story.setCompetitions(competitions);
@@ -54,4 +55,16 @@ window.api.ipcRenderer.on(
 window.api.ipcRenderer.on('status-serial-port', (e: any, serialPortStatus: ISerialPortStatus) => {
     story.setSerialPortStatus(serialPortStatus);
     story.setConnected(serialPortStatus.isOpen);
+});
+
+window.api.ipcRenderer.on('status-wlan', (e: any, wlanStatus: IWlanStatus) => {
+    console.log(wlanStatus);
+    story.setWlanStatus(wlanStatus);
+    story.setConnected(wlanStatus.isOpen);
+});
+
+window.api.ipcRenderer.on('status-connect', (e: any, wlanStatus: IWlanStatus, serialPortStatus: ISerialPortStatus) => {
+    story.setWlanStatus(wlanStatus);
+    story.setSerialPortStatus(serialPortStatus);
+    story.setConnected(wlanStatus.isOpen || serialPortStatus.isOpen);
 });
