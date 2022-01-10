@@ -14,8 +14,9 @@ import {
     loadLapsForGroupAction,
     loadRoundsAction
 } from '@/actions/actionRequest';
-import { Button, Grid } from '@mui/material';
+import { Button, Grid, IconButton, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { DialogFormRound } from '@/modules/rounds/components/DialogFormRound/DialogFormRound';
 import { ListGroups } from '@/modules/rounds/components/ListGroups/ListGroups';
 import { DialogFormGroup } from '@/modules/rounds/components/DialogFormGroup/DialogFormGroup';
@@ -34,6 +35,8 @@ import { TypeRaceStatus } from '@/types/TypeRaceStatus';
 import { StopWatch } from '@/modules/rounds/components/StopWatch/StopWatch';
 
 import styles from './styles.module.scss';
+import { sportsmanName } from '@/utils/sportsmanName';
+import { ColorCss } from '@/types/Color';
 
 export const RoundsController: FC = observer(() => {
     const [openDialogAddRound, setOpenDialogAddRound] = useState(false);
@@ -214,6 +217,26 @@ export const RoundsController: FC = observer(() => {
         }
     }, [raceReadyToStart, selectedGroup]);
 
+    const handleCopyListGroups = useCallback(() => {
+        const textGroups = groups
+            .map(
+                (group) =>
+                    group.name +
+                    ':\n' +
+                    [...group.sportsmen, ...group.teams]
+                        .map(
+                            (item) =>
+                                `    ${item.startNumber || ''} - ${item.team?.name || sportsmanName(item?.sportsman!)}${
+                                    item.color !== undefined ? ` ${ColorCss[item.color]}` : ''
+                                }  ${item.channel}`
+                        )
+                        .join('\n')
+            )
+            .join('\n');
+
+        navigator.clipboard.writeText(textGroups).then(() => alert('Group list copied to clipboard.'));
+    }, [groups]);
+
     useEffect(() => {
         window.api.ipcRenderer.removeAllListeners('round-insert-response');
         window.api.ipcRenderer.removeAllListeners('round-update-response');
@@ -263,6 +286,11 @@ export const RoundsController: FC = observer(() => {
                 <Grid container spacing={2} className={styles.container}>
                     <Grid item xs={4} className={styles.groupsContainer}>
                         <div className={styles.actionGroups}>
+                            <Tooltip title="Copy group list">
+                                <IconButton onClick={handleCopyListGroups}>
+                                    <ContentCopyIcon />
+                                </IconButton>
+                            </Tooltip>
                             <Button color="primary" startIcon={<AddIcon />} onClick={handleOpenAddGroup}>
                                 Add group
                             </Button>

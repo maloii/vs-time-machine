@@ -4,6 +4,7 @@ import { BrowserRouter, HashRouter, Routes, Route, Navigate } from 'react-router
 import { MainLayout } from './modules/common/components/MainLayout/MainLayout';
 import { SportsmenController } from '@/modules/sportsmen/controllers/SportsmenController';
 import { RoundsController } from '@/modules/rounds/controllers/RoundsController';
+import { ReportsController } from '@/modules/reports/controllers/ReportsController';
 
 export const Router: FC = observer(() => {
     const routers = (
@@ -11,6 +12,7 @@ export const Router: FC = observer(() => {
             <Routes>
                 <Route path="/rounds" element={<RoundsController />} />
                 <Route path="/sportsmen" element={<SportsmenController />} />
+                <Route path="/reports" element={<ReportsController />} />
                 <Route path="*" element={<Navigate replace to="/sportsmen" />} />
             </Routes>
         </MainLayout>

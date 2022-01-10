@@ -67,3 +67,15 @@ aside {
     }
   }
 }
+
+.iconFillWithoutPath {
+  &:hover {
+    svg {
+      fill: #2c77f4;
+    }
+
+    span {
+      color: #fff;
+    }
+  }
+}
