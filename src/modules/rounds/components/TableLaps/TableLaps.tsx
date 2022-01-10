@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import cn from 'classnames';
 import _ from 'lodash';
 import { observer } from 'mobx-react';
@@ -8,6 +8,7 @@ import { IRound } from '@/types/IRound';
 import { ISportsman } from '@/types/ISportsman';
 import { ILap } from '@/types/ILap';
 import {
+    Badge,
     IconButton,
     Paper,
     Table,
@@ -74,9 +75,11 @@ export const TableLaps: FC<IProps> = observer(({ round, group }: IProps) => {
         return <TableCell>{textLap}</TableCell>;
     };
 
-    const membersGroup = [...groupWithPositions.sportsmen, ...groupWithPositions.teams].sort(
-        (g1, g2) => (g1.position || 9999) - (g2.position || 9999)
-    );
+    const membersGroup = [...groupWithPositions.sportsmen, ...groupWithPositions.teams];
+    // Под вопросом, нужна ли сортировка группы по позиции.
+    // .sort(
+    //     (g1, g2) => (g1.position || 9999) - (g2.position || 9999)
+    // );
 
     const handleOpenAllLaps = useCallback((id: string) => () => setOpenLapsMember(id), []);
 
@@ -87,6 +90,8 @@ export const TableLaps: FC<IProps> = observer(({ round, group }: IProps) => {
     const handleDeleteLap = useCallback((id: string) => lapDeleteAction(id), []);
     const handleUpdateLap = useCallback((id: string, lap: Pick<ILap, 'typeLap'>) => lapUpdateAction(id, lap), []);
 
+    const countLapsForMember = (id: string) =>
+        ((story.laps || []).filter((lap: ILap) => lap.memberGroupId === id) || []).length;
     return (
         <TableContainer component={Paper} variant="outlined" className={styles.root}>
             <Table size="small">
@@ -130,7 +135,9 @@ export const TableLaps: FC<IProps> = observer(({ round, group }: IProps) => {
                                         )}
                                     </div>
                                     <IconButton onClick={handleOpenAllLaps(item._id)}>
-                                        <ListIcon />
+                                        <Badge badgeContent={countLapsForMember(item._id)} color="secondary">
+                                            <ListIcon />
+                                        </Badge>
                                     </IconButton>
                                 </div>
                             </TableCell>

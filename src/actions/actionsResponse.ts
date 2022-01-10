@@ -66,5 +66,5 @@ window.api.ipcRenderer.on('status-wlan', (e: any, wlanStatus: IWlanStatus) => {
 window.api.ipcRenderer.on('status-connect', (e: any, wlanStatus: IWlanStatus, serialPortStatus: ISerialPortStatus) => {
     story.setWlanStatus(wlanStatus);
     story.setSerialPortStatus(serialPortStatus);
-    story.setConnected(wlanStatus.isOpen || serialPortStatus.isOpen);
+    story.setConnected(wlanStatus?.isOpen || serialPortStatus?.isOpen);
 });

@@ -160,17 +160,12 @@ export const RoundsController: FC = observer(() => {
     );
     const handleEditGroup = useCallback(
         (_id: string, group: Omit<IGroup, '_id' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'>) => {
-            if (story.competition && selectedRound && group.name && openDialogEditGroup) {
-                groupUpdateAction(_id, {
-                    ...group,
-                    close: openDialogEditGroup.close,
-                    roundId: openDialogEditGroup.roundId,
-                    sort: openDialogEditGroup.sort
-                });
+            if (story.competition && group.name) {
+                groupUpdateAction(_id, group);
             }
             handleCloseDialog();
         },
-        [handleCloseDialog, openDialogEditGroup, selectedRound]
+        [handleCloseDialog]
     );
 
     const handleSelectGroup = useCallback(
@@ -278,6 +273,8 @@ export const RoundsController: FC = observer(() => {
                             onSelect={handleSelectGroup}
                             onDelete={handleDeleteGroup}
                             onEdit={handleOpenEditGroup}
+                            onUpdate={handleEditGroup}
+                            competition={story.competition!}
                         />
                     </Grid>
                     <Grid item xs={8}>

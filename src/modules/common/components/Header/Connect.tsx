@@ -42,10 +42,9 @@ export const Connect: FC = observer(() => {
         });
     }, []);
 
-    console.log(story.serialPortStatus?.isOpen, story.wlanStatus?.isOpen);
     return (
         <div className={styles.selectSerialPort}>
-            {story.wlanStatus?.isOpen ? (
+            {story?.wlanStatus?.isOpen ? (
                 <Button size="small" variant="outlined" onClick={handleClose}>
                     WLAN Disconnect
                 </Button>
@@ -53,7 +52,7 @@ export const Connect: FC = observer(() => {
                 <Button
                     size="small"
                     variant="outlined"
-                    disabled={story.serialPortStatus?.isOpen}
+                    disabled={story?.serialPortStatus?.isOpen}
                     onClick={handleOpenWlan}
                 >
                     WLAN Connect
@@ -62,11 +61,11 @@ export const Connect: FC = observer(() => {
             <FormControl variant="standard" sx={{ m: 1, minWidth: 200 }}>
                 <TextField
                     select
-                    value={story.serialPortStatus?.isOpen ? story.serialPortStatus?.path : portPath}
+                    value={story?.serialPortStatus?.isOpen ? story?.serialPortStatus?.path : portPath}
                     onChange={handleChangePort}
                     label="Serial port"
                     size="small"
-                    disabled={story.serialPortStatus?.isOpen || story.wlanStatus?.isOpen}
+                    disabled={story?.serialPortStatus?.isOpen || story?.wlanStatus?.isOpen}
                 >
                     {listPorts.map((port) => (
                         <MenuItem key={port} value={port}>
@@ -75,7 +74,7 @@ export const Connect: FC = observer(() => {
                     ))}
                 </TextField>
             </FormControl>
-            {story.serialPortStatus?.isOpen ? (
+            {story?.serialPortStatus?.isOpen ? (
                 <Button size="small" variant="outlined" onClick={handleClose}>
                     Disconnect
                 </Button>
@@ -83,7 +82,7 @@ export const Connect: FC = observer(() => {
                 <Button
                     size="small"
                     variant="outlined"
-                    disabled={!portPath || story.wlanStatus?.isOpen}
+                    disabled={!portPath || story?.wlanStatus?.isOpen}
                     onClick={handleOpen}
                 >
                     Connect

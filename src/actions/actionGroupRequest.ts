@@ -9,7 +9,12 @@ export const groupInsertAction = (group: Omit<IGroup, '_id'>): void => {
     window.api.ipcRenderer.send('group-insert-request', group);
 };
 
-export const groupUpdateAction = (_id: string, group: Omit<IGroup, '_id' | 'competitionId'>): void => {
+export const groupUpdateAction = (
+    _id: string,
+    group:
+        | Omit<IGroup, '_id' | 'competitionId'>
+        | Omit<IGroup, '_id' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'>
+): void => {
     window.api.ipcRenderer.send('group-update-request', _id, group);
 };
 
