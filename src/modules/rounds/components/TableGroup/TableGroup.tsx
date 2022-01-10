@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import _ from 'lodash';
 import { IGroup, IMembersGroup } from '@/types/IGroup';
 import styles from '@/modules/rounds/components/ListGroups/styles.module.scss';
@@ -76,6 +76,10 @@ export const TableGroup: FC<IProps> = ({
         draggedItem.current = undefined;
         onUpdate(innerGroup._id, innerGroup);
     }, [innerGroup, onUpdate]);
+
+    useEffect(() => {
+        setInnerGroup(_.cloneDeep(group));
+    }, [group]);
 
     return (
         <Paper key={innerGroup._id} elevation={isSelected(innerGroup) ? 5 : 1} className={styles.paper}>

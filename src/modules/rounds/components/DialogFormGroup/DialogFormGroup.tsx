@@ -1,4 +1,5 @@
 import React, { FC, useCallback, useState } from 'react';
+import _ from 'lodash';
 import {
     Box,
     Button,
@@ -103,7 +104,7 @@ export const DialogFormGroup: FC<IProps> = ({
             teams: teamsMembers
         };
         if (group?._id) {
-            onUpdate(group?._id, { ...newDataGroup, selected: group.selected });
+            onUpdate(group?._id, _.cloneDeep({ ...newDataGroup, selected: group.selected }));
         } else {
             onSave({ ...newDataGroup, selected: true });
         }

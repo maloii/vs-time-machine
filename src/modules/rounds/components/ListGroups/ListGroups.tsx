@@ -28,6 +28,7 @@ export const ListGroups: FC<IProps> = observer(
         if ((groups || []).length === 0) {
             return <div className={styles.empty}>No groups</div>;
         }
+
         return (
             <div className={styles.root}>
                 {(groups || []).map((group) => (
