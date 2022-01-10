@@ -1,0 +1,5 @@
+export enum TypeReport {
+    BEST_LAP = 'BEST_LAP',
+    COUNT_LAPS = 'COUNT_LAPS',
+    POSITION_SPORTSMEN = 'POSITION_SPORTSMEN'
+}

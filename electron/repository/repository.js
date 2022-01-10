@@ -15,7 +15,8 @@ const db = {
     team: dbFactory('team.db'),
     round: dbFactory('round.db'),
     group: dbFactory('group.db'),
-    lap: dbFactory('lap.db')
+    lap: dbFactory('lap.db'),
+    report: dbFactory('report.db')
 };
 
 db.competition.ensureIndex({ fieldName: 'selected' });

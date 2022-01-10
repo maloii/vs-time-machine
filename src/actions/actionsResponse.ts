@@ -12,6 +12,8 @@ import { loadRoundsAction } from '@/actions/actionRoundRequest';
 import { TypeRaceStatus } from '@/types/TypeRaceStatus';
 import { ISerialPortStatus } from '@/types/ISerialPortStatus';
 import { IWlanStatus } from '@/types/IWlanStatus';
+import { IReport } from '@/types/IReport';
+import { loadReportsAction } from '@/actions/actionReportRequest';
 
 window.api.ipcRenderer.on('load-competitions-response', (e: any, competitions: ICompetition[]) => {
     story.setCompetitions(competitions);
@@ -21,6 +23,7 @@ window.api.ipcRenderer.on('load-competitions-response', (e: any, competitions: I
         loadSportsmenAction(competition);
         loadTeamsAction(competition);
         loadRoundsAction(competition);
+        loadReportsAction();
     }
 });
 
@@ -38,6 +41,10 @@ window.api.ipcRenderer.on('load-rounds-for-competition-response', (e: any, round
 
 window.api.ipcRenderer.on('load-groups-for-round-response', (e: any, groups: IGroup[]) => {
     story.setGroups(groups);
+});
+
+window.api.ipcRenderer.on('load-reports-response', (e: any, reports: IReport[]) => {
+    story.setReports(reports);
 });
 
 window.api.ipcRenderer.on('load-laps-for-group-response', (e: any, laps: ILap[]) => {
