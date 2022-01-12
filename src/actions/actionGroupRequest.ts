@@ -5,6 +5,16 @@ export const loadGroupsAction = (round: IRound): void => {
     window.api.ipcRenderer.send('load-groups-for-round-request', round._id);
 };
 
+export const loadGroupsByRoundAction = (round: IRound): Promise<Array<IGroup>> => {
+    return window.api.ipcRenderer.send('handle-load-groups-for-round-request', round._id);
+};
+
+export const loadGroupsByRoundsAction = (rounds: IRound[]): Promise<Array<IGroup>> => {
+    return window.api.ipcRenderer.send(
+        'handle-load-groups-for-rounds-request',
+        (rounds || []).map((round) => round._id)
+    );
+};
 export const groupInsertAction = (group: Omit<IGroup, '_id'>): void => {
     window.api.ipcRenderer.send('group-insert-request', group);
 };

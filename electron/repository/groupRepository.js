@@ -4,6 +4,10 @@ const groupsFindByRoundId = async (roundId) => {
     return db.group.find({ roundId });
 };
 
+const groupsFindByRoundIds = async (roundIds) => {
+    return db.group.find({ roundId: { $in: roundIds } });
+};
+
 const groupInsert = (group) => {
     return db.group.insert(group);
 };
@@ -28,4 +32,4 @@ const groupDelete = (_id) => {
     return db.group.remove({ _id }, {});
 };
 
-module.exports = { groupsFindByRoundId, groupInsert, groupUpdate, groupSelect, groupDelete };
+module.exports = { groupsFindByRoundId, groupsFindByRoundIds, groupInsert, groupUpdate, groupSelect, groupDelete };

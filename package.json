@@ -34,7 +34,9 @@
     "uuid": "~8.3.2",
     "web-vitals": "~2.1.2",
     "sound-play": "~1.1.0",
-    "dgram": "~1.0.1"
+    "dgram": "~1.0.1",
+    "jspdf": "~2.5.0",
+    "html2canvas": "~1.4.0"
   },
   "devDependencies": {
     "@types/jest": "~26.0.24",

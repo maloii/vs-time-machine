@@ -6,6 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { TableReports } from '@/modules/reports/components/TableReports/TableReports';
 import { IReport } from '@/types/IReport';
 import { DialogFormReport } from '@/modules/reports/components/DialogFormReport/DialogFormReport';
+import { DialogReportController } from '@/modules/reports/controllers/DialogReportController';
 import {
     loadReportsAction,
     reportDeleteAction,
@@ -18,6 +19,7 @@ import styles from './styles.module.scss';
 export const ReportsController: FC = observer(() => {
     const [openDialogAddReport, setOpenDialogAddReport] = useState(false);
     const [openDialogEditReport, setOpenDialogEditReport] = useState<IReport>();
+    const [openDialogReport, setOpenDialogReport] = useState<IReport>();
 
     const handleOpenAddReport = useCallback(() => {
         setOpenDialogAddReport(true);
@@ -27,9 +29,14 @@ export const ReportsController: FC = observer(() => {
         setOpenDialogEditReport(report);
     }, []);
 
+    const handleOpenReport = useCallback((report: IReport) => {
+        setOpenDialogReport(report);
+    }, []);
+
     const handleCloseDialog = useCallback(() => {
         setOpenDialogAddReport(false);
         setOpenDialogEditReport(undefined);
+        setOpenDialogReport(undefined);
     }, []);
 
     const handleAddReport = useCallback(
@@ -78,7 +85,12 @@ export const ReportsController: FC = observer(() => {
                     Add report
                 </Button>
             </div>
-            <TableReports reports={story.reports} onEdit={handleOpenEditReport} onDelete={handleDeleteReport} />
+            <TableReports
+                reports={story.reports}
+                onEdit={handleOpenEditReport}
+                onDelete={handleDeleteReport}
+                onOpen={handleOpenReport}
+            />
             {(openDialogAddReport || openDialogEditReport) && (
                 <DialogFormReport
                     report={openDialogEditReport}
@@ -87,6 +99,13 @@ export const ReportsController: FC = observer(() => {
                     onSave={handleAddReport}
                     onUpdate={handleEditReport}
                     onDelete={handleDeleteReport}
+                />
+            )}
+            {openDialogReport && (
+                <DialogReportController
+                    report={openDialogReport}
+                    open={!!openDialogReport}
+                    onClose={handleCloseDialog}
                 />
             )}
         </div>
