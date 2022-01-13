@@ -28,7 +28,7 @@ export const CountLapsReport: FC<IProps> = ({ report, rounds, teams, sportsmen }
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell>Pos</TableCell>
+                        <TableCell>Pos.</TableCell>
                         <TableCell>Sportsman</TableCell>
                         <TableCell>Laps</TableCell>
                         <TableCell>Gap</TableCell>

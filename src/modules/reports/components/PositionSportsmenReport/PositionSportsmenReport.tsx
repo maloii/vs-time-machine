@@ -24,7 +24,7 @@ export const PositionSportsmenReport: FC<IProps> = ({ report, teams, sportsmen }
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell>Pos</TableCell>
+                        <TableCell>Pos.</TableCell>
                         <TableCell>Sportsman</TableCell>
                         <TableCell>City</TableCell>
                         <TableCell>Country</TableCell>
