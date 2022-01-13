@@ -8,6 +8,8 @@ import { IReport } from '@/types/IReport';
 import { TypeReport } from '@/types/TypeReport';
 import { BestLapReport } from '@/modules/reports/components/BestLapReport/BestLapReport';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import { CountLapsReport } from '@/modules/reports/components/CountLapsReport/CountLapsReport';
+import { PositionSportsmenReport } from '@/modules/reports/components/PositionSportsmenReport/PositionSportsmenReport';
 
 interface IProps {
     open: boolean;
@@ -47,6 +49,17 @@ export const DialogReportController: FC<IProps> = observer(({ open, onClose, rep
                             sportsmen={story.sportsmen}
                             teams={story.teams}
                         />
+                    )}
+                    {report.type === TypeReport.COUNT_LAPS && (
+                        <CountLapsReport
+                            report={report}
+                            rounds={story.rounds}
+                            sportsmen={story.sportsmen}
+                            teams={story.teams}
+                        />
+                    )}
+                    {report.type === TypeReport.POSITION_SPORTSMEN && (
+                        <PositionSportsmenReport report={report} sportsmen={story.sportsmen} teams={story.teams} />
                     )}
                 </DialogContent>
             </div>

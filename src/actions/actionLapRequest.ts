@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { IGroup } from '@/types/IGroup';
 import { ILap } from '@/types/ILap';
 import { IRound } from '@/types/IRound';
@@ -13,7 +14,7 @@ export const loadLapsForRoundAction = (round: IRound): Promise<Array<ILap>> => {
 export const loadLapsForRoundsAction = (rounds: IRound[]): Promise<Array<ILap>> => {
     return window.api.ipcRenderer.invoke(
         'handle-load-laps-for-rounds-request',
-        (rounds || []).map((round) => round._id)
+        _.cloneDeep(rounds || []).map((round) => round._id)
     );
 };
 

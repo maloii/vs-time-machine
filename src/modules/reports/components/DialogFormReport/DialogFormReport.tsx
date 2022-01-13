@@ -50,14 +50,15 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
         const newReport = {
             name,
             type,
-            typeRound
+            typeRound,
+            notCountedRounds
         };
         if (report?._id) {
             onUpdate(report?._id, _.cloneDeep(newReport));
         } else {
             onSave(newReport);
         }
-    }, [name, type, report?._id, typeRound, onUpdate, onSave]);
+    }, [name, type, typeRound, notCountedRounds, report?._id, onUpdate, onSave]);
 
     const handleDelete = useCallback(() => {
         if (report) {
