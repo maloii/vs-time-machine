@@ -37,9 +37,10 @@ class Race {
             this.selectedGroup = { ...group };
             const round = this.selectedGroup.round || {};
             const count = await lapDeleteByGroupId(this.selectedGroup._id);
-            if (global.mainWindow) {
-                global.mainWindow.webContents.send('group-update-response', count);
-            }
+            Object.values(global.windows).forEach((item, indx) => {
+                item.webContents.send('group-update-response', count);
+                item.webContents.send('group-in-race', this.selectedGroup);
+            });
             this.numberPackages = [];
             this.raceStatus = 'READY';
             this.sendRaceStatus();
@@ -52,9 +53,9 @@ class Race {
             this.startTime = DateTime.now().toMillis();
             this.sendRaceStatus(this.startTime);
             groupUpdate(this.selectedGroup._id, { timeStart: this.startTime }).then((count) => {
-                if (global.mainWindow) {
-                    global.mainWindow.webContents.send('group-update-response', count);
-                }
+                Object.values(global.windows).forEach((item) => {
+                    item.webContents.send('group-update-response', count);
+                });
             });
             //Если гонка с фиксированным временем пикаем когда достигнет время.
             if (round.maxTimeRace && Number(round.maxTimeRace) > 0) {
@@ -86,9 +87,9 @@ class Race {
         if (this.timerStop) {
             clearInterval(this.timerStop);
         }
-        if (global.mainWindow) {
-            global.mainWindow.webContents.send('race-status-message', this.raceStatus, this.selectedGroup);
-        }
+        Object.values(global.windows).forEach((item) => {
+            item.webContents.send('race-status-message', this.raceStatus, this.selectedGroup);
+        });
     };
 
     search = async (group) => {
@@ -99,9 +100,9 @@ class Race {
 
             this.selectedGroup = clearSearchTransponderInGroup(group);
             const count = await groupUpdate(this.selectedGroup._id, this.selectedGroup);
-            if (global.mainWindow) {
-                global.mainWindow.webContents.send('group-update-response', count);
-            }
+            Object.values(global.windows).forEach((item) => {
+                item.webContents.send('group-update-response', count);
+            });
             this.timerSearch = setInterval(() => {
                 const transponders = getAllTranspondersAndColorInGroup(this.selectedGroup);
                 (transponders || []).forEach((transponder) => {
@@ -178,9 +179,9 @@ class Race {
                     gateId: gate._id,
                     memberGroupId: membersGroup._id
                 });
-                if (global.mainWindow) {
-                    global.mainWindow.webContents.send('group-update-response', count);
-                }
+                Object.values(global.windows).forEach((item) => {
+                    item.webContents.send('group-update-response', count);
+                });
                 this.numberPackages.push(numberPackage);
             }
         }
@@ -192,9 +193,9 @@ class Race {
             this.selectedGroup = searchAndMarkTransponderInGroup(this.selectedGroup, transponder);
 
             groupUpdate(this.selectedGroup._id, this.selectedGroup).then((count) => {
-                if (global.mainWindow) {
-                    global.mainWindow.webContents.send('group-update-response', count);
-                }
+                Object.values(global.windows).forEach((item) => {
+                    item.webContents.send('group-update-response', count);
+                });
             });
             if (isAllSearchedTransponderInGroup(this.selectedGroup)) {
                 this.stop();
@@ -204,9 +205,9 @@ class Race {
 
     sendRaceStatus = (startTime) => {
         connector.setRace(this);
-        if (global.mainWindow) {
-            global.mainWindow.webContents.send('race-status-message', this.raceStatus, startTime);
-        }
+        Object.values(global.windows).forEach((item) => {
+            item.webContents.send('race-status-message', this.raceStatus, startTime);
+        });
     };
 }
 

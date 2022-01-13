@@ -35,9 +35,9 @@ class Connector {
     receive = (message) => {
         console.log(message);
         parseMessage(message, this, this.race);
-        if (global.mainWindow) {
-            global.mainWindow.webContents.send('connector-message', message.toString());
-        }
+        Object.values(global.windows).forEach((item) => {
+            item.webContents.send('connector-message', message.toString());
+        });
     };
 
     send = (message) => {

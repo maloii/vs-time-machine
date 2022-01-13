@@ -24,6 +24,7 @@ export class Story {
     public wlanStatus: IWlanStatus | undefined = undefined;
     public connected: boolean = false;
     public startTime: number | undefined = undefined;
+    public groupInRace: IGroup | undefined = undefined;
 
     public constructor() {
         makeAutoObservable(this);
@@ -79,6 +80,10 @@ export class Story {
 
     public setStartTime = (newStartTime: number | undefined): void => {
         this.startTime = newStartTime;
+    };
+
+    public setGroupInRace = (newGroupInRace: IGroup | undefined): void => {
+        this.groupInRace = newGroupInRace;
     };
 }
 

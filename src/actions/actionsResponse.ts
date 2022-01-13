@@ -75,3 +75,7 @@ window.api.ipcRenderer.on('status-connect', (e: any, wlanStatus: IWlanStatus, se
     story.setSerialPortStatus(serialPortStatus);
     story.setConnected(wlanStatus?.isOpen || serialPortStatus?.isOpen);
 });
+
+window.api.ipcRenderer.on('group-in-race', (e: any, group: IGroup) => {
+    story.setGroupInRace(group);
+});

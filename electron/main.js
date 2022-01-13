@@ -14,7 +14,7 @@ function createWindow() {
         },
         icon: path.join(__dirname, 'AppIcon.icns')
     });
-    global.mainWindow = mainWindow;
+    global.windows['main'] = mainWindow;
     init();
     mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
 
@@ -25,6 +25,7 @@ function createWindow() {
 app.allowRendererProcessReuse = false;
 
 app.whenReady().then(() => {
+    global.windows = {};
     createWindow();
 
     app.on('activate', function () {

@@ -8,6 +8,7 @@ const fileMessage = require('./fileMessage');
 const raceMessages = require('./raceMessages');
 const connectMessages = require('./connectMessages');
 const reportMessages = require('./reportMessages');
+const broadCastMessages = require('./broadCastMessages');
 
 module.exports = {
     lapsMessages,
@@ -19,5 +20,6 @@ module.exports = {
     fileMessage,
     raceMessages,
     connectMessages,
-    reportMessages
+    reportMessages,
+    broadCastMessages
 };

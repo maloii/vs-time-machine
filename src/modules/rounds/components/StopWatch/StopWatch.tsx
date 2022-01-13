@@ -9,12 +9,11 @@ import { millisecondsToTimeString } from '@/utils/millisecondsToTimeString';
 import styles from './styles.module.scss';
 
 interface IProps {
-    round?: IRound;
     startTime?: number;
     raceStatus?: TypeRaceStatus;
 }
 
-export const StopWatch: FC<IProps> = observer(({ round, startTime, raceStatus }: IProps) => {
+export const StopWatch: FC<IProps> = observer(({ startTime, raceStatus }: IProps) => {
     const [timer, setTimer] = useState(0);
     const refTimer = useRef<NodeJS.Timeout>();
     useEffect(() => {
