@@ -1,5 +1,5 @@
 const { app } = require('electron');
-const sound = require('sound-play');
+const sound = require('node-wav-player');
 const path = require('path');
 const { DateTime } = require('luxon');
 const { speech } = require('../speech/speech');
@@ -56,9 +56,12 @@ class Race {
             await sleep(8000);
             speech('Удачной гонки!');
             await sleep(1500);
-            await sound.play(path.join(app.getPath('userData'), `/sounds/beep.wav`));
-            await sound.play(path.join(app.getPath('userData'), `/sounds/beep.wav`));
-            await sound.play(path.join(app.getPath('userData'), `/sounds/beep.wav`));
+            await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`) });
+            await sleep(100);
+            await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`) });
+            await sleep(100);
+            await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`) });
+            await sleep(400);
 
             this.raceStatus = 'RUN';
             this.startTime = DateTime.now().toMillis();
@@ -71,7 +74,8 @@ class Race {
                 const maxTimeRace = Number(round.maxTimeRace) * 1000;
                 this.timerStop = setTimeout(() => {
                     if (round.typeRace !== 'FIXED_TIME_AND_ONE_LAP_AFTER') this.stop();
-                    sound.play(path.join(app.getPath('userData'), `/sounds/long_beep.wav`));
+                    sound.play({ path: path.join(app.getPath('userData'), `/sounds/long_beep.wav`) });
+                    speech('Гонка завершена!');
                 }, maxTimeRace);
             }
 
@@ -83,7 +87,7 @@ class Race {
                 this.lastTimeLap[membersGroup._id] = this.startTime;
             });
 
-            await sound.play(path.join(app.getPath('userData'), `/sounds/long_beep.wav`));
+            await sound.play({ path: path.join(app.getPath('userData'), `/sounds/long_beep.wav`) });
         }
     };
 
@@ -171,9 +175,7 @@ class Race {
                 }
                 if (['OK', 'START', 'SKIP_FIRST_GATE'].includes(typeLap)) {
                     this.lastTimeLap[membersGroup._id] = millisecond;
-                    setTimeout(() => {
-                        sound.play(path.join(app.getPath('userData'), `/sounds/short_beep.wav`));
-                    }, 0);
+                    sound.play({ path: path.join(app.getPath('userData'), `/sounds/short_beep.wav`) });
                 }
                 const count = await lapInsert({
                     millisecond,

@@ -334,7 +334,7 @@ export const RoundsController: FC = observer(() => {
                                         variant="contained"
                                         className={styles.invite}
                                         onClick={handleInvitationRace}
-                                        disabled={!story.connected}
+                                        disabled={!raceReadyToStart || !story.connected}
                                     >
                                         INVITE
                                     </Button>
