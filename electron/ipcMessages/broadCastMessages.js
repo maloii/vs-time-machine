@@ -16,7 +16,7 @@ function createBroadCastWindow() {
     screenWindow.loadURL(
         isDev
             ? 'http://localhost:3000/screen/current-group'
-            : `file://${path.join(__dirname, '../../build/index.html#screen/current-group')}`
+            : `file://${path.join(__dirname, '../../build/index.html#/screen/current-group')}`
     );
     screenWindow.on('closed', () => {
         delete global.windows.screen;

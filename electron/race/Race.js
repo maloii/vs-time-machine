@@ -13,6 +13,7 @@ const {
 } = require('./groupUtils');
 const _ = require('lodash');
 const { sendToAllMessage } = require('../ipcMessages/sendMessage');
+const { app } = require("electron");
 
 // const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -44,9 +45,9 @@ class Race {
             this.raceStatus = 'READY';
             this.sendRaceStatus();
 
-            await sound.play(path.join(__dirname, `../../assets/beep.wav`));
-            await sound.play(path.join(__dirname, `../../assets/beep.wav`));
-            await sound.play(path.join(__dirname, `../../assets/beep.wav`));
+            await sound.play(path.join(app.getPath('userData'), `/sounds/beep.wav`));
+            await sound.play(path.join(app.getPath('userData'), `/sounds/beep.wav`));
+            await sound.play(path.join(app.getPath('userData'), `/sounds/beep.wav`));
 
             this.raceStatus = 'RUN';
             this.startTime = DateTime.now().toMillis();
@@ -59,7 +60,7 @@ class Race {
                 const maxTimeRace = Number(round.maxTimeRace) * 1000;
                 this.timerStop = setTimeout(() => {
                     if (round.typeRace !== 'FIXED_TIME_AND_ONE_LAP_AFTER') this.stop();
-                    sound.play(path.join(__dirname, `../../assets/long_beep.wav`));
+                    sound.play(path.join(app.getPath('userData'), `/sounds/long_beep.wav`));
                 }, maxTimeRace);
             }
 
@@ -71,7 +72,7 @@ class Race {
                 this.lastTimeLap[membersGroup._id] = this.startTime;
             });
 
-            await sound.play(path.join(__dirname, `../../assets/long_beep.wav`));
+            await sound.play(path.join(app.getPath('userData'), `/sounds/long_beep.wav`));
         }
     };
 
@@ -159,7 +160,7 @@ class Race {
                 if (['OK', 'START', 'SKIP_FIRST_GATE'].includes(typeLap)) {
                     this.lastTimeLap[membersGroup._id] = millisecond;
                     setTimeout(() => {
-                        sound.play(path.join(__dirname, `../../assets/short_beep.wav`));
+                        sound.play(path.join(app.getPath('userData'), `/sounds/short_beep.wav`));
                     }, 0);
                 }
                 const count = await lapInsert({
