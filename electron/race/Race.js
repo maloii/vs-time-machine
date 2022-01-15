@@ -1,7 +1,8 @@
-const { lapDeleteByGroupId, lapsFindByMemberGroupId, lapInsert } = require('../repository/lapRepository');
+const { app } = require('electron');
 const sound = require('sound-play');
 const path = require('path');
 const { DateTime } = require('luxon');
+const { speech } = require('../speech/speech');
 const { connector } = require('../Connector');
 const { groupUpdate } = require('../repository/groupRepository');
 const {
@@ -9,13 +10,16 @@ const {
     clearSearchTransponderInGroup,
     searchAndMarkTransponderInGroup,
     isAllSearchedTransponderInGroup,
-    findMembersGroupByTransponder, findInMembersGroupSportsmanByTransponder
+    findMembersGroupByTransponder,
+    findInMembersGroupSportsmanByTransponder,
+    getAllNameMembersInGroup,
+    getNameMemberInGroup
 } = require('./groupUtils');
 const _ = require('lodash');
 const { sendToAllMessage } = require('../ipcMessages/sendMessage');
-const { app } = require("electron");
+const { lapDeleteByGroupId, lapsFindByMemberGroupId, lapInsert } = require('../repository/lapRepository');
 
-// const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 class Race {
     // READY,
@@ -31,11 +35,15 @@ class Race {
     timerSearch;
     timerStop;
 
+    invitation = async (group) => {
+        const text = `На старт приглашается ${group.name}. ${getAllNameMembersInGroup(group).join(', ')}`;
+        speech(text);
+    };
+
     start = async (group) => {
         connector.setRace(this);
         if (this.raceStatus === 'STOP') {
             connector.sendSyncTime();
-
             this.selectedGroup = { ...group };
             const round = this.selectedGroup.round || {};
             const count = await lapDeleteByGroupId(this.selectedGroup._id);
@@ -44,7 +52,10 @@ class Race {
             this.numberPackages = [];
             this.raceStatus = 'READY';
             this.sendRaceStatus();
-
+            speech('10 секунд до старта.');
+            await sleep(8000);
+            speech('Удачной гонки!');
+            await sleep(1500);
             await sound.play(path.join(app.getPath('userData'), `/sounds/beep.wav`));
             await sound.play(path.join(app.getPath('userData'), `/sounds/beep.wav`));
             await sound.play(path.join(app.getPath('userData'), `/sounds/beep.wav`));
@@ -126,7 +137,7 @@ class Race {
                 const gateDelay = gate.delay * 1000;
                 let typeLap = (gateDelay > 0 && gateDelay < timeLap) || gateDelay === 0 ? 'OK' : 'HIDDEN';
                 const laps = (await lapsFindByMemberGroupId(membersGroup._id, this.selectedGroup._id)) || [];
-
+                const okLaps = laps.filter((lap) => lap.typeLap === 'OK');
                 //Проверка если указано максимальное время гонки
                 if (round.maxTimeRace && Number(round.maxTimeRace) > 0) {
                     const maxTimeRace = Number(round.maxTimeRace) * 1000;
@@ -145,7 +156,7 @@ class Race {
                     round.countLap &&
                     Number(round.countLap) > 0
                 ) {
-                    if (laps.filter((lap) => lap.typeLap === 'OK').length >= Number(round.countLap)) typeLap = 'HIDDEN';
+                    if (okLaps.length >= Number(round.countLap)) typeLap = 'HIDDEN';
                 }
 
                 if (
@@ -176,6 +187,14 @@ class Race {
                     sportsmanId: sportsman._id,
                     transponder
                 });
+
+                if (round.typeRace === 'FIXED_COUNT_LAPS' && typeLap === 'OK') {
+                    if (okLaps.length + 1 >= Number(round.countLap)) {
+                        const text = `${getNameMemberInGroup(membersGroup)} финишировал!`;
+                        speech(text);
+                    }
+                }
+
                 sendToAllMessage('group-update-response', count);
                 this.numberPackages.push(numberPackage);
             }

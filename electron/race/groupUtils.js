@@ -25,6 +25,19 @@ const getAllTranspondersAndColorInGroup = (group) => {
     ];
 };
 
+const getNameMemberInGroup = (memberInGroup) => {
+    if (memberInGroup.sportsman)
+        return `${memberInGroup.sportsman.lastName || ''} ${memberInGroup.sportsman.firstName || ''}`;
+    if (memberInGroup.team) return memberInGroup.team.name || '';
+    return '';
+};
+
+const getAllNameMembersInGroup = (group) => {
+    return [...(group.sportsmen || []), ...(group.teams || [])]
+        .filter((membersGroup) => !!membersGroup.sportsman || !!membersGroup.team)
+        .flatMap(getNameMemberInGroup);
+};
+
 const clearSearchTransponderInGroup = (group) => {
     return {
         ...group,
@@ -95,5 +108,7 @@ module.exports = {
     searchAndMarkTransponderInGroup,
     isAllSearchedTransponderInGroup,
     findMembersGroupByTransponder,
-    findInMembersGroupSportsmanByTransponder
+    findInMembersGroupSportsmanByTransponder,
+    getAllNameMembersInGroup,
+    getNameMemberInGroup
 };

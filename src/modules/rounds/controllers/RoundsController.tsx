@@ -30,7 +30,7 @@ import {
     roundSelectAction,
     roundUpdateAction
 } from '@/actions/actionRoundRequest';
-import { startRaceAction, startSearchAction, stopRaceAction } from '@/actions/actionRaceRequest';
+import { invitationRaceAction, startRaceAction, startSearchAction, stopRaceAction } from '@/actions/actionRaceRequest';
 import { TypeRaceStatus } from '@/types/TypeRaceStatus';
 import { StopWatch } from '@/modules/rounds/components/StopWatch/StopWatch';
 
@@ -193,6 +193,18 @@ export const RoundsController: FC = observer(() => {
         [selectedRound]
     );
 
+    const handleInvitationRace = useCallback(() => {
+        if (selectedGroup) {
+            if (raceReadyToStart) {
+                invitationRaceAction({
+                    ..._.cloneDeep(selectedGroup),
+                    competition: _.cloneDeep(story.competition),
+                    round: _.cloneDeep(selectedRound)
+                });
+            }
+        }
+    }, [raceReadyToStart, selectedGroup, selectedRound]);
+
     const handleStartRace = useCallback(() => {
         if (selectedGroup) {
             if (raceReadyToStart) {
@@ -318,6 +330,14 @@ export const RoundsController: FC = observer(() => {
                                         SEARCH
                                     </Button>
                                     <StopWatch raceStatus={story.raceStatus} startTime={story.startTime} />
+                                    <Button
+                                        variant="contained"
+                                        className={styles.invite}
+                                        onClick={handleInvitationRace}
+                                        disabled={!story.connected}
+                                    >
+                                        INVITE
+                                    </Button>
                                     <Button
                                         variant="contained"
                                         color={raceReadyToStart ? 'success' : 'error'}

@@ -1,6 +1,10 @@
 const { race } = require('../race/Race');
 const { ipcMain } = require('electron');
 
+ipcMain.on('race-invitation-request', async (e, group) => {
+    race.invitation(group);
+});
+
 ipcMain.on('race-start-request', async (e, group) => {
     race.start(group);
 });
