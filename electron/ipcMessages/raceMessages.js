@@ -12,3 +12,11 @@ ipcMain.on('search-start-request', async (e, group) => {
 ipcMain.on('race-stop-request', async (e) => {
     race.stop();
 });
+
+ipcMain.handle('handle-race-start-time-request', async (e) => {
+    return race.startTime;
+});
+
+ipcMain.handle('handle-race-status-request', async (e) => {
+    return race.raceStatus;
+});

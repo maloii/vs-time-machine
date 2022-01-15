@@ -3,6 +3,7 @@ import styles from './styles.module.scss';
 import { Header } from '../Header/Header';
 import { Footer } from '../Footer/Footer';
 import { Aside } from '../Aside/Aside';
+import { TransponderCheck } from '../TransponderCheck/TransponderCheck';
 
 export const MainLayout: FC = ({ children }) => {
     return (
@@ -11,6 +12,7 @@ export const MainLayout: FC = ({ children }) => {
             <Aside />
             <div className={styles.content}>{children}</div>
             <Footer />
+            <TransponderCheck />
         </div>
     );
 };

@@ -1,0 +1,27 @@
+.transponderCheck {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+}
+
+.transponderData {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-weight: 400;
+  font-size: 1.2rem;
+}
+
+.gateData {
+  font-size: 0.8rem;
+}
+
+.packData {
+  display: flex;
+  font-size: 0.6rem;
+  & > div:last-child {
+    margin-left: 10px;
+  }
+}

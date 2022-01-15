@@ -6,8 +6,8 @@ require('./ipcMessages');
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
-        width: 1024,
-        height: 1024,
+        width: 1920,
+        height: 1080,
         webPreferences: {
             preload: path.join(__dirname, './preload.js'),
             contextIsolation: true
