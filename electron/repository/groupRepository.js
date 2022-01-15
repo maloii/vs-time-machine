@@ -28,8 +28,11 @@ const groupSelect = async (roundId, _id) => {
     return db.group.update({ _id }, { $set: { selected: true } });
 };
 
-const groupDelete = (_id) => {
-    return db.group.remove({ _id }, {});
+const groupDelete = async (_id) => {
+    let count = 0;
+    count += await db.lap.remove({ groupId: _id }, { multi: true });
+    count += await db.group.remove({ _id }, {});
+    return count;
 };
 
 module.exports = { groupsFindByRoundId, groupsFindByRoundIds, groupInsert, groupUpdate, groupSelect, groupDelete };

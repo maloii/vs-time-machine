@@ -20,7 +20,7 @@ export const calculateBestLapReport = async (
     );
     const allLaps = await loadLapsForRoundsAction(reportRounds);
     let resRows = _.chain(allLaps)
-        .groupBy('memberGroupId')
+        .groupBy(report.onlySportsmen ? 'sportsmanId' : 'memberGroupId')
         .map((laps: ILap[], memberGroupId: string) => {
             const okLaps = laps.filter((lap) => lap.typeLap === TypeLap.OK);
             const minLap = _.minBy(okLaps, 'timeLap');

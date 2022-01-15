@@ -70,7 +70,7 @@ const findMembersGroupByTransponder = (group, transponder) => {
         (membersGroup) =>
             membersGroup.sportsman && ((membersGroup.sportsman || {}).transponders || []).includes(transponder)
     );
-    if (sportsmanMembersGroup) return sportsmanMembersGroup;
+    if (sportsmanMembersGroup) return { ...sportsmanMembersGroup, sportsmenId: sportsmanMembersGroup.sportsman._id };
 
     const teamMembersGroup = _.find(group.teams || [], (membersGroup) => {
         const sportsmenInTeam = ((membersGroup.team || {}).sportsmen || []).filter((item) => !!item);
@@ -80,10 +80,20 @@ const findMembersGroupByTransponder = (group, transponder) => {
     return undefined;
 };
 
+const findInMembersGroupSportsmanByTransponder = (membersGroup, transponder) => {
+    if (membersGroup?.sportsman) return membersGroup.sportsman;
+    if (membersGroup?.team) {
+        const sportsmenInTeam = ((membersGroup.team || {}).sportsmen || []).filter((item) => !!item);
+        return _.find(sportsmenInTeam, (item) => (item.transponders || []).includes(transponder));
+    }
+    return undefined;
+};
+
 module.exports = {
     getAllTranspondersAndColorInGroup,
     clearSearchTransponderInGroup,
     searchAndMarkTransponderInGroup,
     isAllSearchedTransponderInGroup,
-    findMembersGroupByTransponder
+    findMembersGroupByTransponder,
+    findInMembersGroupSportsmanByTransponder
 };

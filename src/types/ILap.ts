@@ -10,5 +10,7 @@ export interface ILap {
     groupId: string;
     gateId: string;
     memberGroupId: string;
+    sportsmanId: string;
+    transponder: string;
     position?: number;
 }

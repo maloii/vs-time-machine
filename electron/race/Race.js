@@ -9,7 +9,7 @@ const {
     clearSearchTransponderInGroup,
     searchAndMarkTransponderInGroup,
     isAllSearchedTransponderInGroup,
-    findMembersGroupByTransponder
+    findMembersGroupByTransponder, findInMembersGroupSportsmanByTransponder
 } = require('./groupUtils');
 const _ = require('lodash');
 const { sendToAllMessage } = require('../ipcMessages/sendMessage');
@@ -112,6 +112,7 @@ class Race {
         connector.setRace(this);
         if (this.raceStatus === 'RUN' && !this.numberPackages.includes(numberPackage)) {
             const membersGroup = findMembersGroupByTransponder(this.selectedGroup, transponder);
+            const sportsman = findInMembersGroupSportsmanByTransponder(membersGroup, transponder);
             const competition = this.selectedGroup.competition || {};
             const round = this.selectedGroup.round || {};
             const gate = _.find(competition.gates, (gate) => {
@@ -171,7 +172,9 @@ class Race {
                     roundId: round._id,
                     groupId: this.selectedGroup._id,
                     gateId: gate._id,
-                    memberGroupId: membersGroup._id
+                    memberGroupId: membersGroup._id,
+                    sportsmanId: sportsman._id,
+                    transponder
                 });
                 sendToAllMessage('group-update-response', count);
                 this.numberPackages.push(numberPackage);

@@ -7,9 +7,11 @@ import {
     DialogContent,
     DialogTitle,
     FormControl,
+    FormControlLabel,
     InputLabel,
     MenuItem,
     Select,
+    Switch,
     TextField
 } from '@mui/material';
 import { IReport } from '@/types/IReport';
@@ -32,6 +34,7 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
     const [type, setType] = useState(report?.type || TypeReport.BEST_LAP);
     const [typeRound, setTypeRound] = useState(report?.typeRound || TypeRoundReport.PRACTICE);
     const [notCountedRounds, setNotCountedRounds] = useState(report?.notCountedRounds || 1);
+    const [onlySportsmen, setOnlySportsmen] = useState(report?.onlySportsmen || false);
 
     const handleChangeName = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
@@ -45,20 +48,24 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
     const handleChangeNotCountedRounds = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setNotCountedRounds(Number(event.target.value));
     }, []);
+    const handleChangeOnlySportsmen = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setOnlySportsmen((prev) => !prev);
+    }, []);
 
     const handleSave = useCallback(() => {
         const newReport = {
             name,
             type,
             typeRound,
-            notCountedRounds
+            notCountedRounds,
+            onlySportsmen
         };
         if (report?._id) {
             onUpdate(report?._id, _.cloneDeep(newReport));
         } else {
             onSave(newReport);
         }
-    }, [name, type, typeRound, notCountedRounds, report?._id, onUpdate, onSave]);
+    }, [name, type, typeRound, notCountedRounds, onlySportsmen, report?._id, onUpdate, onSave]);
 
     const handleDelete = useCallback(() => {
         if (report) {
@@ -105,6 +112,12 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
                                 ))}
                             </Select>
                         </FormControl>
+                    )}
+                    {type === TypeReport.BEST_LAP && (
+                        <FormControlLabel
+                            control={<Switch checked={onlySportsmen} onChange={handleChangeOnlySportsmen} />}
+                            label="Only sportsmen"
+                        />
                     )}
                     {type === TypeReport.COUNT_LAPS && (
                         <TextField

@@ -7,4 +7,5 @@ export interface IReport {
     type: TypeReport;
     typeRound: TypeRoundReport;
     notCountedRounds?: number;
+    onlySportsmen?: boolean;
 }

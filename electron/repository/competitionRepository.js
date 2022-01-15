@@ -33,23 +33,27 @@ const competitionDelete = async (_id) => {
     let count = 0;
     const competition = await db.competition.findOne({ _id });
     if (competition) {
-        count += await db.sportsman.remove({ competitionId: _id }, {});
-        count += await db.team.remove({ competitionId: _id }, {});
+        count += await db.sportsman.remove({ competitionId: _id }, { multi: true });
+        count += await db.team.remove({ competitionId: _id }, { multi: true });
         const rounds = await db.round.find({ competitionId: _id });
         for (const round in rounds) {
             const groups = await db.group.find({ roundId: round._id });
             for (const group in groups) {
-                count += await db.lap.remove({ groupId: group._id }, {});
+                count += await db.lap.remove({ groupId: group._id }, { multi: true });
             }
-            count += await db.group.remove({ roundId: round._id }, {});
+            count += await db.group.remove({ roundId: round._id }, { multi: true });
         }
-        count += await db.round.remove({ competitionId: _id }, {});
+        count += await db.round.remove({ competitionId: _id }, { multi: true });
         count += await db.competition.remove({ _id }, {});
         if (competition.selected) {
             const competitions = await competitionFindAll();
             if ((competitions || []).length > 0) {
                 const newSelectedCompetitions = competitions[competitions.length - 1];
-                await db.competition.update({ _id: newSelectedCompetitions._id }, { $set: { selected: true } });
+                await db.competition.update(
+                    { _id: newSelectedCompetitions._id },
+                    { $set: { selected: true } },
+                    { multi: true }
+                );
             }
         }
     }

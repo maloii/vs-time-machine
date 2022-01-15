@@ -49,6 +49,11 @@ const roundDelete = async (_id) => {
             const newSelectedRound = rounds[rounds.length - 1];
             count += await db.round.update({ _id: newSelectedRound._id }, { $set: { selected: true } });
         }
+        const groups = await db.group.find({ roundId: round._id });
+        for (const group in groups) {
+            count += await db.lap.remove({ groupId: group._id }, { multi: true });
+        }
+        count += await db.group.remove({ roundId: round._id }, { multi: true });
     }
     return count;
 };
