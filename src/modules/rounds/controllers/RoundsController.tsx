@@ -53,7 +53,7 @@ export const RoundsController: FC = observer(() => {
         .map((group) => ({
             ...group,
             sportsmen: group.sportsmen
-                .map(
+                ?.map(
                     (item): IMembersGroup => ({
                         ...item,
                         sportsman: _.find<ISportsman>(story.sportsmen, ['_id', item._id])
@@ -61,7 +61,7 @@ export const RoundsController: FC = observer(() => {
                 )
                 .filter((item) => !!item.sportsman),
             teams: group.teams
-                .map(
+                ?.map(
                     (item): IMembersGroup => ({
                         ...item,
                         team: _.find<ITeam>(story.teams, ['_id', item._id])

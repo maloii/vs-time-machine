@@ -19,7 +19,6 @@ import { ITeam } from '@/types/ITeam';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { TypeGroup } from '@/types/TypeGroup';
 import { ICompetition } from '@/types/ICompetition';
-import { competitionColorAndChannel } from '@/utils/competitionColorAndChannel';
 
 interface IProps {
     open: boolean;
@@ -65,7 +64,10 @@ export const DialogFormGroup: FC<IProps> = ({
             setSportsmenMembers(
                 (event.target.value as string[]).map((_id, indx) => {
                     const startNumber = indx + 1;
-                    const colorAndChannel = competitionColorAndChannel(startNumber, competition);
+                    const colorAndChannel = window.api.competitionColorAndChannel(
+                        startNumber,
+                        _.cloneDeep(competition)
+                    );
                     return {
                         _id,
                         startNumber,
@@ -83,7 +85,10 @@ export const DialogFormGroup: FC<IProps> = ({
             setTeamsMembers(
                 (event.target.value as string[]).map((_id, indx) => {
                     const startNumber = indx + 1;
-                    const colorAndChannel = competitionColorAndChannel(startNumber, competition);
+                    const colorAndChannel = window.api.competitionColorAndChannel(
+                        startNumber,
+                        _.cloneDeep(competition)
+                    );
                     return {
                         _id,
                         startNumber,

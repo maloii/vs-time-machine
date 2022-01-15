@@ -1,5 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
-const { positionCalculation, groupLapsByMemberGroup } = require("./race/positionCalculation");
+const { positionCalculation, groupLapsByMemberGroup } = require('./race/positionCalculation');
+const { competitionColorAndChannel } = require('./utils/competitionColorAndChannel');
 const {
     IMAGES_FOLDER,
     DEFAULT_PHOTO,
@@ -23,7 +24,8 @@ const API = {
         invoke: (channel, ...data) => ipcRenderer.invoke(channel, ...data)
     },
     positionCalculation: (round, group, groupedLaps) => positionCalculation(round, group, groupedLaps),
-    groupLapsByMemberGroup: (group, laps) => groupLapsByMemberGroup(group, laps)
+    groupLapsByMemberGroup: (group, laps) => groupLapsByMemberGroup(group, laps),
+    competitionColorAndChannel: (position, competition) => competitionColorAndChannel(position, competition)
 };
 
 contextBridge.exposeInMainWorld('api', API);

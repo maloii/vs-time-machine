@@ -9,7 +9,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { sportsmanName } from '@/utils/sportsmanName';
 import { ColorAndChannel } from '@/modules/rounds/components/ColorAndChannel/ColorAndChannel';
 import { ICompetition } from '@/types/ICompetition';
-import { competitionColorAndChannel } from '@/utils/competitionColorAndChannel';
 
 interface IProps {
     group: IGroup;
@@ -55,7 +54,7 @@ export const TableGroup: FC<IProps> = ({
             [items[index], items[oldIndex]] = [items[oldIndex], items[index]];
             const sortedItems = items.map((item: IMembersGroup, indx: number) => {
                 const startNumber = indx + 1;
-                const colorAndChannel = competitionColorAndChannel(startNumber, competition);
+                const colorAndChannel = window.api.competitionColorAndChannel(startNumber, _.cloneDeep(competition));
                 return {
                     ...item,
                     startNumber,
@@ -106,7 +105,7 @@ export const TableGroup: FC<IProps> = ({
                     </ListSubheader>
                 }
             >
-                {[...innerGroup.sportsmen, ...innerGroup.teams].map((item) => (
+                {[...(innerGroup.sportsmen || []), ...(innerGroup.teams || [])].map((item) => (
                     <ListItem
                         key={item._id}
                         divider

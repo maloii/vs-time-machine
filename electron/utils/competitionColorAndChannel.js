@@ -1,11 +1,4 @@
-import { Color } from '@/types/Color';
-import { Channel } from '@/types/VTXChannel';
-import { ICompetition } from '@/types/ICompetition';
-
-export const competitionColorAndChannel = (
-    position: number,
-    competition: ICompetition
-): { color: Color; channel: Channel } | undefined => {
+const competitionColorAndChannel = (position, competition) => {
     switch (position) {
         case 1:
             return {
@@ -49,3 +42,5 @@ export const competitionColorAndChannel = (
             };
     }
 };
+
+module.exports = { competitionColorAndChannel };

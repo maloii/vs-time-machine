@@ -76,7 +76,7 @@ export const TabRounds: FC<IProps> = observer(({ rounds, selectedId, onSelect, o
                         />
                     ))}
                 </Tabs>
-                <div>
+                <div className={styles.actions}>
                     {!!selectedId && (
                         <Button color="primary" startIcon={<EditIcon />} onClick={handleEditRound}>
                             Edit round

@@ -1,4 +1,4 @@
-export const millisecondsToTimeString = (duration: number): string => {
+export const millisecondsToTimeString = (duration: number, showMilliseconds: boolean = true): string => {
     const milliseconds = duration % 1000;
     const seconds = Math.floor((duration / 1000) % 60);
     const minutes = Math.floor((duration / (1000 * 60)) % 60);
@@ -11,5 +11,11 @@ export const millisecondsToTimeString = (duration: number): string => {
     if (milliseconds < 10) millisecondsStr = '00' + milliseconds;
     if (milliseconds < 100 && milliseconds >= 10) millisecondsStr = '0' + milliseconds;
 
-    return (hours > 0 ? hoursStr + ':' : '') + minutesStr + ':' + secondsStr + ':' + millisecondsStr;
+    return (
+        (hours > 0 ? hoursStr + ':' : '') +
+        minutesStr +
+        ':' +
+        secondsStr +
+        (showMilliseconds ? ':' + millisecondsStr : '')
+    );
 };

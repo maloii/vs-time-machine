@@ -4,6 +4,10 @@ const competitionFindAll = () => {
     return db.competition.find({});
 };
 
+const competitionFindById = (_id) => {
+    return db.competition.findOne({ _id });
+};
+
 const competitionClearSelect = () => {
     return db.competition.update({ selected: true }, { $set: { selected: false } }, { multi: true });
 };
@@ -60,4 +64,4 @@ const competitionDelete = async (_id) => {
     return count;
 };
 
-module.exports = { competitionFindAll, competitionInsert, competitionUpdate, competitionDelete };
+module.exports = { competitionFindAll, competitionFindById, competitionInsert, competitionUpdate, competitionDelete };

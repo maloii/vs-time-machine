@@ -21,6 +21,7 @@ import { IRound } from '@/types/IRound';
 import { TypeParentEntity } from '@/types/TypeParentEntity';
 import { TypeRaceElimination } from '@/types/TypeRaceElimination';
 import { TypeStartRace } from '@/types/TypeStartRace';
+import { millisecondsToTimeString } from '@/utils/millisecondsToTimeString';
 
 interface IProps {
     open: boolean;
@@ -211,6 +212,7 @@ export const DialogFormRound: FC<IProps> = ({ open, onClose, onSave, onUpdate, o
                             label={typeRace === TypeRace.FIXED_COUNT_LAPS ? 'Max time race (sec)' : 'Time race (sec)'}
                             value={maxTimeRace}
                             type="number"
+                            helperText={millisecondsToTimeString(Number(maxTimeRace) * 1000, false)}
                             onChange={handleChangeMaxTimeRace}
                         />
                     )}

@@ -2,3 +2,11 @@
   display: flex;
   justify-content: space-between;
 }
+
+.actions {
+  display: flex;
+  flex-wrap: nowrap;
+  button {
+    white-space: nowrap;
+  }
+}
