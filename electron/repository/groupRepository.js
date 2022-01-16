@@ -1,15 +1,48 @@
+const _ = require('lodash');
 const { db } = require('./repository');
+const { groupLapsByMemberGroup, positionCalculation } = require('../race/positionCalculation');
 
-const groupsFindByRoundId = async (roundId) => {
+const groupsFindByRoundId = (roundId) => {
     return db.group.find({ roundId });
 };
 
-const groupsFindByRoundIds = async (roundIds) => {
+const groupsFindByRoundIds = (roundIds) => {
     return db.group.find({ roundId: { $in: roundIds } });
 };
 
 const groupInsert = (group) => {
     return db.group.insert(group);
+};
+
+const groupFindById = (_id) => {
+    return db.group.findOne({ _id }).then(async (group) => {
+        const sportsmen = await db.sportsman.find({ competitionId: group.competitionId });
+        const teams = await db.team.find({ competitionId: group.competitionId });
+        return {
+            ...group,
+            sportsmen: group.sportsmen
+                ?.map((item) => ({
+                    ...item,
+                    sportsman: _.find(sportsmen, ['_id', item._id])
+                }))
+                .filter((item) => !!item.sportsman),
+            teams: await group.teams
+                ?.map(async (item) => ({
+                    ...item,
+                    team: _.find(teams, ['_id', item._id])
+                }))
+                .map(async (item) => ({
+                    ...item,
+                    team: {
+                        ...item.team,
+                        sportsmen: (item?.team?.sportsmenIds || []).map((sportsmanId) =>
+                            _.find(sportsmen, ['_id', sportsmanId])
+                        )
+                    }
+                }))
+                .filter((item) => !!item.team)
+        };
+    });
 };
 
 const groupUpdate = (_id, group) => {
@@ -21,6 +54,15 @@ const groupUpdate = (_id, group) => {
             }
         }
     );
+};
+
+const groupSavePositions = async (_id) => {
+    const group = await groupFindById(_id);
+    const round = await db.round.findOne({ _id: group.roundId });
+    const allLapsGroup = await db.lap.find({ groupId: _id });
+    const laps = groupLapsByMemberGroup(group, allLapsGroup);
+    const groupWithPositions = positionCalculation(round, group, laps);
+    return groupUpdate(_id, groupWithPositions);
 };
 
 const groupSelect = async (roundId, _id) => {
@@ -35,4 +77,13 @@ const groupDelete = async (_id) => {
     return count;
 };
 
-module.exports = { groupsFindByRoundId, groupsFindByRoundIds, groupInsert, groupUpdate, groupSelect, groupDelete };
+module.exports = {
+    groupsFindByRoundId,
+    groupsFindByRoundIds,
+    groupFindById,
+    groupInsert,
+    groupUpdate,
+    groupSavePositions,
+    groupSelect,
+    groupDelete
+};

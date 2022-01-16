@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import { DateTime } from 'luxon';
 import { IRound } from '@/types/IRound';
@@ -15,15 +15,30 @@ interface IProps {
 }
 
 export const StopWatch: FC<IProps> = observer(({ round, startTime, raceStatus }: IProps) => {
-    const [timer, setTimer] = useState(0);
+    // const [timer, setTimer] = useState(0);
     const refTimer = useRef<NodeJS.Timeout>();
+    const refTimeRace = useRef<HTMLSpanElement>(null);
+    const refTimeLeft = useRef<HTMLSpanElement>(null);
+
+    const setTimer = useCallback(
+        (timer: number) => {
+            if (refTimeRace.current) {
+                refTimeRace.current.innerText = millisecondsToTimeString(timer);
+            }
+            if (refTimeLeft.current) {
+                refTimeLeft.current.innerText = millisecondsToTimeString(Number(round?.maxTimeRace) * 1000 - timer);
+            }
+        },
+        [round?.maxTimeRace]
+    );
+
     useEffect(() => {
         if (raceStatus === TypeRaceStatus.RUN) {
             refTimer.current = setInterval(() => {
                 if (startTime) {
                     setTimer(DateTime.now().toMillis() - startTime);
                 }
-            }, 10);
+            }, 82);
         }
         if (raceStatus === TypeRaceStatus.STOP) {
             if (refTimer.current) {
@@ -38,19 +53,22 @@ export const StopWatch: FC<IProps> = observer(({ round, startTime, raceStatus }:
                 clearInterval(refTimer.current);
             }
         };
-    }, [startTime, raceStatus]);
+    }, [startTime, raceStatus, setTimer]);
+
+    useEffect(() => setTimer(0), [setTimer]);
+
     return (
         <div className={styles.root}>
             <fieldset className={styles.timer}>
                 <legend>Time race</legend>
-                {millisecondsToTimeString(timer)}
+                <span ref={refTimeRace}>00:00:000</span>
             </fieldset>
             {round &&
                 [TypeRace.FIXED_TIME, TypeRace.FIXED_TIME_AND_ONE_LAP_AFTER].includes(round?.typeRace) &&
                 Number(round?.maxTimeRace) > 0 && (
                     <fieldset className={styles.timer}>
                         <legend>Time left</legend>
-                        {millisecondsToTimeString(Number(round?.maxTimeRace) * 1000 - timer)}
+                        <span ref={refTimeLeft}>00:00:000</span>
                     </fieldset>
                 )}
         </div>

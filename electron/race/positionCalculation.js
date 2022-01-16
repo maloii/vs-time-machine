@@ -7,7 +7,7 @@ const positionCalculation = (round, group, groupedLaps) => {
             const m2Laps = groupedLaps?.[m2._id] || [];
             // Если колличество кругов одинакого то по лучшему кругу
             if (m1Laps.length === m2Laps.length) {
-                return _.minBy(m2Laps, 'timeLap')?.timeLap - _.minBy(m1Laps, 'timeLap')?.timeLap;
+                return _.minBy(m1Laps, 'timeLap')?.timeLap - _.minBy(m2Laps, 'timeLap')?.timeLap;
             }
             return m2Laps.length - m1Laps.length;
         });

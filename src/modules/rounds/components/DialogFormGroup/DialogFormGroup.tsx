@@ -23,10 +23,12 @@ import { ICompetition } from '@/types/ICompetition';
 interface IProps {
     open: boolean;
     onClose: () => void;
-    onSave: (group: Omit<IGroup, '_id' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'>) => void;
+    onSave: (
+        group: Omit<IGroup, '_id' | 'competitionId' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'>
+    ) => void;
     onUpdate: (
         _id: string,
-        group: Omit<IGroup, '_id' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'>
+        group: Omit<IGroup, '_id' | 'competitionId' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'>
     ) => void;
     onDelete: (_id: string) => void;
     group?: IGroup;

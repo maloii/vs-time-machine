@@ -38,8 +38,7 @@ interface IProps {
 export const TableLaps: FC<IProps> = observer(({ round, group, readonly }: IProps) => {
     const [openLapsMember, setOpenLapsMember] = useState<string | undefined>(undefined);
     const laps = window.api.groupLapsByMemberGroup(_.cloneDeep(group), _.cloneDeep(story.laps));
-    const groupWithPositions = window.api.positionCalculation(_.cloneDeep(round), _.cloneDeep(group), laps);
-    const maxCountLap = [...groupWithPositions.sportsmen, ...groupWithPositions.teams].reduce(
+    const maxCountLap = [...group.sportsmen, ...group.teams].reduce(
         (count, item) => (laps[item._id].length > count ? laps[item._id].length : count),
         0
     );
@@ -76,7 +75,7 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly }: IProp
         return <TableCell>{textLap}</TableCell>;
     };
 
-    const membersGroup = [...groupWithPositions.sportsmen, ...groupWithPositions.teams];
+    const membersGroup = [...group.sportsmen, ...group.teams];
     // Под вопросом, нужна ли сортировка группы по позиции.
     // .sort(
     //     (g1, g2) => (g1.position || 9999) - (g2.position || 9999)
@@ -92,6 +91,7 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly }: IProp
     const handleUpdateLap = useCallback((id: string, lap: Pick<ILap, 'typeLap'>) => lapUpdateAction(id, lap), []);
 
     useEffect(() => {
+        if (group) loadLapsForGroupAction(group);
         window.api.ipcRenderer.removeAllListeners('new-lap-update');
         window.api.ipcRenderer.on('new-lap-update', () => loadLapsForGroupAction(group));
     }, [group]);

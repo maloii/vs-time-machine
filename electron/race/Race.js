@@ -4,7 +4,7 @@ const path = require('path');
 const { DateTime } = require('luxon');
 const { speech } = require('../speech/speech');
 const { connector } = require('../Connector');
-const { groupUpdate } = require('../repository/groupRepository');
+const { groupUpdate, groupSavePositions } = require('../repository/groupRepository');
 const {
     getAllTranspondersAndColorInGroup,
     clearSearchTransponderInGroup,
@@ -13,7 +13,7 @@ const {
     findMembersGroupByTransponder,
     findInMembersGroupSportsmanByTransponder,
     getAllNameMembersInGroup,
-    getNameMemberInGroup
+    getNameMemberInGroup, clearPositionInGroup
 } = require('./groupUtils');
 const _ = require('lodash');
 const { sendToAllMessage } = require('../ipcMessages/sendMessage');
@@ -46,9 +46,10 @@ class Race {
         connector.setRace(this);
         if (this.raceStatus === 'STOP') {
             connector.sendSyncTime();
-            this.selectedGroup = { ...group };
+            this.selectedGroup = clearPositionInGroup(group);
+            let count = await groupUpdate(this.selectedGroup._id, this.selectedGroup);
             const round = this.selectedGroup.round || {};
-            const count = await lapDeleteByGroupId(this.selectedGroup._id);
+            count += await lapDeleteByGroupId(this.selectedGroup._id);
             sendToAllMessage('group-update-response', count);
             sendToAllMessage('group-in-race', this.selectedGroup);
             this.numberPackages = [];
@@ -234,6 +235,9 @@ class Race {
                     memberGroupId: membersGroup._id,
                     sportsmanId: sportsman._id,
                     transponder
+                });
+                groupSavePositions(this.selectedGroup._id).then((resGroup) => {
+                    sendToAllMessage('group-update-response', resGroup);
                 });
 
                 if (round.typeRace === 'FIXED_COUNT_LAPS' && typeLap === 'OK') {

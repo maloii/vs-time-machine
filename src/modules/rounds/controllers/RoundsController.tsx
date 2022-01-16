@@ -148,12 +148,18 @@ export const RoundsController: FC = observer(() => {
     );
 
     const handleAddGroup = useCallback(
-        (group: Omit<IGroup, '_id' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'>) => {
+        (
+            group: Omit<
+                IGroup,
+                '_id' | 'competitionId' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'
+            >
+        ) => {
             if (story.competition && selectedRound && group.name) {
                 groupInsertAction({
                     ...group,
                     close: false,
                     roundId: selectedRound._id,
+                    competitionId: story.competition._id,
                     sort: (groups || []).length > 0 ? groups[groups.length - 1].sort + 1 : 1
                 });
             }
@@ -162,7 +168,13 @@ export const RoundsController: FC = observer(() => {
         [groups, handleCloseDialog, selectedRound]
     );
     const handleEditGroup = useCallback(
-        (_id: string, group: Omit<IGroup, '_id' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'>) => {
+        (
+            _id: string,
+            group: Omit<
+                IGroup,
+                '_id' | 'competitionId' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'
+            >
+        ) => {
             if (story.competition && group.name) {
                 groupUpdateAction(_id, group);
             }

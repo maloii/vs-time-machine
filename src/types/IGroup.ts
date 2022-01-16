@@ -20,6 +20,7 @@ export interface IMembersGroup {
 export interface IGroup {
     _id: string;
     roundId: string;
+    competitionId: string;
     name: string;
     sort: number;
     selected: boolean;

@@ -4,6 +4,10 @@ const sportsmenFindByCompetitionId = (competitionId) => {
     return db.sportsman.find({ competitionId });
 };
 
+const sportsmanFindById = (_id) => {
+    return db.sportsman.findOne({ _id });
+};
+
 const sportsmanInsert = (sportsman) => {
     return db.sportsman.insert(sportsman);
 };
@@ -23,4 +27,4 @@ const sportsmanDelete = (_id) => {
     return db.sportsman.remove({ _id }, {});
 };
 
-module.exports = { sportsmenFindByCompetitionId, sportsmanInsert, sportsmanUpdate, sportsmanDelete };
+module.exports = { sportsmenFindByCompetitionId, sportsmanFindById, sportsmanInsert, sportsmanUpdate, sportsmanDelete };

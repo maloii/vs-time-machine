@@ -41,8 +41,21 @@ const getAllNameMembersInGroup = (group) => {
 const clearSearchTransponderInGroup = (group) => {
     return {
         ...group,
-        sportsmen: (group.sportsmen || []).map((item) => ({ ...item, searchTransponder: false })),
-        teams: (group.teams || []).map((item) => ({ ...item, searchTransponder: false, searchTeamSportsmenIds: [] }))
+        sportsmen: (group.sportsmen || []).map((item) => ({ ...item, searchTransponder: false, position: undefined })),
+        teams: (group.teams || []).map((item) => ({
+            ...item,
+            searchTransponder: false,
+            searchTeamSportsmenIds: [],
+            position: undefined
+        }))
+    };
+};
+
+const clearPositionInGroup = (group) => {
+    return {
+        ...group,
+        sportsmen: (group.sportsmen || []).map((item) => ({ ...item, position: undefined })),
+        teams: (group.teams || []).map((item) => ({ ...item, position: undefined }))
     };
 };
 
@@ -105,6 +118,7 @@ const findInMembersGroupSportsmanByTransponder = (membersGroup, transponder) => 
 module.exports = {
     getAllTranspondersAndColorInGroup,
     clearSearchTransponderInGroup,
+    clearPositionInGroup,
     searchAndMarkTransponderInGroup,
     isAllSearchedTransponderInGroup,
     findMembersGroupByTransponder,

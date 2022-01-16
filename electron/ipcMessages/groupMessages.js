@@ -4,7 +4,7 @@ const {
     groupInsert,
     groupUpdate,
     groupSelect,
-    groupDelete
+    groupDelete, groupFindById
 } = require('../repository/groupRepository');
 const { ipcMain } = require('electron');
 
@@ -19,6 +19,10 @@ ipcMain.handle('handle-load-groups-for-round-request', async (e, roundId) => {
 
 ipcMain.handle('handle-load-groups-for-rounds-request', async (e, roundIds) => {
     return groupsFindByRoundIds(roundIds);
+});
+
+ipcMain.handle('handle-load-group-by-id-request', async (e, _id) => {
+    return groupFindById(_id);
 });
 
 ipcMain.on('group-insert-request', async (e, group) => {

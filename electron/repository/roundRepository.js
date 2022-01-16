@@ -1,16 +1,12 @@
 const _ = require('lodash');
 const { db } = require('./repository');
-const { sportsmenFindByCompetitionId } = require('./sportsmanRepository');
-const { teamsFindByCompetitionId } = require('./teamRepository');
-const { competitionFindById } = require('./competitionRepository');
 const { competitionColorAndChannel } = require('../utils/competitionColorAndChannel');
-const { groupInsert, groupsFindByRoundId } = require('./groupRepository');
 
 const roundsFindByCompetitionId = async (competitionId) => {
     return db.round.find({ competitionId });
 };
 
-const roundsFindById = async (_id) => {
+const roundsFindById = (_id) => {
     return db.round.findOne({ _id });
 };
 
@@ -42,17 +38,18 @@ const roundInsert = async (competitionId, round) => {
 };
 
 const generateRandomGroups = async (round) => {
-    const competition = await competitionFindById(round.competitionId);
+    const competition = await db.competition.findOne({ _id: round.competitionId });
     if (competition) {
         Promise.all([
-            sportsmenFindByCompetitionId(round.competitionId),
-            teamsFindByCompetitionId(round.competitionId)
+            db.sportsman.find({ competitionId: round.competitionId }),
+            db.team.find({ competitionId: round.competitionId })
         ]).then(async ([resSportsmen, resTeams]) => {
             const sportsmen = _.shuffle((resSportsmen || []).filter((item) => item.selected));
             const teams = _.shuffle((resTeams || []).filter((item) => item.selected));
 
             let group = {
                 roundId: round._id,
+                competitionId: competition._id,
                 name: 'Group 1',
                 sort: 0,
                 selected: true,
@@ -64,9 +61,10 @@ const generateRandomGroups = async (round) => {
             if (sportsmen.length > 0) {
                 for (let i = 0; i < sportsmen.length; i++) {
                     if (i !== 0 && i % round.countSportsmen === 0) {
-                        await groupInsert(group);
+                        await db.group.insert(group);
                         group = {
                             roundId: round._id,
+                            competitionId: competition._id,
                             name: `Group ${group.sort + 2}`,
                             sort: group.sort + 1,
                             selected: false,
@@ -88,13 +86,14 @@ const generateRandomGroups = async (round) => {
                     });
                 }
                 if (group.sportsmen.length > 0) {
-                    await groupInsert(group);
+                    await db.group.insert(group);
                 }
             }
             if (teams.length > 0) {
                 if (sportsmen.length > 0) {
                     group = {
                         roundId: round._id,
+                        competitionId: competition._id,
                         name: `Group ${group.sort + 2}`,
                         sort: group.sort + 1,
                         selected: false,
@@ -106,9 +105,10 @@ const generateRandomGroups = async (round) => {
                 }
                 for (let i = 0; i < teams.length; i++) {
                     if (i !== 0 && i % round.countSportsmen === 0) {
-                        await groupInsert(group);
+                        await db.group.insert(group);
                         group = {
                             roundId: round._id,
+                            competitionId: competition._id,
                             name: `Group ${group.sort + 2}`,
                             sort: group.sort + 1,
                             selected: false,
@@ -130,7 +130,7 @@ const generateRandomGroups = async (round) => {
                     });
                 }
                 if (group.teams.length > 0) {
-                    await groupInsert(group);
+                    await db.group.insert(group);
                 }
             }
         });
@@ -138,7 +138,7 @@ const generateRandomGroups = async (round) => {
 };
 
 const generateGroupsFromBeforeRound = async (round) => {
-    return groupsFindByRoundId(round.fromRoundCopy).then((groups) => {
+    return db.group.find({ roundId: round.fromRoundCopy }).then((groups) => {
         groups.forEach(async (group) => {
             const newGroup = {
                 ...group,
@@ -155,7 +155,7 @@ const generateGroupsFromBeforeRound = async (round) => {
                     searchTeamSportsmenIds: undefined
                 }))
             };
-            await groupInsert(newGroup);
+            await db.group.insert(newGroup);
         });
     });
 };
