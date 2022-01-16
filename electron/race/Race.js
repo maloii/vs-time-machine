@@ -13,7 +13,8 @@ const {
     findMembersGroupByTransponder,
     findInMembersGroupSportsmanByTransponder,
     getAllNameMembersInGroup,
-    getNameMemberInGroup, clearPositionInGroup
+    getNameMemberInGroup,
+    clearPositionInGroup
 } = require('./groupUtils');
 const _ = require('lodash');
 const { sendToAllMessage } = require('../ipcMessages/sendMessage');

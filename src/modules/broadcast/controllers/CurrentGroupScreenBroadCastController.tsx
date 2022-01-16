@@ -4,7 +4,7 @@ import { StopWatch } from '@/modules/rounds/components/StopWatch/StopWatch';
 import { TableLaps } from '@/modules/rounds/components/TableLaps/TableLaps';
 import { story } from '@/story/story';
 import { getGroupInRaceAction, getRaceStatusAction, getStartTimeAction } from '@/actions/actionRaceRequest';
-import { loadGroupByIdAction, loadGroupsAction } from '@/actions/actionGroupRequest';
+import { loadGroupByIdAction } from '@/actions/actionGroupRequest';
 
 import styles from './styles.module.scss';
 import { IGroup } from '@/types/IGroup';

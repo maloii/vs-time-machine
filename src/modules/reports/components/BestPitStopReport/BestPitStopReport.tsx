@@ -48,6 +48,13 @@ export const BestPitStopReport: FC<IProps> = ({ report, rounds, teams, sportsmen
                         </TableRow>
                     ))}
                 </TableBody>
+                <tfoot>
+                    <tr>
+                        <td colSpan={6}>
+                            <div />
+                        </td>
+                    </tr>
+                </tfoot>
             </Table>
         </TableContainer>
     );

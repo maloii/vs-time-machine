@@ -1,3 +1,8 @@
+@page {
+  size: A4;
+  margin: 2mm 2mm 2mm 2mm;
+}
+
 .root {
   height: 100%;
 }
@@ -5,4 +10,58 @@
 .actions {
   display: flex;
   justify-content: flex-end;
+}
+
+.report {
+  overflow-x: visible;
+  tfoot {
+    display: none;
+  }
+  @media print {
+    tfoot {
+      display: table-footer-group;
+      div {
+        background: white;
+        width: calc(100% + 4px);
+        height: 35px;
+        margin: -2px;
+      }
+    }
+    table {
+      page-break-inside:auto;
+    }
+    tr {
+      page-break-inside:avoid;
+      page-break-after:auto
+    }
+  }
+}
+
+.title {
+  text-align: center;
+}
+
+.logo {
+  display: none;
+  @media print {
+    display: block;
+  }
+  padding: 24px 0 20px 24px;
+  img {
+    height: 60px;
+  }
+}
+
+.footerLogo {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  @media print {
+    display: flex;
+    justify-content: center;
+  }
+  img {
+    height: 20px;
+  }
 }

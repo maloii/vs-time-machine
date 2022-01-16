@@ -1,16 +1,17 @@
-import React, { FC, useCallback, useRef } from 'react';
+import React, { FC, useRef } from 'react';
 import { observer } from 'mobx-react';
-import html2canvas from 'html2canvas';
-import JsPDF from 'jspdf';
+import ReactToPrint, { PrintContextConsumer } from 'react-to-print';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
 import { story } from '@/story/story';
 import { IReport } from '@/types/IReport';
 import { TypeReport } from '@/types/TypeReport';
 import { BestLapReport } from '@/modules/reports/components/BestLapReport/BestLapReport';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import PrintIcon from '@mui/icons-material/Print';
 import { CountLapsReport } from '@/modules/reports/components/CountLapsReport/CountLapsReport';
 import { PositionSportsmenReport } from '@/modules/reports/components/PositionSportsmenReport/PositionSportsmenReport';
 import { BestPitStopReport } from '@/modules/reports/components/BestPitStopReport/BestPitStopReport';
+
+import styles from './styles.module.scss';
 
 interface IProps {
     open: boolean;
@@ -20,28 +21,17 @@ interface IProps {
 
 export const DialogReportController: FC<IProps> = observer(({ open, onClose, report }: IProps) => {
     const refReport = useRef<HTMLDivElement>(null);
-    const handleGeneratePDF = useCallback(() => {
-        if (refReport.current) {
-            html2canvas(refReport.current, { scale: 5 }).then((canvas) => {
-                let imgWidth = 208;
-                let imgHeight = (canvas.height * imgWidth) / canvas.width;
-                const imgData = canvas.toDataURL('img/png');
-                const pdf = new JsPDF('p', 'mm', 'a4');
-                pdf.addImage(imgData, 'PNG', 0, 5, imgWidth, imgHeight);
-                const pageSize = pdf.internal.pageSize;
-                const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
-
-                const footerLogo = window.api.getFilePath(window.api.DEFAULT_COMPETITION_LOGO);
-                pdf.addImage(footerLogo, 'PNG', 72, pageHeight - 15, 64, 10.6875);
-                pdf.save('download.pdf');
-            });
-        }
-    }, []);
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth={false}>
-            <div ref={refReport}>
-                <DialogTitle>{report.name}</DialogTitle>
+            <div ref={refReport} className={styles.report}>
+                <div className={styles.logo}>
+                    <img
+                        src={window.api.getFilePath(story.competition?.logo || window.api.DEFAULT_COMPETITION_LOGO)}
+                        alt="logo"
+                    />
+                </div>
+                <DialogTitle className={styles.title}>{report.name}</DialogTitle>
                 <DialogContent>
                     {report.type === TypeReport.BEST_LAP && (
                         <BestLapReport
@@ -71,11 +61,23 @@ export const DialogReportController: FC<IProps> = observer(({ open, onClose, rep
                         <PositionSportsmenReport report={report} sportsmen={story.sportsmen} teams={story.teams} />
                     )}
                 </DialogContent>
+                <footer className={styles.footerLogo}>
+                    <img
+                        src={window.api.getFilePath(story.competition?.logo || window.api.DEFAULT_COMPETITION_LOGO)}
+                        alt="logo"
+                    />
+                </footer>
             </div>
             <DialogActions>
-                <IconButton onClick={handleGeneratePDF}>
-                    <PictureAsPdfIcon />
-                </IconButton>
+                <ReactToPrint content={() => refReport.current}>
+                    <PrintContextConsumer>
+                        {({ handlePrint }) => (
+                            <IconButton onClick={handlePrint}>
+                                <PrintIcon />
+                            </IconButton>
+                        )}
+                    </PrintContextConsumer>
+                </ReactToPrint>
                 <Button onClick={onClose}>Close</Button>
             </DialogActions>
         </Dialog>
