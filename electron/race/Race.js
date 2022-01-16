@@ -103,7 +103,7 @@ class Race {
         if (this.timerStop) {
             clearInterval(this.timerStop);
         }
-        sendToAllMessage('race-status-message', this.raceStatus, this.selectedGroup);
+        this.sendRaceStatus();
     };
 
     search = async (group) => {
@@ -154,7 +154,7 @@ class Race {
                     this.lastTimePitStopEnd[membersGroup._id] = millisecond;
                     this.lastTimePitStopBegin[membersGroup._id] = undefined;
                 }
-                const count = await lapInsert({
+                const newLap = await lapInsert({
                     millisecond,
                     timeLap,
                     typeLap: gate?.type,
@@ -166,8 +166,8 @@ class Race {
                     sportsmanId: sportsman._id,
                     transponder
                 });
-                sendToAllMessage('group-update-response', count);
-                sound.play({ path: path.join(app.getPath('userData'), `/sounds/short_beep.wav`) });
+                sendToAllMessage('new-lap-update', newLap);
+                sound.play({ path: path.join(app.getPath('userData'), `/sounds/short_beep.mp3`) });
             }
         }
     };
@@ -218,11 +218,12 @@ class Race {
                 if (laps.length === 0 && round.typeStartRace === 'START_AFTER_FIRST_GATE') {
                     typeLap = 'START';
                 }
+
                 if (['OK', 'START', 'SKIP_FIRST_GATE'].includes(typeLap)) {
                     this.lastTimeLap[membersGroup._id] = millisecond;
-                    sound.play({ path: path.join(app.getPath('userData'), `/sounds/short_beep.wav`) });
+                    sound.play({ path: path.join(app.getPath('userData'), `/sounds/short_beep.mp3`) });
                 }
-                const count = await lapInsert({
+                const newLap = await lapInsert({
                     millisecond,
                     timeLap,
                     typeLap,
@@ -242,7 +243,7 @@ class Race {
                     }
                 }
 
-                sendToAllMessage('group-update-response', count);
+                sendToAllMessage('new-lap-update', newLap);
                 this.numberPackages.push(numberPackage);
             }
         }

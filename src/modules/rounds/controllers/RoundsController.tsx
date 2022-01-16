@@ -329,7 +329,11 @@ export const RoundsController: FC = observer(() => {
                                     >
                                         SEARCH
                                     </Button>
-                                    <StopWatch raceStatus={story.raceStatus} startTime={story.startTime} />
+                                    <StopWatch
+                                        round={selectedRound}
+                                        raceStatus={story.raceStatus}
+                                        startTime={story.startTime}
+                                    />
                                     <Button
                                         variant="contained"
                                         className={styles.invite}

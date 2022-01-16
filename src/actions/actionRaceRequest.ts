@@ -24,3 +24,7 @@ export const getStartTimeAction = (): Promise<number> => {
 export const getRaceStatusAction = (): Promise<TypeRaceStatus> => {
     return window.api.ipcRenderer.invoke('handle-race-status-request');
 };
+
+export const getGroupInRaceAction = (): Promise<IGroup> => {
+    return window.api.ipcRenderer.invoke('handle-group-in-race-request');
+};

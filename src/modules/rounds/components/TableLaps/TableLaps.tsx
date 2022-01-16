@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import cn from 'classnames';
 import _ from 'lodash';
 import { observer } from 'mobx-react';
@@ -27,14 +27,15 @@ import { ListAllLaps } from '@/modules/rounds/components/ListAllLaps/ListAllLaps
 
 import styles from './styles.module.scss';
 import { TypeStartRace } from '@/types/TypeStartRace';
-import { lapDeleteAction, lapUpdateAction } from '@/actions/actionLapRequest';
+import { lapDeleteAction, lapUpdateAction, loadLapsForGroupAction } from '@/actions/actionLapRequest';
 
 interface IProps {
     round: IRound;
     group: IGroup;
+    readonly?: boolean;
 }
 
-export const TableLaps: FC<IProps> = observer(({ round, group }: IProps) => {
+export const TableLaps: FC<IProps> = observer(({ round, group, readonly }: IProps) => {
     const [openLapsMember, setOpenLapsMember] = useState<string | undefined>(undefined);
     const laps = window.api.groupLapsByMemberGroup(_.cloneDeep(group), _.cloneDeep(story.laps));
     const groupWithPositions = window.api.positionCalculation(_.cloneDeep(round), _.cloneDeep(group), laps);
@@ -90,8 +91,14 @@ export const TableLaps: FC<IProps> = observer(({ round, group }: IProps) => {
     const handleDeleteLap = useCallback((id: string) => lapDeleteAction(id), []);
     const handleUpdateLap = useCallback((id: string, lap: Pick<ILap, 'typeLap'>) => lapUpdateAction(id, lap), []);
 
+    useEffect(() => {
+        window.api.ipcRenderer.removeAllListeners('new-lap-update');
+        window.api.ipcRenderer.on('new-lap-update', () => loadLapsForGroupAction(group));
+    }, [group]);
+
     const countLapsForMember = (id: string) =>
         ((story.laps || []).filter((lap: ILap) => lap.memberGroupId === id) || []).length;
+
     return (
         <TableContainer component={Paper} variant="outlined" className={styles.root}>
             <Table size="small">
@@ -103,9 +110,9 @@ export const TableLaps: FC<IProps> = observer(({ round, group }: IProps) => {
                                 <div className={styles.header}>
                                     <div>
                                         {item.sportsman ? (
-                                            <b>{`${sportsmanName(item?.sportsman!)} - ${(
-                                                item?.sportsman?.transponders || []
-                                            ).join(',')}`}</b>
+                                            <b>{`${sportsmanName(item?.sportsman!)}${
+                                                readonly ? '' : ` - ${(item?.sportsman?.transponders || []).join(',')}`
+                                            }`}</b>
                                         ) : (
                                             <Tooltip
                                                 title={
@@ -121,9 +128,13 @@ export const TableLaps: FC<IProps> = observer(({ round, group }: IProps) => {
                                                                         ).includes(sportsman._id)
                                                                     })}
                                                                 >
-                                                                    {`${sportsmanName(sportsman)} - ${(
-                                                                        sportsman.transponders || []
-                                                                    ).join(',')}`}
+                                                                    {`${sportsmanName(sportsman)}${
+                                                                        readonly
+                                                                            ? ''
+                                                                            : ` - ${(sportsman.transponders || []).join(
+                                                                                  ','
+                                                                              )}`
+                                                                    }`}
                                                                 </div>
                                                             ))}
                                                     </>
@@ -134,11 +145,13 @@ export const TableLaps: FC<IProps> = observer(({ round, group }: IProps) => {
                                             </Tooltip>
                                         )}
                                     </div>
-                                    <IconButton onClick={handleOpenAllLaps(item._id)}>
-                                        <Badge badgeContent={countLapsForMember(item._id)} color="secondary">
-                                            <ListIcon />
-                                        </Badge>
-                                    </IconButton>
+                                    {!readonly && (
+                                        <IconButton onClick={handleOpenAllLaps(item._id)}>
+                                            <Badge badgeContent={countLapsForMember(item._id)} color="secondary">
+                                                <ListIcon />
+                                            </Badge>
+                                        </IconButton>
+                                    )}
                                 </div>
                             </TableCell>
                         ))}

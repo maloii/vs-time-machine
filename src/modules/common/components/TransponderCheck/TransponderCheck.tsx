@@ -60,8 +60,8 @@ export const TransponderCheck: FC = () => {
                 </div>
                 <div className={styles.gateData}>{`Gate: ${gateNumber}`}</div>
                 <div className={styles.packData}>
-                    <div>{`Pack: ${numberPackage}`}</div>
-                    <div>{`Start: ${startNumber}`}</div>
+                    {numberPackage && <div>{`Pack: ${numberPackage}`}</div>}
+                    {startNumber && <div>{`Start: ${startNumber}`}</div>}
                 </div>
             </Paper>
         </div>

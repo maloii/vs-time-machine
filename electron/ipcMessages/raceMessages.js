@@ -24,3 +24,7 @@ ipcMain.handle('handle-race-start-time-request', async (e) => {
 ipcMain.handle('handle-race-status-request', async (e) => {
     return race.raceStatus;
 });
+
+ipcMain.handle('handle-group-in-race-request', async (e) => {
+    return race.selectedGroup;
+});
