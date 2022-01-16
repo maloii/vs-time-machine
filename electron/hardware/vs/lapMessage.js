@@ -1,4 +1,4 @@
-const { sendToAllMessage } = require("../../ipcMessages/sendMessage");
+const { sendToAllMessage } = require('../../ipcMessages/sendMessage');
 const NUMBER_PACKAGE = 0;
 const BASE_STATION_ID = 1;
 const TRANSPONDER_ID = 2;

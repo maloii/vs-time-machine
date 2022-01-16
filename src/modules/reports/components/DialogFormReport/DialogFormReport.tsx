@@ -96,7 +96,7 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
                             ))}
                         </Select>
                     </FormControl>
-                    {[TypeReport.BEST_LAP, TypeReport.COUNT_LAPS].includes(type) && (
+                    {[TypeReport.BEST_LAP, TypeReport.BEST_PIT_STOP, TypeReport.COUNT_LAPS].includes(type) && (
                         <FormControl fullWidth>
                             <InputLabel id="type-round-label">Type round</InputLabel>
                             <Select<TypeRoundReport>

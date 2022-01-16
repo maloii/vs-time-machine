@@ -3,5 +3,6 @@ export enum TypeLap {
     OUT_OF_SCORE = 'OUT_OF_SCORE', //wasted
     HIDDEN = 'HIDDEN',
     START = 'START',
-    SKIP_FIRST_GATE = 'SKIP_FIRST_GATE'
+    PIT_STOP_BEGIN = 'PIT_STOP_BEGIN',
+    PIT_STOP_END = 'PIT_STOP_END'
 }

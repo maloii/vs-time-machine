@@ -10,6 +10,7 @@ import { BestLapReport } from '@/modules/reports/components/BestLapReport/BestLa
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { CountLapsReport } from '@/modules/reports/components/CountLapsReport/CountLapsReport';
 import { PositionSportsmenReport } from '@/modules/reports/components/PositionSportsmenReport/PositionSportsmenReport';
+import { BestPitStopReport } from '@/modules/reports/components/BestPitStopReport/BestPitStopReport';
 
 interface IProps {
     open: boolean;
@@ -52,6 +53,14 @@ export const DialogReportController: FC<IProps> = observer(({ open, onClose, rep
                     )}
                     {report.type === TypeReport.COUNT_LAPS && (
                         <CountLapsReport
+                            report={report}
+                            rounds={story.rounds}
+                            sportsmen={story.sportsmen}
+                            teams={story.teams}
+                        />
+                    )}
+                    {report.type === TypeReport.BEST_PIT_STOP && (
+                        <BestPitStopReport
                             report={report}
                             rounds={story.rounds}
                             sportsmen={story.sportsmen}

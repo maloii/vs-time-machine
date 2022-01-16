@@ -32,6 +32,8 @@ class Race {
 
     numberPackages = [];
     lastTimeLap = {};
+    lastTimePitStopBegin = {};
+    lastTimePitStopEnd = {};
     timerSearch;
     timerStop;
 
@@ -80,6 +82,7 @@ class Race {
             }
 
             this.lastTimeLap = {};
+            this.lastTimePitStopBegin = {};
             (this.selectedGroup.sportsmen || []).forEach((membersGroup) => {
                 this.lastTimeLap[membersGroup._id] = this.startTime;
             });
@@ -123,6 +126,52 @@ class Race {
         }
     };
 
+    newGate = async (millisecond, transponder, gateNumber) => {
+        connector.setRace(this);
+        if (this.raceStatus === 'RUN') {
+            const membersGroup = findMembersGroupByTransponder(this.selectedGroup, transponder);
+            const sportsman = findInMembersGroupSportsmanByTransponder(membersGroup, transponder);
+            const competition = this.selectedGroup.competition || {};
+            const round = this.selectedGroup.round || {};
+            const gate = _.find(competition.gates, ['number', Number(gateNumber)]);
+            const gateDelay = gate.delay * 1000;
+            if (
+                ('PIT_STOP_BEGIN' === gate?.type &&
+                    ((gateDelay > 0 && gateDelay < millisecond - this.lastTimePitStopBegin[membersGroup._id]) ||
+                        gateDelay === 0 ||
+                        this.lastTimePitStopBegin[membersGroup._id] === undefined)) ||
+                ('PIT_STOP_END' === gate?.type &&
+                    ((gateDelay > 0 && gateDelay < millisecond - this.lastTimePitStopEnd[membersGroup._id]) ||
+                        gateDelay === 0 ||
+                        this.lastTimePitStopEnd[membersGroup._id] === undefined))
+            ) {
+                let timeLap = undefined;
+                if ('PIT_STOP_BEGIN' === gate?.type) {
+                    this.lastTimePitStopBegin[membersGroup._id] = millisecond;
+                    this.lastTimePitStopEnd[membersGroup._id] = undefined;
+                } else if ('PIT_STOP_END' === gate?.type && this.lastTimePitStopBegin[membersGroup._id]) {
+                    timeLap = millisecond - this.lastTimePitStopBegin[membersGroup._id];
+                    this.lastTimePitStopEnd[membersGroup._id] = millisecond;
+                    this.lastTimePitStopBegin[membersGroup._id] = undefined;
+                }
+                const count = await lapInsert({
+                    millisecond,
+                    timeLap,
+                    typeLap: gate?.type,
+                    competitionId: competition._id,
+                    roundId: round._id,
+                    groupId: this.selectedGroup._id,
+                    gateId: gate._id,
+                    memberGroupId: membersGroup._id,
+                    sportsmanId: sportsman._id,
+                    transponder
+                });
+                sendToAllMessage('group-update-response', count);
+                sound.play({ path: path.join(app.getPath('userData'), `/sounds/short_beep.wav`) });
+            }
+        }
+    };
+
     newLap = async (millisecond, transponder, numberPackage, gateNumber) => {
         connector.setRace(this);
         if (this.raceStatus === 'RUN' && !this.numberPackages.includes(numberPackage)) {
@@ -130,18 +179,14 @@ class Race {
             const sportsman = findInMembersGroupSportsmanByTransponder(membersGroup, transponder);
             const competition = this.selectedGroup.competition || {};
             const round = this.selectedGroup.round || {};
-            const gate = _.find(competition.gates, (gate) => {
-                if (gate.number === gateNumber) {
-                    return true;
-                }
-                return !gate.number && gate.type === 'FINISH';
-            });
-            if (membersGroup && gate) {
+            const gate = _.find(competition.gates, ['type', 'FINISH']);
+
+            if (membersGroup && gate?.type === 'FINISH') {
+                const laps = (await lapsFindByMemberGroupId(membersGroup._id, this.selectedGroup._id)) || [];
+                const okLaps = laps.filter((lap) => lap.typeLap === 'OK');
                 const timeLap = millisecond - this.lastTimeLap[membersGroup._id];
                 const gateDelay = gate.delay * 1000;
                 let typeLap = (gateDelay > 0 && gateDelay < timeLap) || gateDelay === 0 ? 'OK' : 'HIDDEN';
-                const laps = (await lapsFindByMemberGroupId(membersGroup._id, this.selectedGroup._id)) || [];
-                const okLaps = laps.filter((lap) => lap.typeLap === 'OK');
                 //Проверка если указано максимальное время гонки
                 if (round.maxTimeRace && Number(round.maxTimeRace) > 0) {
                     const maxTimeRace = Number(round.maxTimeRace) * 1000;

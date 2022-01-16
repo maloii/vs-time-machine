@@ -3,6 +3,7 @@ const { timeSynchOkMessage } = require('./timeSynchOkMessage');
 const { lapMessage } = require('./lapMessage');
 const { echoTransMessage } = require('./echoTransMessage');
 const { pingMessage } = require('./pingMessage');
+const { gateMessage } = require('./gateMessage');
 
 const parseMessage = (message, connector, race) => {
     if (!message || message.length < 3 || message.indexOf(':') < 0 || message.indexOf(',') < 0) return;
@@ -12,6 +13,8 @@ const parseMessage = (message, connector, race) => {
         if (crc8(message.slice(0, message.lastIndexOf(','))) === Number(arrDataMessage[arrDataMessage.length - 1])) {
             if (arrMessage[0] === 'lap') {
                 lapMessage(arrDataMessage, connector, race);
+            } else if (arrMessage[0] === 'gate') {
+                gateMessage(arrDataMessage, connector, race);
             } else if (arrMessage[0] === 'ping') {
                 pingMessage(arrDataMessage, connector, race);
             } else if (arrMessage[0] === 'timesynchok') {

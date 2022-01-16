@@ -66,7 +66,7 @@ export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, onDelete, onUpdat
             <TableRow>
                 <TableCell>{lap.position}</TableCell>
                 <TableCell>{DateTime.fromMillis(lap.millisecond).toFormat('dd.MM.yyyy hh:mm.ss')}</TableCell>
-                <TableCell>{millisecondsToTimeString(lap.timeLap)}</TableCell>
+                <TableCell>{lap.timeLap ? millisecondsToTimeString(lap.timeLap) : '--:--:---'}</TableCell>
                 <TableCell>{lap.typeLap}</TableCell>
                 <TableCell>
                     <div className={styles.actions}>
