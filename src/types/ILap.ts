@@ -1,4 +1,5 @@
 import { TypeLap } from './TypeLap';
+import { IGate } from '@/types/IGate';
 
 export interface ILap {
     _id: string;
@@ -13,4 +14,5 @@ export interface ILap {
     sportsmanId: string;
     transponder: string;
     position?: number;
+    gate?: IGate;
 }

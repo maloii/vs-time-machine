@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { ILap } from '@/types/ILap';
+import _ from 'lodash';
 import { DateTime } from 'luxon';
 import {
     Button,
@@ -17,31 +17,36 @@ import {
     TableRow
 } from '@mui/material';
 import { TypeLap } from '@/types/TypeLap';
+import { ILap } from '@/types/ILap';
 import { millisecondsToTimeString } from '@/utils/millisecondsToTimeString';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { DialogFormLap } from '@/modules/rounds/components/DialogFormLap/DialogFormLap';
 
 import styles from './styles.module.scss';
+import { IGate } from '@/types/IGate';
 
 interface IProps {
     open: boolean;
     onClose: () => void;
     laps: ILap[];
+    gates?: IGate[];
     onDelete: (id: string) => void;
     onUpdate: (_id: string, lap: Pick<ILap, 'typeLap'>) => void;
 }
 
-export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, onDelete, onUpdate }: IProps) => {
+export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, gates, onDelete, onUpdate }: IProps) => {
     const [editLap, setEditLap] = useState<ILap | undefined>(undefined);
 
     const lapsWithPos = useMemo<ILap[]>(() => {
         let pos = 1;
-        return (laps || []).map((lap) => {
-            if (lap.typeLap === TypeLap.OK) return { ...lap, position: pos++ };
-            return lap;
-        });
-    }, [laps]);
+        return (laps || [])
+            .map((lap) => {
+                if (lap.typeLap === TypeLap.OK) return { ...lap, position: pos++ };
+                return lap;
+            })
+            .map((lap) => ({ ...lap, gate: _.find(gates, ['_id', lap.gateId]) }));
+    }, [gates, laps]);
     const handleDelete = useCallback(
         (id: string) => () => {
             if (window.confirm('Are you sure you want to delete the lap?')) {
@@ -68,6 +73,7 @@ export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, onDelete, onUpdat
                 <TableCell>{DateTime.fromMillis(lap.millisecond).toFormat('dd.MM.yyyy hh:mm.ss')}</TableCell>
                 <TableCell>{lap.timeLap ? millisecondsToTimeString(lap.timeLap) : '--:--:---'}</TableCell>
                 <TableCell>{lap.typeLap}</TableCell>
+                <TableCell>{lap.gate?.number}</TableCell>
                 <TableCell>
                     <div className={styles.actions}>
                         <IconButton onClick={handleOpenEdit(lap)}>
@@ -95,6 +101,7 @@ export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, onDelete, onUpdat
                                     <TableCell>DateTime</TableCell>
                                     <TableCell>Time</TableCell>
                                     <TableCell>Type</TableCell>
+                                    <TableCell>Gate</TableCell>
                                     <TableCell />
                                 </TableRow>
                             </TableHead>

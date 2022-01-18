@@ -128,51 +128,7 @@ class Race {
         }
     };
 
-    newGate = async (millisecond, transponder, gateNumber) => {
-        connector.setRace(this);
-        if (this.raceStatus === 'RUN') {
-            const membersGroup = findMembersGroupByTransponder(this.selectedGroup, transponder);
-            const sportsman = findInMembersGroupSportsmanByTransponder(membersGroup, transponder);
-            const competition = this.selectedGroup.competition || {};
-            const round = this.selectedGroup.round || {};
-            const gate = _.find(competition.gates, ['number', Number(gateNumber)]);
-            const gateDelay = gate.delay * 1000;
-            if (
-                ('PIT_STOP_BEGIN' === gate?.type &&
-                    ((gateDelay > 0 && gateDelay < millisecond - this.lastTimePitStopBegin[membersGroup._id]) ||
-                        gateDelay === 0 ||
-                        this.lastTimePitStopBegin[membersGroup._id] === undefined)) ||
-                ('PIT_STOP_END' === gate?.type &&
-                    ((gateDelay > 0 && gateDelay < millisecond - this.lastTimePitStopEnd[membersGroup._id]) ||
-                        gateDelay === 0 ||
-                        this.lastTimePitStopEnd[membersGroup._id] === undefined))
-            ) {
-                let timeLap = undefined;
-                if ('PIT_STOP_BEGIN' === gate?.type) {
-                    this.lastTimePitStopBegin[membersGroup._id] = millisecond;
-                    this.lastTimePitStopEnd[membersGroup._id] = undefined;
-                } else if ('PIT_STOP_END' === gate?.type && this.lastTimePitStopBegin[membersGroup._id]) {
-                    timeLap = millisecond - this.lastTimePitStopBegin[membersGroup._id];
-                    this.lastTimePitStopEnd[membersGroup._id] = millisecond;
-                    this.lastTimePitStopBegin[membersGroup._id] = undefined;
-                }
-                const newLap = await lapInsert({
-                    millisecond,
-                    timeLap,
-                    typeLap: gate?.type,
-                    competitionId: competition._id,
-                    roundId: round._id,
-                    groupId: this.selectedGroup._id,
-                    gateId: gate._id,
-                    memberGroupId: membersGroup._id,
-                    sportsmanId: sportsman._id,
-                    transponder
-                });
-                sendToAllMessage('new-lap-update', newLap);
-                sound.play({ path: path.join(app.getPath('userData'), `/sounds/short_beep.mp3`) });
-            }
-        }
-    };
+    newGate = async (millisecond, transponder, gateNumber) => {};
 
     newLap = async (millisecond, transponder, numberPackage, gateNumber) => {
         connector.setRace(this);
@@ -181,7 +137,10 @@ class Race {
             const sportsman = findInMembersGroupSportsmanByTransponder(membersGroup, transponder);
             const competition = this.selectedGroup.competition || {};
             const round = this.selectedGroup.round || {};
-            const gate = _.find(competition.gates, ['type', 'FINISH']);
+            let gate = _.find(competition.gates, (gate) => gate.number === Number(gateNumber));
+            if (!gate) {
+                gate = _.find(competition.gates, (gate) => gate.type === 'FINISH');
+            }
 
             if (membersGroup && gate?.type === 'FINISH') {
                 const laps = (await lapsFindByMemberGroupId(membersGroup._id, this.selectedGroup._id)) || [];
@@ -223,7 +182,7 @@ class Race {
 
                 if (['OK', 'START', 'SKIP_FIRST_GATE'].includes(typeLap)) {
                     this.lastTimeLap[membersGroup._id] = millisecond;
-                    sound.play({ path: path.join(app.getPath('userData'), `/sounds/short_beep.mp3`) });
+                    // sound.play({ path: path.join(app.getPath('userData'), `/sounds/short_beep.mp3`) });
                 }
                 const newLap = await lapInsert({
                     millisecond,
@@ -250,6 +209,42 @@ class Race {
 
                 sendToAllMessage('new-lap-update', newLap);
                 this.numberPackages.push(numberPackage);
+            } else {
+                const gateDelay = gate.delay * 1000;
+                if (
+                    ('PIT_STOP_BEGIN' === gate?.type &&
+                        ((gateDelay > 0 && gateDelay < millisecond - this.lastTimePitStopBegin[membersGroup._id]) ||
+                            gateDelay === 0 ||
+                            this.lastTimePitStopBegin[membersGroup._id] === undefined)) ||
+                    ('PIT_STOP_END' === gate?.type &&
+                        ((gateDelay > 0 && gateDelay < millisecond - this.lastTimePitStopEnd[membersGroup._id]) ||
+                            gateDelay === 0 ||
+                            this.lastTimePitStopEnd[membersGroup._id] === undefined))
+                ) {
+                    let timeLap = undefined;
+                    if ('PIT_STOP_BEGIN' === gate?.type) {
+                        this.lastTimePitStopBegin[membersGroup._id] = millisecond;
+                        this.lastTimePitStopEnd[membersGroup._id] = undefined;
+                    } else if ('PIT_STOP_END' === gate?.type && this.lastTimePitStopBegin[membersGroup._id]) {
+                        timeLap = millisecond - this.lastTimePitStopBegin[membersGroup._id];
+                        this.lastTimePitStopEnd[membersGroup._id] = millisecond;
+                        this.lastTimePitStopBegin[membersGroup._id] = undefined;
+                    }
+                    const newLap = await lapInsert({
+                        millisecond,
+                        timeLap,
+                        typeLap: gate?.type,
+                        competitionId: competition._id,
+                        roundId: round._id,
+                        groupId: this.selectedGroup._id,
+                        gateId: gate._id,
+                        memberGroupId: membersGroup._id,
+                        sportsmanId: sportsman._id,
+                        transponder
+                    });
+                    sendToAllMessage('new-lap-update', newLap);
+                    // sound.play({ path: path.join(app.getPath('userData'), `/sounds/short_beep.mp3`) });
+                }
             }
         }
     };

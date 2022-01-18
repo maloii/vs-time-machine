@@ -24,10 +24,11 @@ import { sportsmanName } from '@/utils/sportsmanName';
 import { story } from '@/story/story';
 import { millisecondsToTimeString } from '@/utils/millisecondsToTimeString';
 import { ListAllLaps } from '@/modules/rounds/components/ListAllLaps/ListAllLaps';
-
-import styles from './styles.module.scss';
 import { TypeStartRace } from '@/types/TypeStartRace';
 import { lapDeleteAction, lapUpdateAction, loadLapsForGroupAction } from '@/actions/actionLapRequest';
+import { beep } from '@/utils/beep';
+
+import styles from './styles.module.scss';
 
 interface IProps {
     round: IRound;
@@ -93,7 +94,12 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly }: IProp
     useEffect(() => {
         if (group) loadLapsForGroupAction(group);
         window.api.ipcRenderer.removeAllListeners('new-lap-update');
-        window.api.ipcRenderer.on('new-lap-update', () => loadLapsForGroupAction(group));
+        window.api.ipcRenderer.on('new-lap-update', (e: any, newLap: ILap) => {
+            loadLapsForGroupAction(group);
+            if ([TypeLap.OK, TypeLap.START, TypeLap.PIT_STOP_END, TypeLap.PIT_STOP_BEGIN].includes(newLap.typeLap)) {
+                beep(20, 1000, 1, 'sine');
+            }
+        });
     }, [group]);
 
     const countLapsForMember = (id: string) =>
@@ -186,6 +192,7 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly }: IProp
                         (story.laps || []).filter((lap: ILap) => lap.memberGroupId === openLapsMember) || [],
                         ['millisecond']
                     )}
+                    gates={story.competition?.gates}
                     open={!!openLapsMember}
                     onClose={handleCloseAllLaps}
                     onDelete={handleDeleteLap}

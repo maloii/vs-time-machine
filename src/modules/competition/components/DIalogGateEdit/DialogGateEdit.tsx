@@ -99,12 +99,15 @@ export const DialogGateEdit: FC<IProps> = ({ open, onClose, gate, onSave, onUpda
     useEffect(() => {
         const newAvailableGates: string[] = Object.keys(TypeGate).filter((key) => {
             if (key === TypeGate.GATE.toString()) return key;
-            return !(gates || []).map((item) => item.type.toString()).includes(key);
+            return !(gates || [])
+                .filter((item) => gate?._id !== item._id)
+                .map((item) => item.type.toString())
+                .includes(key);
         });
         setAvailableGates(newAvailableGates);
         const newType = gate?.type || TypeGate[newAvailableGates[0] as keyof typeof TypeGate];
         setType(newType);
-    }, [gate?.number, gate?.type, gates]);
+    }, [gate?._id, gate?.number, gate?.type, gates]);
 
     const disabled = useMemo(() => {
         return type !== TypeGate.FINISH && !number;
