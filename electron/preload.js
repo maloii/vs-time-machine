@@ -24,7 +24,7 @@ const API = {
         invoke: (channel, ...data) => ipcRenderer.invoke(channel, ...data)
     },
     positionCalculation: (round, group, groupedLaps) => positionCalculation(round, group, groupedLaps),
-    groupLapsByMemberGroup: (group, laps) => groupLapsByMemberGroup(group, laps),
+    groupLapsByMemberGroup: (group, laps, withPitStop) => groupLapsByMemberGroup(group, laps, withPitStop),
     competitionColorAndChannel: (position, competition) => competitionColorAndChannel(position, competition)
 };
 

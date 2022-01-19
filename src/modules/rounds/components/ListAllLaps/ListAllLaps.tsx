@@ -90,7 +90,7 @@ export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, gates, onDelete, 
 
     return (
         <>
-            <Dialog open={open} onClose={onClose}>
+            <Dialog open={open} onClose={onClose} maxWidth={false}>
                 <DialogTitle>All laps</DialogTitle>
                 <DialogContent>
                     <TableContainer component={Paper} variant="outlined">

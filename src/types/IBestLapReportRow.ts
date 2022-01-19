@@ -5,7 +5,7 @@ export interface IBestLapReportRow {
     memberGroupId: string;
     team?: ITeam;
     sportsman?: ISportsman;
-    timeLap: number;
+    timeLap?: number;
     gap?: number;
     rel?: number;
     average: number;

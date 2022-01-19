@@ -29,7 +29,7 @@ export const calculateBestLPitStopReport = async (
                 memberGroupId,
                 team: _.find(teams, ['_id', memberGroupId]),
                 sportsman: _.find(sportsmen, ['_id', memberGroupId]),
-                timeLap: minLap?.timeLap || 0,
+                timeLap: minLap?.timeLap,
                 average
             };
         })
@@ -38,8 +38,8 @@ export const calculateBestLPitStopReport = async (
     if (resRows.length > 0) {
         resRows = resRows.map((row, indx) => ({
             ...row,
-            rel: indx > 0 ? row.timeLap - resRows[indx - 1].timeLap : undefined,
-            gap: indx > 0 ? row.timeLap - resRows[0].timeLap : undefined
+            rel: indx > 0 && row.timeLap ? row.timeLap - (resRows[indx - 1].timeLap || 0) : undefined,
+            gap: indx > 0 && row.timeLap ? row.timeLap - (resRows[0].timeLap || 0) : undefined
         }));
     }
     return resRows;

@@ -40,11 +40,17 @@ const positionCalculation = (round, group, groupedLaps) => {
     };
 };
 
-const groupLapsByMemberGroup = (group, laps) => {
+const groupLapsByMemberGroup = (group, laps, withPitStop = false) => {
     const groupedLaps = {};
     [...group.sportsmen, ...group.teams].forEach((item) => {
         groupedLaps[item._id] = _.sortBy(
-            (laps || []).filter((lap) => lap.memberGroupId === item._id && ['START', 'OK'].includes(lap.typeLap)),
+            (laps || []).filter(
+                (lap) =>
+                    lap.memberGroupId === item._id &&
+                    (withPitStop
+                        ? ['START', 'OK', 'PIT_STOP_END'].includes(lap.typeLap) && lap.timeLap
+                        : ['START', 'OK'].includes(lap.typeLap))
+            ),
             ['millisecond']
         );
     });

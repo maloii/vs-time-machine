@@ -18,3 +18,19 @@
   font-weight: bold;
   color: aquamarine;
 }
+.pitStop {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  color: rgb(25, 118, 210);
+  font-style: italic;
+  svg {
+    margin-right: 8px;
+  }
+}
+
+.rowPos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

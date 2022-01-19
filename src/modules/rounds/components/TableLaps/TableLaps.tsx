@@ -19,7 +19,9 @@ import {
     TableRow,
     Tooltip
 } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 import ListIcon from '@mui/icons-material/List';
+import ConstructionIcon from '@mui/icons-material/Construction';
 import { sportsmanName } from '@/utils/sportsmanName';
 import { story } from '@/story/story';
 import { millisecondsToTimeString } from '@/utils/millisecondsToTimeString';
@@ -29,27 +31,37 @@ import { lapDeleteAction, lapUpdateAction, loadLapsForGroupAction } from '@/acti
 import { beep } from '@/utils/beep';
 
 import styles from './styles.module.scss';
+import { TypeRaceStatus } from '@/types/TypeRaceStatus';
+import { matrixLapsWithPitStop } from '@/utils/matrixLapsWithPitStop';
 
 interface IProps {
     round: IRound;
     group: IGroup;
     readonly?: boolean;
+    raceStatus?: TypeRaceStatus;
 }
 
-export const TableLaps: FC<IProps> = observer(({ round, group, readonly }: IProps) => {
+export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceStatus }: IProps) => {
     const [openLapsMember, setOpenLapsMember] = useState<string | undefined>(undefined);
-    const laps = window.api.groupLapsByMemberGroup(_.cloneDeep(group), _.cloneDeep(story.laps));
+    const laps = matrixLapsWithPitStop(
+        window.api.groupLapsByMemberGroup(_.cloneDeep(group), _.cloneDeep(story.laps), true)
+    );
     const maxCountLap = [...group.sportsmen, ...group.teams].reduce(
         (count, item) => (laps[item._id].length > count ? laps[item._id].length : count),
         0
     );
 
-    const getPositionLap = (indx: number): number | string => {
-        if (round.typeStartRace === TypeStartRace.START_AFTER_FIRST_GATE) {
-            if (indx === 0) return '';
-            return indx;
+    let numLap = 0;
+    const getPositionLap = (indx: number): number | undefined => {
+        const isLap = Object.keys(laps).reduce(
+            (res, item) => res && (!laps[item]?.[indx] || laps[item]?.[indx]?.typeLap === TypeLap.OK),
+            true
+        );
+        if (isLap) {
+            numLap++;
+            return numLap;
         }
-        return indx + 1;
+        return undefined;
     };
 
     const Cell: FC<{ memberGroupId: string; indx: number }> = ({
@@ -60,20 +72,32 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly }: IProp
         indx: number;
     }) => {
         const lap = laps[memberGroupId][indx];
-        const minLap = _.minBy<ILap>(
-            laps[memberGroupId]?.filter((item: ILap) => item.typeLap === TypeLap.OK),
+        const minLap = _.minBy<ILap | undefined>(
+            laps[memberGroupId]?.filter((item: ILap | undefined) => !!item && item.typeLap === TypeLap.OK),
             'timeLap'
         );
         let textLap = '';
         if (lap?.typeLap === TypeLap.START) textLap = 'Start';
-        if (lap?.typeLap === TypeLap.OK) textLap = millisecondsToTimeString(lap.timeLap);
+        if (lap?.typeLap && [TypeLap.OK, TypeLap.PIT_STOP_END].includes(lap.typeLap))
+            textLap = millisecondsToTimeString(lap.timeLap);
         if (minLap && lap && minLap.timeLap === lap.timeLap)
             return (
                 <TableCell>
                     <b>{textLap}</b>
                 </TableCell>
             );
-        return <TableCell>{textLap}</TableCell>;
+        return (
+            <TableCell>
+                {lap?.typeLap === TypeLap.PIT_STOP_END ? (
+                    <div className={styles.pitStop}>
+                        {lap?.typeLap === TypeLap.PIT_STOP_END && <ConstructionIcon sx={{ fontSize: 16 }} />}
+                        {textLap}
+                    </div>
+                ) : (
+                    textLap
+                )}
+            </TableCell>
+        );
     };
 
     const membersGroup = [...group.sportsmen, ...group.teams];
@@ -168,7 +192,7 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly }: IProp
                         .fill(0)
                         .map((_, indx) => (
                             <TableRow key={indx}>
-                                <TableCell>{getPositionLap(indx)}</TableCell>
+                                <TableCell>{getPositionLap(indx) || ''}</TableCell>
                                 {membersGroup.map((item) => (
                                     <Cell key={item._id} memberGroupId={item._id} indx={indx} />
                                 ))}
@@ -180,7 +204,16 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly }: IProp
                         </TableCell>
                         {membersGroup.map((item) => (
                             <TableCell key={item._id}>
-                                <b>{item.position || 'DNS'}</b>
+                                <div className={styles.rowPos}>
+                                    <b>{item.position || 'DNS'}</b>
+                                    {!readonly &&
+                                        (!raceStatus ||
+                                            [TypeRaceStatus.READY, TypeRaceStatus.RUN].includes(raceStatus)) && (
+                                            <IconButton>
+                                                <EditIcon sx={{ fontSize: 16 }} />
+                                            </IconButton>
+                                        )}
+                                </div>
                             </TableCell>
                         ))}
                     </TableRow>
