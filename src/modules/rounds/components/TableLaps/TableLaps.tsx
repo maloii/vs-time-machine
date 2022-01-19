@@ -26,7 +26,6 @@ import { sportsmanName } from '@/utils/sportsmanName';
 import { story } from '@/story/story';
 import { millisecondsToTimeString } from '@/utils/millisecondsToTimeString';
 import { ListAllLaps } from '@/modules/rounds/components/ListAllLaps/ListAllLaps';
-import { TypeStartRace } from '@/types/TypeStartRace';
 import { lapDeleteAction, lapUpdateAction, loadLapsForGroupAction } from '@/actions/actionLapRequest';
 import { beep } from '@/utils/beep';
 
@@ -39,9 +38,10 @@ interface IProps {
     group: IGroup;
     readonly?: boolean;
     raceStatus?: TypeRaceStatus;
+    onChangePosition?: (id: string) => void;
 }
 
-export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceStatus }: IProps) => {
+export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceStatus, onChangePosition }: IProps) => {
     const [openLapsMember, setOpenLapsMember] = useState<string | undefined>(undefined);
     const laps = matrixLapsWithPitStop(
         window.api.groupLapsByMemberGroup(_.cloneDeep(group), _.cloneDeep(story.laps), true)
@@ -114,6 +114,10 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
 
     const handleDeleteLap = useCallback((id: string) => lapDeleteAction(id), []);
     const handleUpdateLap = useCallback((id: string, lap: Pick<ILap, 'typeLap'>) => lapUpdateAction(id, lap), []);
+    const handleChangePosition = useCallback(
+        () => onChangePosition && onChangePosition(group._id),
+        [onChangePosition, group]
+    );
 
     useEffect(() => {
         if (group) loadLapsForGroupAction(group);
@@ -185,6 +189,7 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
                                 </div>
                             </TableCell>
                         ))}
+                        {!readonly && <TableCell />}
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -196,6 +201,7 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
                                 {membersGroup.map((item) => (
                                     <Cell key={item._id} memberGroupId={item._id} indx={indx} />
                                 ))}
+                                {!readonly && <TableCell />}
                             </TableRow>
                         ))}
                     <TableRow>
@@ -204,18 +210,20 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
                         </TableCell>
                         {membersGroup.map((item) => (
                             <TableCell key={item._id}>
-                                <div className={styles.rowPos}>
-                                    <b>{item.position || 'DNS'}</b>
-                                    {!readonly &&
-                                        (!raceStatus ||
-                                            [TypeRaceStatus.READY, TypeRaceStatus.RUN].includes(raceStatus)) && (
-                                            <IconButton>
-                                                <EditIcon sx={{ fontSize: 16 }} />
-                                            </IconButton>
-                                        )}
-                                </div>
+                                <b>{item.position || 'DNS'}</b>
                             </TableCell>
                         ))}
+                        {!readonly && (
+                            <TableCell className={styles.actionPos}>
+                                {onChangePosition &&
+                                    (!raceStatus ||
+                                        ![TypeRaceStatus.READY, TypeRaceStatus.RUN].includes(raceStatus)) && (
+                                        <IconButton onClick={handleChangePosition}>
+                                            <EditIcon sx={{ fontSize: 16 }} />
+                                        </IconButton>
+                                    )}
+                            </TableCell>
+                        )}
                     </TableRow>
                 </TableBody>
             </Table>

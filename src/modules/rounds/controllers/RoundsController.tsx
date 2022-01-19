@@ -37,12 +37,14 @@ import { StopWatch } from '@/modules/rounds/components/StopWatch/StopWatch';
 import styles from './styles.module.scss';
 import { sportsmanName } from '@/utils/sportsmanName';
 import { ColorCss } from '@/types/Color';
+import { DialogChangePositionsInGroup } from '@/modules/rounds/components/DialogChangePositionsInGroup/DialogChangePositionsInGroup';
 
 export const RoundsController: FC = observer(() => {
     const [openDialogAddRound, setOpenDialogAddRound] = useState(false);
     const [openDialogEditRound, setOpenDialogEditRound] = useState(false);
     const [openDialogAddGroup, setOpenDialogAddGroup] = useState(false);
     const [openDialogEditGroup, setOpenDialogEditGroup] = useState<IGroup>();
+    const [openDialogChangePositions, setOpenDialogChangePositions] = useState<IGroup>();
 
     const sportsmen = _.sortBy(story.sportsmen, 'lastName');
     const teams = _.sortBy(story.teams, 'name');
@@ -94,9 +96,16 @@ export const RoundsController: FC = observer(() => {
     const handleOpenAddRound = useCallback(() => setOpenDialogAddRound(true), []);
     const handleOpenEditRound = useCallback(() => setOpenDialogEditRound(true), []);
     const handleOpenAddGroup = useCallback(() => setOpenDialogAddGroup(true), []);
+
     const handleOpenEditGroup = useCallback(
         (id: string) => {
             setOpenDialogEditGroup(_.find(groups, ['_id', id]));
+        },
+        [groups]
+    );
+    const handleOpenChangePositions = useCallback(
+        (id: string) => {
+            setOpenDialogChangePositions(_.find(groups, ['_id', id]));
         },
         [groups]
     );
@@ -105,6 +114,7 @@ export const RoundsController: FC = observer(() => {
         setOpenDialogAddRound(false);
         setOpenDialogEditRound(false);
         setOpenDialogAddGroup(false);
+        setOpenDialogChangePositions(undefined);
         setOpenDialogEditGroup(undefined);
     }, []);
 
@@ -364,7 +374,12 @@ export const RoundsController: FC = observer(() => {
                                         {raceReadyToStart ? 'START' : 'STOP'}
                                     </Button>
                                 </div>
-                                <TableLaps round={selectedRound} group={selectedGroup} raceStatus={story.raceStatus} />
+                                <TableLaps
+                                    round={selectedRound}
+                                    group={selectedGroup}
+                                    raceStatus={story.raceStatus}
+                                    onChangePosition={handleOpenChangePositions}
+                                />
                             </div>
                         )}
                     </Grid>
@@ -393,6 +408,14 @@ export const RoundsController: FC = observer(() => {
                     sportsmen={sportsmen}
                     teams={teams}
                     competition={story.competition!}
+                />
+            )}
+            {openDialogChangePositions && (
+                <DialogChangePositionsInGroup
+                    open={!!openDialogChangePositions}
+                    onClose={handleCloseDialog}
+                    onUpdate={handleEditGroup}
+                    group={openDialogChangePositions}
                 />
             )}
         </div>
