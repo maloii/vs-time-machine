@@ -53,6 +53,12 @@ export const CurrentGroupScreenBroadCastController: FC = observer(() => {
     return (
         <div className={styles.root}>
             <div className={styles.stopWatch}>
+                <div className={styles.logo}>
+                    <img
+                        src={window.api.getFilePath(story.competition?.logo || window.api.DEFAULT_COMPETITION_LOGO)}
+                        alt="logo"
+                    />
+                </div>
                 <StopWatch round={groupInRace?.round} raceStatus={raceStatus} startTime={startTime} />
             </div>
             <div className={styles.race}>

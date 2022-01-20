@@ -1,4 +1,6 @@
 .root {
+  max-height: calc(100% - 80px);
+  overflow-y: auto;
   th:not(:first-child), td:not(:first-child) {
     border-left: 1px solid rgba(224, 224, 224, 1);
   }
@@ -11,7 +13,7 @@
 }
 
 .searched {
-  background-color: aquamarine;
+  background-color: aquamarine !important;
 }
 
 .searchedTeamSportsmen {

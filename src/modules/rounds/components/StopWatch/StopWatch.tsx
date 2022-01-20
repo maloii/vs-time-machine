@@ -15,7 +15,6 @@ interface IProps {
 }
 
 export const StopWatch: FC<IProps> = observer(({ round, startTime, raceStatus }: IProps) => {
-    // const [timer, setTimer] = useState(0);
     const refTimer = useRef<NodeJS.Timeout>();
     const refTimeRace = useRef<HTMLSpanElement>(null);
     const refTimeLeft = useRef<HTMLSpanElement>(null);

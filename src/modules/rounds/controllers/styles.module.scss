@@ -11,6 +11,10 @@
   margin-top: 10px !important;
 }
 
+.containerRace {
+  height: 100%;
+}
+
 .groupsContainer {
   height: 100% !important;
   overflow-y: auto;
@@ -21,7 +25,9 @@
   justify-content: space-between;
   padding-left: 15px;
 }
-
+.race {
+  height: 100%;
+}
 .actionRace {
   display: flex;
   justify-content: center;

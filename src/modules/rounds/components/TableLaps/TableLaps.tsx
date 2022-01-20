@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
 import _ from 'lodash';
 import { observer } from 'mobx-react';
@@ -43,6 +43,7 @@ interface IProps {
 
 export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceStatus, onChangePosition }: IProps) => {
     const [openLapsMember, setOpenLapsMember] = useState<string | undefined>(undefined);
+    const refTableContainer = useRef<HTMLDivElement>(null);
     const laps = matrixLapsWithPitStop(
         window.api.groupLapsByMemberGroup(_.cloneDeep(group), _.cloneDeep(story.laps), true)
     );
@@ -127,6 +128,11 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
             if ([TypeLap.OK, TypeLap.START, TypeLap.PIT_STOP_END, TypeLap.PIT_STOP_BEGIN].includes(newLap.typeLap)) {
                 beep(20, 1000, 1, 'sine');
             }
+            setTimeout(() => {
+                if (refTableContainer.current) {
+                    refTableContainer.current.scrollTop = refTableContainer.current.scrollHeight;
+                }
+            }, 1);
         });
     }, [group]);
 
@@ -134,8 +140,8 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
         ((story.laps || []).filter((lap: ILap) => lap.memberGroupId === id) || []).length;
 
     return (
-        <TableContainer component={Paper} variant="outlined" className={styles.root}>
-            <Table size="small">
+        <TableContainer component={Paper} variant="outlined" className={styles.root} ref={refTableContainer}>
+            <Table size="small" stickyHeader>
                 <TableHead>
                     <TableRow>
                         <TableCell>Lap</TableCell>

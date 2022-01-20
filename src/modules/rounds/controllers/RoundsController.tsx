@@ -339,9 +339,9 @@ export const RoundsController: FC = observer(() => {
                             competition={story.competition!}
                         />
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={8} className={styles.containerRace}>
                         {selectedGroup && (
-                            <div>
+                            <div className={styles.race}>
                                 <div className={styles.actionRace}>
                                     <Button
                                         variant="contained"

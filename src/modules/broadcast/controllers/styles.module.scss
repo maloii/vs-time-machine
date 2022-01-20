@@ -1,13 +1,26 @@
 .root {
   padding: 25px;
+  height: 100%;
+  box-sizing: border-box;
 }
+
 .stopWatch {
   display: flex;
   justify-content: center;
 }
-.race {
 
+.logo {
+  position: absolute;
+  left: 0;
+  img {
+    height: 50px;
+  }
 }
+
+.race {
+  height: calc(100% - 30px);
+}
+
 .raceHeader {
 
 }
