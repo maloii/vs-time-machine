@@ -5,13 +5,13 @@ import { SportsmenController } from '@/modules/sportsmen/controllers/SportsmenCo
 import { RoundsController } from '@/modules/rounds/controllers/RoundsController';
 import { ReportsController } from '@/modules/reports/controllers/ReportsController';
 import { BroadCastController } from '@/modules/broadcast/controllers/BroadCastController';
-import { CurrentGroupScreenBroadCastController } from '@/modules/broadcast/controllers/CurrentGroupScreenBroadCastController';
+import { ScreenBroadCastController } from '@/modules/broadcast/controllers/ScreenBroadCastController';
 import { MainLayout } from '@/modules/common/components/MainLayout/MainLayout';
 
 export const Router: FC = observer(() => {
     const routers = (
         <Routes>
-            <Route path="/screen/current-group" element={<CurrentGroupScreenBroadCastController />} />
+            <Route path="/screen/:screenId" element={<ScreenBroadCastController />} />
             <Route
                 element={
                     <MainLayout>

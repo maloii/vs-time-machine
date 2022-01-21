@@ -1,20 +1,26 @@
 import React, { FC, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { StopWatch } from '@/modules/rounds/components/StopWatch/StopWatch';
 import { TableLaps } from '@/modules/rounds/components/TableLaps/TableLaps';
 import { story } from '@/story/story';
 import { getGroupInRaceAction, getRaceStatusAction, getStartTimeAction } from '@/actions/actionRaceRequest';
+import { loadBroadCastByIdAction } from '@/actions/actionBroadcastRequest';
 import { loadGroupByIdAction } from '@/actions/actionGroupRequest';
+import { IGroup } from '@/types/IGroup';
+import { IBroadCast } from '@/types/IBroadCast';
 
 import styles from './styles.module.scss';
-import { IGroup } from '@/types/IGroup';
 
-export const CurrentGroupScreenBroadCastController: FC = observer(() => {
+export const ScreenBroadCastController: FC = observer(() => {
+    const [broadCast, setBroadCast] = useState<IBroadCast>();
     const [startTime, setStartTime] = useState(story.startTime);
     const [raceStatus, setRaceStatus] = useState(story.raceStatus);
     const [groupInRace, setGroupInRace] = useState(story.groupInRace);
     const [group, setGroup] = useState<IGroup | undefined>();
     const [roundInRace, setRoundInRace] = useState(story.groupInRace?.round);
+
+    const params = useParams<{ screenId: string }>();
 
     useEffect(() => {
         Promise.all([getStartTimeAction(), getRaceStatusAction(), getGroupInRaceAction()]).then(
@@ -49,6 +55,11 @@ export const CurrentGroupScreenBroadCastController: FC = observer(() => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [groupInRace]);
+    useEffect(() => {
+        if (params.screenId) {
+            loadBroadCastByIdAction(params.screenId).then(setBroadCast);
+        }
+    }, [params.screenId]);
 
     return (
         <div className={styles.root}>
@@ -62,6 +73,7 @@ export const CurrentGroupScreenBroadCastController: FC = observer(() => {
                 <StopWatch round={groupInRace?.round} raceStatus={raceStatus} startTime={startTime} />
             </div>
             <div className={styles.race}>
+                {broadCast?.name}
                 {roundInRace && groupInRace && group && (
                     <>
                         <h2 className={styles.raceHeader}>{`${roundInRace.name} - ${groupInRace.name}`}</h2>

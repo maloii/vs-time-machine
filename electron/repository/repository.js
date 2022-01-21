@@ -16,7 +16,8 @@ const db = {
     round: dbFactory('round.db'),
     group: dbFactory('group.db'),
     lap: dbFactory('lap.db'),
-    report: dbFactory('report.db')
+    report: dbFactory('report.db'),
+    broadcast: dbFactory('broadcast.db')
 };
 
 db.competition.ensureIndex({ fieldName: 'selected' });
@@ -24,5 +25,8 @@ db.sportsman.ensureIndex({ fieldName: 'competitionId' });
 db.team.ensureIndex({ fieldName: 'competitionId' });
 db.round.ensureIndex({ fieldName: 'competitionId' });
 db.group.ensureIndex({ fieldName: 'roundId' });
+db.lap.ensureIndex({ fieldName: 'memberGroupId' });
+db.lap.ensureIndex({ fieldName: 'groupId' });
+db.lap.ensureIndex({ fieldName: 'roundId' });
 
 module.exports = { db };
