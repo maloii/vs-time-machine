@@ -16,6 +16,6 @@ export const teamUpdateAction = (
     window.api.ipcRenderer.send('team-update-request', _id, team);
 };
 
-export const teamDeleteAction = (_id: string): void => {
-    window.api.ipcRenderer.send('team-delete-request', _id);
+export const teamDeleteAction = (_id: string): Promise<number> => {
+    return window.api.ipcRenderer.invoke('team-delete-request', _id);
 };

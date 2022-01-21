@@ -16,7 +16,6 @@ ipcMain.on('team-update-request', async (e, _id, team) => {
     e.reply('team-update-response', count);
 });
 
-ipcMain.on('team-delete-request', async (e, _id) => {
-    const count = await teamDelete(_id);
-    e.reply('team-delete-response', count);
+ipcMain.handle('team-delete-request', async (e, _id) => {
+    return teamDelete(_id);
 });

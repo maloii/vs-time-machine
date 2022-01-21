@@ -94,8 +94,12 @@ export const SportsmenController: FC = observer(() => {
         (_id: string) => {
             if (story.competition) {
                 if (window.confirm('Are you sure you want to remove the sportsman?')) {
-                    sportsmanDeleteAction(_id);
-                    handleClose();
+                    sportsmanDeleteAction(_id)
+                        .then(() => {
+                            handleClose();
+                            loadSportsmenAction(story.competition!);
+                        })
+                        .catch((error) => window.alert(error));
                 }
             }
         },
@@ -129,8 +133,12 @@ export const SportsmenController: FC = observer(() => {
         (_id: string) => {
             if (story.competition) {
                 if (window.confirm('Are you sure you want to remove the team?')) {
-                    teamDeleteAction(_id);
-                    handleClose();
+                    teamDeleteAction(_id)
+                        .then(() => {
+                            handleClose();
+                            loadTeamsAction(story.competition!);
+                        })
+                        .catch((error) => window.alert(error));
                 }
             }
         },
@@ -139,16 +147,12 @@ export const SportsmenController: FC = observer(() => {
     useEffect(() => {
         window.api.ipcRenderer.removeAllListeners('team-insert-response');
         window.api.ipcRenderer.removeAllListeners('team-update-response');
-        window.api.ipcRenderer.removeAllListeners('team-delete-response');
         window.api.ipcRenderer.removeAllListeners('sportsman-insert-response');
         window.api.ipcRenderer.removeAllListeners('sportsman-update-response');
-        window.api.ipcRenderer.removeAllListeners('sportsman-delete-response');
         window.api.ipcRenderer.on('team-insert-response', () => loadTeamsAction(story.competition!));
         window.api.ipcRenderer.on('team-update-response', () => loadTeamsAction(story.competition!));
-        window.api.ipcRenderer.on('team-delete-response', () => loadTeamsAction(story.competition!));
         window.api.ipcRenderer.on('sportsman-insert-response', () => loadSportsmenAction(story.competition!));
         window.api.ipcRenderer.on('sportsman-update-response', () => loadSportsmenAction(story.competition!));
-        window.api.ipcRenderer.on('sportsman-delete-response', () => loadSportsmenAction(story.competition!));
     }, []);
     if (!story.competition) return null;
 

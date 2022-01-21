@@ -21,7 +21,6 @@ ipcMain.on('sportsman-update-request', async (e, _id, sportsman) => {
     e.reply('sportsman-update-response', count);
 });
 
-ipcMain.on('sportsman-delete-request', async (e, _id) => {
-    const count = await sportsmanDelete(_id);
-    e.reply('sportsman-delete-response', count);
+ipcMain.handle('sportsman-delete-request', async (e, _id) => {
+    return sportsmanDelete(_id);
 });

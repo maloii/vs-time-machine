@@ -16,6 +16,6 @@ export const sportsmanUpdateAction = (
     window.api.ipcRenderer.send('sportsman-update-request', _id, sportsman);
 };
 
-export const sportsmanDeleteAction = (_id: string): void => {
-    window.api.ipcRenderer.send('sportsman-delete-request', _id);
+export const sportsmanDeleteAction = (_id: string): Promise<number> => {
+    return window.api.ipcRenderer.invoke('sportsman-delete-request', _id);
 };

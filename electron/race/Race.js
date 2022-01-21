@@ -146,6 +146,7 @@ class Race {
                 const laps = (await lapsFindByMemberGroupId(membersGroup._id, this.selectedGroup._id)) || [];
                 const okLaps = laps.filter((lap) => lap.typeLap === 'OK');
                 const timeLap = millisecond - this.lastTimeLap[membersGroup._id];
+                this.lastTimePitStopBegin[membersGroup._id] = undefined;
                 const gateDelay = gate.delay * 1000;
                 let typeLap = (gateDelay > 0 && gateDelay < timeLap) || gateDelay === 0 ? 'OK' : 'HIDDEN';
                 //Проверка если указано максимальное время гонки
