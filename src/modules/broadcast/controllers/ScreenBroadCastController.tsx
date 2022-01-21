@@ -1,19 +1,26 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, ReactNode, useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import _ from 'lodash';
+import { v4 } from 'uuid';
 import { observer } from 'mobx-react';
 import { StopWatch } from '@/modules/rounds/components/StopWatch/StopWatch';
 import { TableLaps } from '@/modules/rounds/components/TableLaps/TableLaps';
 import { story } from '@/story/story';
 import { getGroupInRaceAction, getRaceStatusAction, getStartTimeAction } from '@/actions/actionRaceRequest';
-import { loadBroadCastByIdAction } from '@/actions/actionBroadcastRequest';
+import { handleLoadBroadCastByIdAction } from '@/actions/actionBroadcastRequest';
 import { loadGroupByIdAction } from '@/actions/actionGroupRequest';
 import { IGroup } from '@/types/IGroup';
 import { IBroadCast } from '@/types/IBroadCast';
+import { TypeBroadCastComponents } from '@/types/TypeBroadCastComponents';
+import { ContentReport } from '@/modules/reports/components/ContentReport/ContentReport';
+import { loadReportsAction } from '@/actions/actionReportRequest';
+import { loadCompetitionsAction } from '@/actions/actionCompetitionRequest';
 
 import styles from './styles.module.scss';
 
 export const ScreenBroadCastController: FC = observer(() => {
     const [broadCast, setBroadCast] = useState<IBroadCast>();
+
     const [startTime, setStartTime] = useState(story.startTime);
     const [raceStatus, setRaceStatus] = useState(story.raceStatus);
     const [groupInRace, setGroupInRace] = useState(story.groupInRace);
@@ -21,6 +28,46 @@ export const ScreenBroadCastController: FC = observer(() => {
     const [roundInRace, setRoundInRace] = useState(story.groupInRace?.round);
 
     const params = useParams<{ screenId: string }>();
+
+    const screenComponent = useCallback(
+        (idComponent?: string): ReactNode | null => {
+            if (idComponent === TypeBroadCastComponents.STOP_WATCH.toString()) {
+                return <StopWatch round={groupInRace?.round} raceStatus={raceStatus} startTime={startTime} />;
+            } else if (idComponent === TypeBroadCastComponents.CURRENT_GROUP.toString()) {
+                if (roundInRace && groupInRace && group) {
+                    return (
+                        <>
+                            <h2 className={styles.header}>{`${roundInRace.name} - ${groupInRace.name}`}</h2>
+                            <TableLaps round={roundInRace} group={group} readonly />
+                        </>
+                    );
+                }
+            } else if (idComponent) {
+                const report = _.find(story.reports, ['_id', idComponent]);
+                if (report)
+                    return (
+                        <>
+                            <h2 className={styles.header}>{report.name}</h2>
+                            <ContentReport key={v4()} report={report} />
+                        </>
+                    );
+            }
+            return null;
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [
+            group,
+            groupInRace,
+            raceStatus,
+            roundInRace,
+            startTime,
+            story.reports,
+            story.rounds,
+            story.sportsmen,
+            story.teams,
+            story.laps
+        ]
+    );
 
     useEffect(() => {
         Promise.all([getStartTimeAction(), getRaceStatusAction(), getGroupInRaceAction()]).then(
@@ -31,7 +78,7 @@ export const ScreenBroadCastController: FC = observer(() => {
                     setGroupInRace(resGroupInRace);
                     setGroup(await loadGroupByIdAction(resGroupInRace._id));
                 }
-                setRoundInRace(resGroupInRace.round);
+                setRoundInRace(resGroupInRace?.round);
             }
         );
     }, []);
@@ -55,32 +102,72 @@ export const ScreenBroadCastController: FC = observer(() => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [groupInRace]);
+
     useEffect(() => {
         if (params.screenId) {
-            loadBroadCastByIdAction(params.screenId).then(setBroadCast);
+            loadCompetitionsAction();
+            loadReportsAction();
+            loadReportsAction();
+            handleLoadBroadCastByIdAction(params.screenId).then(setBroadCast);
+            window.api.ipcRenderer.removeAllListeners('group-in-race');
+            window.api.ipcRenderer.removeAllListeners('report-insert-response');
+            window.api.ipcRenderer.removeAllListeners('report-update-response');
+            window.api.ipcRenderer.removeAllListeners('report-delete-response');
+            window.api.ipcRenderer.removeAllListeners('broadcast-insert-message');
+            window.api.ipcRenderer.removeAllListeners('broadcast-update-message');
+            window.api.ipcRenderer.removeAllListeners('broadcast-delete-message');
+            window.api.ipcRenderer.on('report-insert-response', () => loadReportsAction());
+            window.api.ipcRenderer.on('report-update-response', () => loadReportsAction());
+            window.api.ipcRenderer.on('report-delete-response', () => loadReportsAction());
+            window.api.ipcRenderer.on('broadcast-insert-message', () =>
+                handleLoadBroadCastByIdAction(params.screenId!).then(setBroadCast)
+            );
+            window.api.ipcRenderer.on('broadcast-update-message', () =>
+                handleLoadBroadCastByIdAction(params.screenId!).then(setBroadCast)
+            );
+            window.api.ipcRenderer.on('broadcast-delete-message', () =>
+                handleLoadBroadCastByIdAction(params.screenId!).then(setBroadCast)
+            );
+            window.api.ipcRenderer.on('group-in-race', async (e: any, group: IGroup) => {
+                setRoundInRace(group?.round);
+                setGroupInRace(group);
+                setGroup(await loadGroupByIdAction(group._id));
+            });
         }
     }, [params.screenId]);
 
     return (
-        <div className={styles.root}>
-            <div className={styles.stopWatch}>
+        <div className={styles.root} style={{ background: broadCast?.chromaKey }}>
+            <div className={styles.top}>
                 <div className={styles.logo}>
                     <img
                         src={window.api.getFilePath(story.competition?.logo || window.api.DEFAULT_COMPETITION_LOGO)}
                         alt="logo"
                     />
                 </div>
-                <StopWatch round={groupInRace?.round} raceStatus={raceStatus} startTime={startTime} />
+                {!!broadCast?.top && screenComponent(broadCast?.top)}
             </div>
-            <div className={styles.race}>
-                {broadCast?.name}
-                {roundInRace && groupInRace && group && (
-                    <>
-                        <h2 className={styles.raceHeader}>{`${roundInRace.name} - ${groupInRace.name}`}</h2>
-                        <TableLaps round={roundInRace} group={group} readonly />
-                    </>
+            <div className={styles.centerBlock}>
+                {(!!broadCast?.left || !!broadCast?.left2) && (
+                    <div className={styles.left}>
+                        {screenComponent(broadCast?.left)}
+                        {screenComponent(broadCast?.left2)}
+                    </div>
+                )}
+                {(!!broadCast?.center || !!broadCast?.center2) && (
+                    <div className={styles.center}>
+                        {screenComponent(broadCast?.center)}
+                        {screenComponent(broadCast?.center2)}
+                    </div>
+                )}
+                {(!!broadCast?.right || !!broadCast?.right2) && (
+                    <div className={styles.right}>
+                        {screenComponent(broadCast?.right)}
+                        {screenComponent(broadCast?.right2)}
+                    </div>
                 )}
             </div>
+            {!!broadCast?.bottom && <div className={styles.bottom}>{screenComponent(broadCast?.bottom)}</div>}
         </div>
     );
 });

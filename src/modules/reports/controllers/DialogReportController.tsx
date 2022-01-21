@@ -1,15 +1,12 @@
 import React, { FC, useRef } from 'react';
 import { observer } from 'mobx-react';
+import { v4 } from 'uuid';
 import ReactToPrint, { PrintContextConsumer } from 'react-to-print';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
+import PrintIcon from '@mui/icons-material/Print';
 import { story } from '@/story/story';
 import { IReport } from '@/types/IReport';
-import { TypeReport } from '@/types/TypeReport';
-import { BestLapReport } from '@/modules/reports/components/BestLapReport/BestLapReport';
-import PrintIcon from '@mui/icons-material/Print';
-import { CountLapsReport } from '@/modules/reports/components/CountLapsReport/CountLapsReport';
-import { PositionSportsmenReport } from '@/modules/reports/components/PositionSportsmenReport/PositionSportsmenReport';
-import { BestPitStopReport } from '@/modules/reports/components/BestPitStopReport/BestPitStopReport';
+import { ContentReport } from '@/modules/reports/components/ContentReport/ContentReport';
 
 import styles from './styles.module.scss';
 
@@ -33,33 +30,7 @@ export const DialogReportController: FC<IProps> = observer(({ open, onClose, rep
                 </div>
                 <DialogTitle className={styles.title}>{report.name}</DialogTitle>
                 <DialogContent>
-                    {report.type === TypeReport.BEST_LAP && (
-                        <BestLapReport
-                            report={report}
-                            rounds={story.rounds}
-                            sportsmen={story.sportsmen}
-                            teams={story.teams}
-                        />
-                    )}
-                    {report.type === TypeReport.COUNT_LAPS && (
-                        <CountLapsReport
-                            report={report}
-                            rounds={story.rounds}
-                            sportsmen={story.sportsmen}
-                            teams={story.teams}
-                        />
-                    )}
-                    {report.type === TypeReport.BEST_PIT_STOP && (
-                        <BestPitStopReport
-                            report={report}
-                            rounds={story.rounds}
-                            sportsmen={story.sportsmen}
-                            teams={story.teams}
-                        />
-                    )}
-                    {report.type === TypeReport.POSITION_SPORTSMEN && (
-                        <PositionSportsmenReport report={report} sportsmen={story.sportsmen} teams={story.teams} />
-                    )}
+                    <ContentReport key={v4()} report={report} />
                 </DialogContent>
                 <footer className={styles.footerLogo}>
                     <img src={window.api.getFilePath(window.api.DEFAULT_COMPETITION_LOGO)} alt="logo" />

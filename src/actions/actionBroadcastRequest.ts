@@ -4,22 +4,26 @@ export const openWindowBroadCastAction = (id: string): void => {
     window.api.ipcRenderer.send('open-window-broadcast-request', id);
 };
 
-export const loadBroadCastsAction = (): Promise<Array<IBroadCast>> => {
-    return window.api.ipcRenderer.invoke('load-broadcast-request');
+export const loadReportsAction = (): void => {
+    window.api.ipcRenderer.send('load-reports-request');
 };
 
-export const loadBroadCastByIdAction = (id: string): Promise<IBroadCast> => {
-    return window.api.ipcRenderer.invoke('load-broadcast-request-by-id', id);
+export const handleLoadBroadCastsAction = (): Promise<Array<IBroadCast>> => {
+    return window.api.ipcRenderer.invoke('handle-load-broadcast-request');
 };
 
-export const broadCastInsertAction = (broadCast: Omit<IBroadCast, '_id'>): Promise<IBroadCast> => {
-    return window.api.ipcRenderer.invoke('broadcast-insert-request', broadCast);
+export const handleLoadBroadCastByIdAction = (id: string): Promise<IBroadCast> => {
+    return window.api.ipcRenderer.invoke('handle-load-broadcast-request-by-id', id);
 };
 
-export const broadCastUpdateAction = (_id: string, broadCast: Omit<IBroadCast, '_id'>): Promise<number> => {
-    return window.api.ipcRenderer.invoke('broadcast-update-request', _id, broadCast);
+export const handleBroadCastInsertAction = (broadCast: Omit<IBroadCast, '_id'>): Promise<IBroadCast> => {
+    return window.api.ipcRenderer.invoke('handle-broadcast-insert-request', broadCast);
 };
 
-export const broadCastDeleteAction = (_id: string): Promise<number> => {
-    return window.api.ipcRenderer.invoke('broadcast-delete-request', _id);
+export const handleBroadCastUpdateAction = (_id: string, broadCast: Omit<IBroadCast, '_id'>): Promise<number> => {
+    return window.api.ipcRenderer.invoke('handle-broadcast-update-request', _id, broadCast);
+};
+
+export const handlebroadCastDeleteAction = (_id: string): Promise<number> => {
+    return window.api.ipcRenderer.invoke('handle-broadcast-delete-request', _id);
 };

@@ -9,6 +9,7 @@ import { TypeRaceStatus } from '@/types/TypeRaceStatus';
 import { ISerialPortStatus } from '@/types/ISerialPortStatus';
 import { IWlanStatus } from '@/types/IWlanStatus';
 import { IReport } from '@/types/IReport';
+import { IBroadCast } from '@/types/IBroadCast';
 
 export class Story {
     public competitions: Array<ICompetition> = [];
@@ -18,6 +19,7 @@ export class Story {
     public rounds: Array<IRound> = [];
     public groups: Array<IGroup> = [];
     public reports: Array<IReport> = [];
+    public broadCasts: Array<IBroadCast> = [];
     public laps: Array<ILap> = [];
     public raceStatus: TypeRaceStatus | undefined = undefined;
     public serialPortStatus: ISerialPortStatus | undefined = undefined;
@@ -56,6 +58,10 @@ export class Story {
 
     public setReports = (newReports: IReport[]): void => {
         this.reports = newReports;
+    };
+
+    public setBroadCasts = (newBroadCasts: IBroadCast[]): void => {
+        this.broadCasts = newBroadCasts;
     };
 
     public setLaps = (newLaps: ILap[]): void => {

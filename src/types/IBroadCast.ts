@@ -5,8 +5,11 @@ export interface IBroadCast {
     name: string;
     top: string;
     left: string;
+    left2: string;
     center: string;
+    center2: string;
     right: string;
+    right2: string;
     bottom: string;
     chromaKey: TypeChromaKey;
 }

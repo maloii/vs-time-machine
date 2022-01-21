@@ -4,9 +4,47 @@
   box-sizing: border-box;
 }
 
-.stopWatch {
+.top {
   display: flex;
   justify-content: center;
+}
+
+.centerBlock {
+  display: flex;
+  justify-content: space-between;
+  height: calc(100% - 30px);
+  & > div {
+    padding-right: 25px;
+  }
+  & > div:last-child {
+    padding-right: 0;
+  }
+}
+
+.left {
+  flex: 1;
+  margin-right: auto;
+  padding: 5px;
+}
+
+.center {
+  margin: 0 auto;
+  flex: 1;
+  padding: 5px;
+}
+
+.right {
+  flex: 1;
+  margin-left: auto;
+}
+
+.bottom {
+  display: flex;
+  justify-content: center;
+}
+
+.header {
+
 }
 
 .logo {
@@ -15,12 +53,4 @@
   img {
     height: 50px;
   }
-}
-
-.race {
-  height: calc(100% - 30px);
-}
-
-.raceHeader {
-
 }

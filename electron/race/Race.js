@@ -39,6 +39,8 @@ class Race {
     timerStop;
 
     invitation = async (group) => {
+        this.selectedGroup = group;
+        sendToAllMessage('group-in-race', this.selectedGroup);
         const text = `На старт приглашается ${group.name}. ${getAllNameMembersInGroup(group).join(', ')}`;
         speech(text);
     };

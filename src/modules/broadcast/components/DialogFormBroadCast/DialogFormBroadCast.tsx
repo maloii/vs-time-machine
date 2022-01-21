@@ -8,6 +8,7 @@ import {
     DialogTitle,
     FormControl,
     InputLabel,
+    ListSubheader,
     MenuItem,
     Select,
     TextField
@@ -16,6 +17,7 @@ import { IReport } from '@/types/IReport';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { IBroadCast } from '@/types/IBroadCast';
 import { TypeChromaKey } from '@/types/TypeChromaKey';
+import { TypeBroadCastComponents } from '@/types/TypeBroadCastComponents';
 
 interface IProps {
     open: boolean;
@@ -39,8 +41,11 @@ export const DialogFormBroadCast: FC<IProps> = ({
     const [name, setName] = useState(broadCast?.name);
     const [top, setTop] = useState(broadCast?.top);
     const [left, setLeft] = useState(broadCast?.left);
+    const [left2, setLeft2] = useState(broadCast?.left2);
     const [center, setCenter] = useState(broadCast?.center);
+    const [center2, setCenter2] = useState(broadCast?.center2);
     const [right, setRight] = useState(broadCast?.right);
+    const [right2, setRight2] = useState(broadCast?.right2);
     const [bottom, setBottom] = useState(broadCast?.bottom);
     const [chromaKey, setChromaKey] = useState(broadCast?.chromaKey || TypeChromaKey.NONE);
 
@@ -59,12 +64,24 @@ export const DialogFormBroadCast: FC<IProps> = ({
         setLeft(event.target.value);
     }, []);
 
+    const handleChangeLeft2 = useCallback((event: SelectChangeEvent) => {
+        setLeft2(event.target.value);
+    }, []);
+
     const handleChangeCenter = useCallback((event: SelectChangeEvent) => {
         setCenter(event.target.value);
     }, []);
 
+    const handleChangeCenter2 = useCallback((event: SelectChangeEvent) => {
+        setCenter2(event.target.value);
+    }, []);
+
     const handleChangeRight = useCallback((event: SelectChangeEvent) => {
         setRight(event.target.value);
+    }, []);
+
+    const handleChangeRight2 = useCallback((event: SelectChangeEvent) => {
+        setRight2(event.target.value);
     }, []);
 
     const handleChangeBottom = useCallback((event: SelectChangeEvent) => {
@@ -76,8 +93,11 @@ export const DialogFormBroadCast: FC<IProps> = ({
             name,
             top,
             left,
+            left2,
             center,
+            center2,
             right,
+            right2,
             bottom,
             chromaKey
         };
@@ -86,7 +106,7 @@ export const DialogFormBroadCast: FC<IProps> = ({
         } else {
             onSave(newBroadCast as IBroadCast);
         }
-    }, [name, top, left, center, right, bottom, chromaKey, broadCast?._id, onUpdate, onSave]);
+    }, [name, top, left, left2, center, center2, right, right2, bottom, chromaKey, broadCast?._id, onUpdate, onSave]);
 
     const handleDelete = useCallback(() => {
         if (broadCast) {
@@ -94,6 +114,30 @@ export const DialogFormBroadCast: FC<IProps> = ({
         }
     }, [onDelete, broadCast]);
 
+    const selectForPosition = (
+        title: string,
+        value: string | undefined,
+        onChange: (event: SelectChangeEvent) => void
+    ) => (
+        <FormControl fullWidth>
+            <InputLabel id="select-label">{title}</InputLabel>
+            <Select labelId="select-label" value={value} label={title} onChange={onChange}>
+                <MenuItem value={undefined}>NONE</MenuItem>
+                <ListSubheader>Screen</ListSubheader>
+                {Object.keys(TypeBroadCastComponents).map((key) => (
+                    <MenuItem key={key} value={key}>
+                        {key}
+                    </MenuItem>
+                ))}
+                <ListSubheader>Reports</ListSubheader>
+                {reports.map((report) => (
+                    <MenuItem key={report._id} value={report._id}>
+                        {report.name}
+                    </MenuItem>
+                ))}
+            </Select>
+        </FormControl>
+    );
     return (
         <Dialog open={open} onClose={onClose}>
             <DialogTitle>{broadCast ? 'Edit' : 'New'} broadcast</DialogTitle>
@@ -122,61 +166,14 @@ export const DialogFormBroadCast: FC<IProps> = ({
                             ))}
                         </Select>
                     </FormControl>
-                    <FormControl fullWidth>
-                        <InputLabel id="center-label">Center</InputLabel>
-                        <Select labelId="center-label" value={center} label="Center" onChange={handleChangeCenter}>
-                            <MenuItem value={undefined}>NONE</MenuItem>
-                            {reports.map((report) => (
-                                <MenuItem key={report._id} value={report._id}>
-                                    {report.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <FormControl fullWidth>
-                        <InputLabel id="left-label">Left</InputLabel>
-                        <Select labelId="left-label" value={left} label="Left" onChange={handleChangeLeft}>
-                            <MenuItem value={undefined}>NONE</MenuItem>
-                            {reports.map((report) => (
-                                <MenuItem key={report._id} value={report._id}>
-                                    {report.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <FormControl fullWidth>
-                        <InputLabel id="right-label">Right</InputLabel>
-                        <Select labelId="right-label" value={right} label="Right" onChange={handleChangeRight}>
-                            <MenuItem value={undefined}>NONE</MenuItem>
-                            {reports.map((report) => (
-                                <MenuItem key={report._id} value={report._id}>
-                                    {report.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <FormControl fullWidth>
-                        <InputLabel id="top-label">Top</InputLabel>
-                        <Select labelId="top-label" value={left} label="Top" onChange={handleChangeTop}>
-                            <MenuItem value={undefined}>NONE</MenuItem>
-                            {reports.map((report) => (
-                                <MenuItem key={report._id} value={report._id}>
-                                    {report.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <FormControl fullWidth>
-                        <InputLabel id="bottom-label">Bottom</InputLabel>
-                        <Select labelId="bottom-label" value={bottom} label="Bottom" onChange={handleChangeBottom}>
-                            <MenuItem value={undefined}>NONE</MenuItem>
-                            {reports.map((report) => (
-                                <MenuItem key={report._id} value={report._id}>
-                                    {report.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    {selectForPosition('Top', top, handleChangeTop)}
+                    {selectForPosition('Left', left, handleChangeLeft)}
+                    {selectForPosition('Left 2', left2, handleChangeLeft2)}
+                    {selectForPosition('Center', center, handleChangeCenter)}
+                    {selectForPosition('Center 2', center2, handleChangeCenter2)}
+                    {selectForPosition('Right', right, handleChangeRight)}
+                    {selectForPosition('Right 2', right2, handleChangeRight2)}
+                    {selectForPosition('Bottom', bottom, handleChangeBottom)}
                 </Box>
             </DialogContent>
             <DialogActions>

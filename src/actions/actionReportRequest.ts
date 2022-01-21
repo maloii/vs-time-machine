@@ -4,6 +4,10 @@ export const loadReportsAction = (): void => {
     window.api.ipcRenderer.send('load-reports-request');
 };
 
+export const handleLoadReportsAction = (): Promise<Array<IReport>> => {
+    return window.api.ipcRenderer.invoke('handle-load-reports-request');
+};
+
 export const reportInsertAction = (report: Omit<IReport, '_id'>): void => {
     window.api.ipcRenderer.send('report-insert-request', report);
 };

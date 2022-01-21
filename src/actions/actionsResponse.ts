@@ -14,6 +14,7 @@ import { ISerialPortStatus } from '@/types/ISerialPortStatus';
 import { IWlanStatus } from '@/types/IWlanStatus';
 import { IReport } from '@/types/IReport';
 import { loadReportsAction } from '@/actions/actionReportRequest';
+import { IBroadCast } from '@/types/IBroadCast';
 
 window.api.ipcRenderer.on('load-competitions-response', (e: any, competitions: ICompetition[]) => {
     story.setCompetitions(competitions);
@@ -45,6 +46,10 @@ window.api.ipcRenderer.on('load-groups-for-round-response', (e: any, groups: IGr
 
 window.api.ipcRenderer.on('load-reports-response', (e: any, reports: IReport[]) => {
     story.setReports(reports);
+});
+
+window.api.ipcRenderer.on('load-broadcast-response', (e: any, broadCasts: IBroadCast[]) => {
+    story.setBroadCasts(broadCasts);
 });
 
 window.api.ipcRenderer.on('load-laps-for-group-response', (e: any, laps: ILap[]) => {

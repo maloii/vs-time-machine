@@ -2,11 +2,11 @@ import React, { FC, useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Button } from '@mui/material';
 import {
-    loadBroadCastsAction,
+    handleLoadBroadCastsAction,
     openWindowBroadCastAction,
-    broadCastInsertAction,
-    broadCastUpdateAction,
-    broadCastDeleteAction
+    handleBroadCastInsertAction,
+    handleBroadCastUpdateAction,
+    handlebroadCastDeleteAction
 } from '@/actions/actionBroadcastRequest';
 import { IBroadCast } from '@/types/IBroadCast';
 import styles from '@/modules/reports/controllers/styles.module.scss';
@@ -31,11 +31,11 @@ export const BroadCastController: FC = observer(() => {
         setOpenDialogEditBroadCast(undefined);
     }, []);
 
-    const handleLoadBroadCasts = useCallback(() => loadBroadCastsAction().then(setBroadCasts), []);
+    const handleLoadBroadCasts = useCallback(() => handleLoadBroadCastsAction().then(setBroadCasts), []);
     const handleAdd = useCallback(
         async (broadCasts: Omit<IBroadCast, '_id'>) => {
             if (broadCasts.name) {
-                await broadCastInsertAction(broadCasts);
+                await handleBroadCastInsertAction(broadCasts);
                 await handleLoadBroadCasts();
                 handleCloseDialog();
             }
@@ -46,7 +46,7 @@ export const BroadCastController: FC = observer(() => {
     const handleEdit = useCallback(
         async (_id: string, broadCasts: Omit<IBroadCast, '_id'>) => {
             if (broadCasts.name) {
-                await broadCastUpdateAction(_id, broadCasts);
+                await handleBroadCastUpdateAction(_id, broadCasts);
                 await handleLoadBroadCasts();
                 handleCloseDialog();
             }
@@ -57,7 +57,7 @@ export const BroadCastController: FC = observer(() => {
     const handleDelete = useCallback(
         async (_id: string) => {
             if (window.confirm('Are you sure you want to delete the report?')) {
-                await broadCastDeleteAction(_id);
+                await handlebroadCastDeleteAction(_id);
                 await handleLoadBroadCasts();
                 handleCloseDialog();
             }

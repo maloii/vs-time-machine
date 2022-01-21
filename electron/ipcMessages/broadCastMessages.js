@@ -9,11 +9,12 @@ const {
     broadCastDelete,
     broadCastFindById
 } = require('../repository/broadCastRepository');
+const { sendToAllMessage } = require('./sendMessage');
 
 function createBroadCastWindow(id) {
     const screenWindow = new BrowserWindow({
-        width: 1024,
-        height: 1024,
+        width: 1920,
+        height: 1080,
         webPreferences: {
             preload: path.join(__dirname, '../preload.js'),
             contextIsolation: true
@@ -36,22 +37,30 @@ ipcMain.on('open-window-broadcast-request', (e, id) => {
     createBroadCastWindow(id);
 });
 
-ipcMain.handle('load-broadcast-request', (e) => {
+ipcMain.handle('load-broadcast-request', async (e) => {
+    const broadCasts = await broadCastFindAll();
+    e.reply('load-broadcast-response', broadCasts);
+});
+
+ipcMain.handle('handle-load-broadcast-request', (e) => {
     return broadCastFindAll();
 });
 
-ipcMain.handle('load-broadcast-request-by-id', (e, id) => {
+ipcMain.handle('handle-load-broadcast-request-by-id', (e, id) => {
     return broadCastFindById(id);
 });
 
-ipcMain.handle('broadcast-insert-request', (e, broadCast) => {
+ipcMain.handle('handle-broadcast-insert-request', (e, broadCast) => {
+    sendToAllMessage('broadcast-insert-message', 1);
     return broadCastInsert(broadCast);
 });
 
-ipcMain.handle('broadcast-update-request', (e, _id, broadCast) => {
+ipcMain.handle('handle-broadcast-update-request', (e, _id, broadCast) => {
+    sendToAllMessage('broadcast-update-message', 1);
     return broadCastUpdate(_id, broadCast);
 });
 
-ipcMain.handle('broadcast-delete-request', async (e, _id) => {
+ipcMain.handle('handle-broadcast-delete-request', async (e, _id) => {
+    sendToAllMessage('broadcast-delete-message', 1);
     return broadCastDelete(_id);
 });
