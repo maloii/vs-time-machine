@@ -1,6 +1,7 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import cn from 'classnames';
 import _ from 'lodash';
+import { DateTime } from 'luxon';
 import { observer } from 'mobx-react';
 import { IGroup } from '@/types/IGroup';
 import { TypeLap } from '@/types/TypeLap';
@@ -28,11 +29,11 @@ import { millisecondsToTimeString } from '@/utils/millisecondsToTimeString';
 import { ListAllLaps } from '@/modules/rounds/components/ListAllLaps/ListAllLaps';
 import { lapDeleteAction, lapInsertAction, lapUpdateAction, loadLapsForGroupAction } from '@/actions/actionLapRequest';
 import { beep } from '@/utils/beep';
-
-import styles from './styles.module.scss';
 import { TypeRaceStatus } from '@/types/TypeRaceStatus';
 import { matrixLapsWithPitStop } from '@/utils/matrixLapsWithPitStop';
-import { DateTime } from 'luxon';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+
+import styles from './styles.module.scss';
 
 interface IProps {
     round: IRound;
@@ -54,17 +55,24 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
     );
 
     let numLap = 0;
-    const getPositionLap = (indx: number): number | undefined => {
-        const isLap = Object.keys(laps).reduce(
-            (res, item) => res && (!laps[item]?.[indx] || laps[item]?.[indx]?.typeLap === TypeLap.OK),
-            true
-        );
-        if (isLap) {
-            numLap++;
-            return numLap;
-        }
-        return undefined;
-    };
+    const isLap = useCallback(
+        (indx: number): boolean =>
+            Object.keys(laps).reduce<boolean>(
+                (res, item) => res && (!laps[item]?.[indx] || laps[item]?.[indx]?.typeLap === TypeLap.OK),
+                true
+            ),
+        [laps]
+    );
+    const getPositionLap = useCallback(
+        (indx: number): number | undefined => {
+            if (isLap(indx)) {
+                numLap++;
+                return numLap;
+            }
+            return undefined;
+        },
+        [isLap, numLap]
+    );
 
     const Cell: FC<{ memberGroupId: string; indx: number }> = ({
         memberGroupId,
@@ -102,7 +110,7 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
         );
     };
 
-    const membersGroup = [...group.sportsmen, ...group.teams];
+    const membersGroup = useMemo(() => [...group.sportsmen, ...group.teams], [group.sportsmen, group.teams]);
     // Под вопросом, нужна ли сортировка группы по позиции.
     // .sort(
     //     (g1, g2) => (g1.position || 9999) - (g2.position || 9999)
@@ -154,6 +162,37 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
         () => onChangePosition && onChangePosition(group._id),
         [onChangePosition, group]
     );
+
+    const handleCopyGroupLaps = useCallback(() => {
+        //laps
+        const textGroupLaps = membersGroup
+            .map((item) => {
+                let nLap = 0;
+                return (
+                    item.team?.name ||
+                    sportsmanName(item?.sportsman!) +
+                        '\n' +
+                        laps?.[item._id]
+                            ?.map((lap, index) => {
+                                if (!lap?.timeLap) return undefined;
+                                let stringLap = '';
+                                if (isLap(index)) {
+                                    nLap++;
+                                    stringLap = `  ${nLap} - `;
+                                }
+                                if (lap?.typeLap === TypeLap.PIT_STOP_END) {
+                                    stringLap = '  🛠 - ';
+                                }
+                                stringLap += millisecondsToTimeString(lap?.timeLap);
+                                return stringLap;
+                            })
+                            .filter((item) => item !== undefined)
+                            .join('\n')
+                );
+            })
+            .join('\n');
+        navigator.clipboard.writeText(textGroupLaps).then(() => alert('Group laps copied to clipboard.'));
+    }, [isLap, laps, membersGroup]);
 
     useEffect(() => {
         if (group) loadLapsForGroupAction(group);
@@ -230,7 +269,15 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
                                 </div>
                             </TableCell>
                         ))}
-                        {!readonly && <TableCell />}
+                        {!readonly && (
+                            <TableCell>
+                                <Tooltip title="Copy group laps">
+                                    <IconButton onClick={handleCopyGroupLaps}>
+                                        <ContentCopyIcon sx={{ fontSize: 16 }} />
+                                    </IconButton>
+                                </Tooltip>
+                            </TableCell>
+                        )}
                     </TableRow>
                 </TableHead>
                 <TableBody>
