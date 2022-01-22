@@ -1,7 +1,6 @@
 import React, { FC, ReactNode, useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import _ from 'lodash';
-import { v4 } from 'uuid';
 import { observer } from 'mobx-react';
 import { StopWatch } from '@/modules/rounds/components/StopWatch/StopWatch';
 import { TableLaps } from '@/modules/rounds/components/TableLaps/TableLaps';
@@ -48,7 +47,7 @@ export const ScreenBroadCastController: FC = observer(() => {
                     return (
                         <>
                             <h2 className={styles.header}>{report.name}</h2>
-                            <ContentReport key={v4()} report={report} />
+                            <ContentReport report={report} />
                         </>
                     );
             }

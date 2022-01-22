@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
+import { observer } from 'mobx-react';
 import { IReport } from '@/types/IReport';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { IRound } from '@/types/IRound';
@@ -8,6 +9,7 @@ import { sportsmanName } from '@/utils/sportsmanName';
 import { millisecondsToTimeString } from '@/utils/millisecondsToTimeString';
 import { calculateBestLapReport } from '@/modules/reports/calculate/calculateBestLapReport';
 import { IBestLapReportRow } from '@/types/IBestLapReportRow';
+import { story } from '@/story/story';
 
 interface IProps {
     report: IReport;
@@ -16,12 +18,13 @@ interface IProps {
     sportsmen: ISportsman[];
 }
 
-export const BestLapReport: FC<IProps> = ({ report, rounds, teams, sportsmen }: IProps) => {
+export const BestLapReport: FC<IProps> = observer(({ report, rounds, teams, sportsmen }: IProps) => {
     const [rows, setRows] = useState<Array<IBestLapReportRow>>([]);
 
     useEffect(() => {
         calculateBestLapReport(report, rounds, teams, sportsmen).then(setRows);
-    }, [report, report.typeRound, rounds, sportsmen, teams]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [report, report.typeRound, rounds, sportsmen, teams, story.laps]);
 
     return (
         <TableContainer component={Paper} variant="outlined">
@@ -58,4 +61,4 @@ export const BestLapReport: FC<IProps> = ({ report, rounds, teams, sportsmen }: 
             </Table>
         </TableContainer>
     );
-};
+});
