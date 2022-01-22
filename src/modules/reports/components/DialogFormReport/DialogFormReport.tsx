@@ -35,6 +35,7 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
     const [typeRound, setTypeRound] = useState(report?.typeRound || TypeRoundReport.PRACTICE);
     const [notCountedRounds, setNotCountedRounds] = useState(report?.notCountedRounds || 1);
     const [onlySportsmen, setOnlySportsmen] = useState(report?.onlySportsmen || false);
+    const [count, setCount] = useState(report?.count || 0);
 
     const handleChangeName = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
@@ -51,6 +52,9 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
     const handleChangeOnlySportsmen = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setOnlySportsmen((prev) => !prev);
     }, []);
+    const handleChangeCount = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setCount(Number(event.target.value));
+    }, []);
 
     const handleSave = useCallback(() => {
         const newReport = {
@@ -58,14 +62,15 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
             type,
             typeRound,
             notCountedRounds,
-            onlySportsmen
+            onlySportsmen,
+            count
         };
         if (report?._id) {
             onUpdate(report?._id, _.cloneDeep(newReport));
         } else {
             onSave(newReport);
         }
-    }, [name, type, typeRound, notCountedRounds, onlySportsmen, report?._id, onUpdate, onSave]);
+    }, [count, name, type, typeRound, notCountedRounds, onlySportsmen, report?._id, onUpdate, onSave]);
 
     const handleDelete = useCallback(() => {
         if (report) {
@@ -128,6 +133,14 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
                             onChange={handleChangeNotCountedRounds}
                         />
                     )}
+                    <TextField
+                        fullWidth
+                        label="Top positions in the report"
+                        type="number"
+                        value={count}
+                        onChange={handleChangeCount}
+                        helperText="0 = no limit"
+                    />
                 </Box>
             </DialogContent>
             <DialogActions>

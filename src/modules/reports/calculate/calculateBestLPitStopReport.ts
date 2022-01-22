@@ -42,5 +42,8 @@ export const calculateBestLPitStopReport = async (
             gap: indx > 0 && row.timeLap ? row.timeLap - (resRows[0].timeLap || 0) : undefined
         }));
     }
+    if (report.count) {
+        return resRows.slice(0, report.count);
+    }
     return resRows;
 };

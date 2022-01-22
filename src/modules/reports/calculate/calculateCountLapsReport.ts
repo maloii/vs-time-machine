@@ -55,5 +55,9 @@ export const calculateCountLapsReport = async (
             gap: indx > 0 ? resRows[0].count - row.count : undefined
         }));
     }
+
+    if (report.count) {
+        return resRows.slice(0, report.count);
+    }
     return resRows;
 };

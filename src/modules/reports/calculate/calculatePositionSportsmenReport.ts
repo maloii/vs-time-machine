@@ -10,7 +10,7 @@ export const calculatePositionSportsmenReport = async (
     teams: ITeam[],
     sportsmen: ISportsman[]
 ): Promise<Array<IPositionSportsmenReport>> => {
-    return _.orderBy(
+    const resRows = _.orderBy(
         [
             ...(teams || [])
                 .filter((team) => team.selected)
@@ -33,4 +33,9 @@ export const calculatePositionSportsmenReport = async (
         ],
         'pos'
     );
+
+    if (report.count) {
+        return resRows.slice(0, report.count);
+    }
+    return resRows;
 };

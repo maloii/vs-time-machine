@@ -42,5 +42,9 @@ export const calculateBestLapReport = async (
             gap: indx > 0 ? row.timeLap - resRows[0].timeLap : undefined
         }));
     }
+
+    if (report.count) {
+        return resRows.slice(0, report.count);
+    }
     return resRows;
 };
