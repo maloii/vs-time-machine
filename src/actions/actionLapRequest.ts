@@ -18,8 +18,12 @@ export const loadLapsForRoundsAction = (rounds: IRound[]): Promise<Array<ILap>> 
     );
 };
 
-export const lapUpdateAction = (_id: string, lap: Pick<ILap, 'typeLap'>): void => {
+export const lapUpdateAction = (_id: string, lap: Pick<ILap, 'typeLap' | 'gateId' | 'timeLap'>): void => {
     window.api.ipcRenderer.send('lap-update-request', _id, lap);
+};
+
+export const lapInsertAction = (lap: Omit<ILap, '_id'>): void => {
+    window.api.ipcRenderer.send('lap-insert-request', lap);
 };
 
 export const lapDeleteAction = (_id: string): void => {

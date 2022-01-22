@@ -3,9 +3,11 @@ const {
     lapsFindByRoundId,
     lapsFindByRoundIds,
     lapUpdate,
-    lapDelete
+    lapDelete,
+    lapInsert
 } = require('../repository/lapRepository');
 const { ipcMain } = require('electron');
+const { sendToAllMessage } = require('./sendMessage');
 
 ipcMain.on('load-laps-for-group-request', async (e, groupId) => {
     const laps = await lapsFindByGroupId(groupId);
@@ -18,6 +20,11 @@ ipcMain.handle('handle-load-laps-for-round-request', async (event, roundId) => {
 
 ipcMain.handle('handle-load-laps-for-rounds-request', async (event, roundIds) => {
     return lapsFindByRoundIds(roundIds);
+});
+
+ipcMain.on('lap-insert-request', async (e, lap) => {
+    const newLap = await lapInsert(lap);
+    sendToAllMessage('new-lap-update', newLap);
 });
 
 ipcMain.on('lap-update-request', async (e, _id, lap) => {

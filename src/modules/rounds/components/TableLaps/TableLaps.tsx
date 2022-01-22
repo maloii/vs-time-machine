@@ -26,12 +26,13 @@ import { sportsmanName } from '@/utils/sportsmanName';
 import { story } from '@/story/story';
 import { millisecondsToTimeString } from '@/utils/millisecondsToTimeString';
 import { ListAllLaps } from '@/modules/rounds/components/ListAllLaps/ListAllLaps';
-import { lapDeleteAction, lapUpdateAction, loadLapsForGroupAction } from '@/actions/actionLapRequest';
+import { lapDeleteAction, lapInsertAction, lapUpdateAction, loadLapsForGroupAction } from '@/actions/actionLapRequest';
 import { beep } from '@/utils/beep';
 
 import styles from './styles.module.scss';
 import { TypeRaceStatus } from '@/types/TypeRaceStatus';
 import { matrixLapsWithPitStop } from '@/utils/matrixLapsWithPitStop';
+import { DateTime } from 'luxon';
 
 interface IProps {
     round: IRound;
@@ -114,7 +115,41 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
     }, []);
 
     const handleDeleteLap = useCallback((id: string) => lapDeleteAction(id), []);
-    const handleUpdateLap = useCallback((id: string, lap: Pick<ILap, 'typeLap'>) => lapUpdateAction(id, lap), []);
+    const handleUpdateLap = useCallback(
+        (id: string, lap: Pick<ILap, 'typeLap' | 'gateId' | 'timeLap'>) => lapUpdateAction(id, lap),
+        []
+    );
+    const handleAddLap = useCallback(
+        (
+            memberGroupId: string,
+            lap: Pick<ILap, 'typeLap' | 'gateId' | 'timeLap'>,
+            beforeLap?: ILap,
+            afterLap?: ILap
+        ) => {
+            const sportsman = _.find(group.sportsmen, ['_id', memberGroupId]);
+            const team = _.find(group.teams, ['_id', memberGroupId]);
+            let millisecond = DateTime.now().toMillis();
+            if (beforeLap) {
+                millisecond = beforeLap.millisecond - lap.timeLap;
+            } else if (afterLap) {
+                millisecond = afterLap.millisecond + lap.timeLap;
+            }
+            const sportsmanId = (sportsman ? sportsman?.sportsman?._id : team?.team?.sportsmenIds?.[0]) || '';
+            const newLap = {
+                ...lap,
+                millisecond,
+                competitionId: story?.competition?._id!,
+                roundId: round._id,
+                groupId: group._id,
+                memberGroupId,
+                sportsmanId,
+                transponder: 'missing'
+            };
+            lapInsertAction(newLap);
+        },
+        [group._id, group.sportsmen, group.teams, round._id]
+    );
+
     const handleChangePosition = useCallback(
         () => onChangePosition && onChangePosition(group._id),
         [onChangePosition, group]
@@ -240,10 +275,13 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
                         ['millisecond']
                     )}
                     gates={story.competition?.gates}
+                    sportsmen={story.sportsmen}
                     open={!!openLapsMember}
+                    memberGroupId={openLapsMember}
                     onClose={handleCloseAllLaps}
                     onDelete={handleDeleteLap}
                     onUpdate={handleUpdateLap}
+                    onAdd={handleAddLap}
                 />
             )}
         </TableContainer>

@@ -14,29 +14,56 @@ import {
     TableCell,
     TableContainer,
     TableHead,
-    TableRow
+    TableRow,
+    Tooltip
 } from '@mui/material';
 import { TypeLap } from '@/types/TypeLap';
 import { ILap } from '@/types/ILap';
+import { IGate } from '@/types/IGate';
 import { millisecondsToTimeString } from '@/utils/millisecondsToTimeString';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
+import { ISportsman } from '@/types/ISportsman';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { DialogFormLap } from '@/modules/rounds/components/DialogFormLap/DialogFormLap';
+import { sportsmanName } from '@/utils/sportsmanName';
 
 import styles from './styles.module.scss';
-import { IGate } from '@/types/IGate';
 
 interface IProps {
     open: boolean;
+    memberGroupId: string;
     onClose: () => void;
     laps: ILap[];
     gates?: IGate[];
+    sportsmen: ISportsman[];
     onDelete: (id: string) => void;
-    onUpdate: (_id: string, lap: Pick<ILap, 'typeLap'>) => void;
+    onUpdate: (_id: string, lap: Pick<ILap, 'typeLap' | 'gateId' | 'timeLap'>) => void;
+    onAdd: (
+        memberGroupId: string,
+        lap: Pick<ILap, 'typeLap' | 'gateId' | 'timeLap'>,
+        beforeLap?: ILap,
+        afterLap?: ILap
+    ) => void;
 }
 
-export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, gates, onDelete, onUpdate }: IProps) => {
+export const ListAllLaps: FC<IProps> = ({
+    open,
+    memberGroupId,
+    onClose,
+    laps,
+    gates,
+    sportsmen,
+    onDelete,
+    onUpdate,
+    onAdd
+}: IProps) => {
     const [editLap, setEditLap] = useState<ILap | undefined>(undefined);
+    const [openAddLap, setOpenAddLap] = useState(false);
+    const [beforeLap, setBeforeLap] = useState<ILap | undefined>(undefined);
+    const [afterLap, setAfterLap] = useState<ILap | undefined>(undefined);
 
     const lapsWithPos = useMemo<ILap[]>(() => {
         let pos = 1;
@@ -45,8 +72,10 @@ export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, gates, onDelete, 
                 if (lap.typeLap === TypeLap.OK) return { ...lap, position: pos++ };
                 return lap;
             })
-            .map((lap) => ({ ...lap, gate: _.find(gates, ['_id', lap.gateId]) }));
-    }, [gates, laps]);
+            .map((lap) => ({ ...lap, gate: _.find(gates, ['_id', lap.gateId]) }))
+            .map((lap) => ({ ...lap, sportsman: _.find(sportsmen, ['_id', lap.sportsmanId]) }));
+    }, [gates, laps, sportsmen]);
+
     const handleDelete = useCallback(
         (id: string) => () => {
             if (window.confirm('Are you sure you want to delete the lap?')) {
@@ -57,13 +86,47 @@ export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, gates, onDelete, 
         [onDelete]
     );
     const handleOpenEdit = useCallback((lap: ILap) => () => setEditLap(lap), [setEditLap]);
-    const handleCloseEdit = useCallback(() => setEditLap(undefined), [setEditLap]);
-    const handleSave = useCallback(
-        (id: string, lap: Pick<ILap, 'typeLap'>) => {
-            onUpdate(id, lap);
-            setEditLap(undefined);
+    const handleOpenAdd = useCallback(() => setOpenAddLap(true), []);
+    const handleOpenBeforeAdd = useCallback(
+        (lap: ILap) => () => {
+            setOpenAddLap(true);
+            setBeforeLap(lap);
         },
-        [onUpdate]
+        [setBeforeLap]
+    );
+    const handleOpenAfterAdd = useCallback(
+        (lap: ILap) => () => {
+            setOpenAddLap(true);
+            setAfterLap(lap);
+        },
+        [setAfterLap]
+    );
+    const handleCloseEdit = useCallback(() => {
+        setEditLap(undefined);
+        setBeforeLap(undefined);
+        setAfterLap(undefined);
+        setOpenAddLap(false);
+    }, [setEditLap]);
+
+    const handleSave = useCallback(
+        (id: string, lap: Pick<ILap, 'typeLap' | 'gateId' | 'timeLap'>) => {
+            onUpdate(id, lap);
+            handleCloseEdit();
+        },
+        [onUpdate, handleCloseEdit]
+    );
+
+    const handleAdd = useCallback(
+        (
+            memberGroupId: string,
+            lap: Pick<ILap, 'typeLap' | 'gateId' | 'timeLap'>,
+            beforeLap?: ILap,
+            afterLap?: ILap
+        ) => {
+            onAdd(memberGroupId, lap, beforeLap, afterLap);
+            handleCloseEdit();
+        },
+        [onAdd, handleCloseEdit]
     );
 
     const Row: FC<{ lap: ILap }> = ({ lap }: { lap: ILap }) => {
@@ -74,8 +137,20 @@ export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, gates, onDelete, 
                 <TableCell>{lap.timeLap ? millisecondsToTimeString(lap.timeLap) : '--:--:---'}</TableCell>
                 <TableCell>{lap.typeLap}</TableCell>
                 <TableCell>{lap.gate?.number}</TableCell>
+                <TableCell>{lap.transponder}</TableCell>
+                <TableCell>{sportsmanName(lap.sportsman!)}</TableCell>
                 <TableCell>
                     <div className={styles.actions}>
+                        <Tooltip title="Add lap after">
+                            <IconButton onClick={handleOpenAfterAdd(lap)}>
+                                <ArrowDownwardIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Add lap before">
+                            <IconButton onClick={handleOpenBeforeAdd(lap)}>
+                                <ArrowUpwardIcon />
+                            </IconButton>
+                        </Tooltip>
                         <IconButton onClick={handleOpenEdit(lap)}>
                             <EditIcon />
                         </IconButton>
@@ -93,6 +168,13 @@ export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, gates, onDelete, 
             <Dialog open={open} onClose={onClose} maxWidth={false}>
                 <DialogTitle>All laps</DialogTitle>
                 <DialogContent>
+                    {lapsWithPos?.length === 0 && (
+                        <div className={styles.add}>
+                            <Button color="primary" startIcon={<AddIcon />} onClick={handleOpenAdd}>
+                                Add lap
+                            </Button>
+                        </div>
+                    )}
                     <TableContainer component={Paper} variant="outlined">
                         <Table size="small">
                             <TableHead>
@@ -102,6 +184,8 @@ export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, gates, onDelete, 
                                     <TableCell>Time</TableCell>
                                     <TableCell>Type</TableCell>
                                     <TableCell>Gate</TableCell>
+                                    <TableCell>Transponder</TableCell>
+                                    <TableCell>Sportsman</TableCell>
                                     <TableCell />
                                 </TableRow>
                             </TableHead>
@@ -118,13 +202,18 @@ export const ListAllLaps: FC<IProps> = ({ open, onClose, laps, gates, onDelete, 
                 </DialogActions>
             </Dialog>
 
-            {!!editLap && (
+            {(!!editLap || openAddLap) && (
                 <DialogFormLap
+                    memberGroupId={memberGroupId}
                     lap={editLap}
-                    open={!!editLap}
+                    beforeLap={beforeLap}
+                    afterLap={afterLap}
+                    gates={gates || []}
+                    open={!!editLap || openAddLap}
                     onDelete={handleDelete}
                     onClose={handleCloseEdit}
                     onUpdate={handleSave}
+                    onAdd={handleAdd}
                 />
             )}
         </>
