@@ -55,7 +55,7 @@ const clearPositionInGroup = (group) => {
     return {
         ...group,
         sportsmen: (group.sportsmen || []).map((item) => ({ ...item, position: undefined })),
-        teams: (group.teams || []).map((item) => ({ ...item, position: undefined }))
+        teams: (group.teams || []).map((item) => ({ ..._.cloneDeep(item), position: undefined }))
     };
 };
 

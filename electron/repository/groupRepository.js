@@ -18,7 +18,7 @@ const groupFindById = (_id) => {
     return db.group.findOne({ _id }).then(async (group) => {
         const sportsmen = await db.sportsman.find({ competitionId: group.competitionId });
         const teams = await db.team.find({ competitionId: group.competitionId });
-        return {
+        const groupWithSportsman = {
             ...group,
             sportsmen: group.sportsmen
                 ?.map((item) => ({
@@ -26,15 +26,15 @@ const groupFindById = (_id) => {
                     sportsman: _.find(sportsmen, ['_id', item._id])
                 }))
                 .filter((item) => !!item.sportsman),
-            teams: await group.teams
-                ?.map(async (item) => ({
-                    ...item,
+            teams: group.teams
+                ?.map((item) => ({
+                    ..._.cloneDeep(item),
                     team: _.find(teams, ['_id', item._id])
                 }))
-                .map(async (item) => ({
-                    ...item,
+                .map((item) => ({
+                    ..._.cloneDeep(item),
                     team: {
-                        ...item.team,
+                        ..._.cloneDeep(item.team),
                         sportsmen: (item?.team?.sportsmenIds || []).map((sportsmanId) =>
                             _.find(sportsmen, ['_id', sportsmanId])
                         )
@@ -42,6 +42,7 @@ const groupFindById = (_id) => {
                 }))
                 .filter((item) => !!item.team)
         };
+        return groupWithSportsman;
     });
 };
 

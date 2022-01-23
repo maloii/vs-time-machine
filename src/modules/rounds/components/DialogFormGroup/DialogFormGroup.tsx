@@ -160,19 +160,21 @@ export const DialogFormGroup: FC<IProps> = ({
                             multiple
                             onChange={handleChangeSportsmenIds}
                         >
-                            {(sportsmen || []).map((sportsman) => (
-                                <MenuItem
-                                    key={sportsman._id}
-                                    value={sportsman._id}
-                                    selected={sportsmenMembers.map((item) => item._id).includes(sportsman._id)}
-                                >
-                                    {`${sportsman.lastName || ''}${
-                                        sportsman.firstName ? ` ${sportsman.firstName}` : ''
-                                    } ${sportsman.middleName ? ` ${sportsman.middleName}` : ''}${
-                                        sportsman.nick ? ` (${sportsman.nick})` : ''
-                                    }`}
-                                </MenuItem>
-                            ))}
+                            {(sportsmen || [])
+                                .filter((sportsman) => sportsman.selected)
+                                .map((sportsman) => (
+                                    <MenuItem
+                                        key={sportsman._id}
+                                        value={sportsman._id}
+                                        selected={sportsmenMembers.map((item) => item._id).includes(sportsman._id)}
+                                    >
+                                        {`${sportsman.lastName || ''}${
+                                            sportsman.firstName ? ` ${sportsman.firstName}` : ''
+                                        } ${sportsman.middleName ? ` ${sportsman.middleName}` : ''}${
+                                            sportsman.nick ? ` (${sportsman.nick})` : ''
+                                        }`}
+                                    </MenuItem>
+                                ))}
                         </Select>
                     </FormControl>
                     <FormControl fullWidth>
@@ -184,15 +186,17 @@ export const DialogFormGroup: FC<IProps> = ({
                             multiple
                             onChange={handleChangeTeamsIds}
                         >
-                            {(teams || []).map((team) => (
-                                <MenuItem
-                                    key={team._id}
-                                    value={team._id}
-                                    selected={teamsMembers.map((item) => item._id).includes(team._id)}
-                                >
-                                    {team.name}
-                                </MenuItem>
-                            ))}
+                            {(teams || [])
+                                .filter((teams) => teams.selected)
+                                .map((team) => (
+                                    <MenuItem
+                                        key={team._id}
+                                        value={team._id}
+                                        selected={teamsMembers.map((item) => item._id).includes(team._id)}
+                                    >
+                                        {team.name}
+                                    </MenuItem>
+                                ))}
                         </Select>
                     </FormControl>
                 </Box>
