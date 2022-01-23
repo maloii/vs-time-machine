@@ -1,10 +1,12 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const isDev = require('electron-is-dev');
+const stayAwake = require('stay-awake');
 const { init } = require('./init');
 require('./ipcMessages');
 
 function createWindow() {
+    stayAwake.prevent();
     const mainWindow = new BrowserWindow({
         width: 1920,
         height: 1080,
@@ -34,5 +36,6 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', function () {
+    stayAwake.allow();
     app.quit();
 });
