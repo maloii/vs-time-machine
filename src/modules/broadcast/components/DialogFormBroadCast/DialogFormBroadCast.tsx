@@ -7,10 +7,12 @@ import {
     DialogContent,
     DialogTitle,
     FormControl,
+    FormControlLabel,
     InputLabel,
     ListSubheader,
     MenuItem,
     Select,
+    Switch,
     TextField
 } from '@mui/material';
 import { IReport } from '@/types/IReport';
@@ -39,6 +41,7 @@ export const DialogFormBroadCast: FC<IProps> = ({
     broadCast
 }: IProps) => {
     const [name, setName] = useState(broadCast?.name);
+    const [showMainLogo, setShowMainLogo] = useState(broadCast?.showMainLogo || false);
     const [top, setTop] = useState(broadCast?.top);
     const [left, setLeft] = useState(broadCast?.left);
     const [left2, setLeft2] = useState(broadCast?.left2);
@@ -51,6 +54,9 @@ export const DialogFormBroadCast: FC<IProps> = ({
 
     const handleChangeName = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
+    }, []);
+    const handleChangeShowMainLogo = useCallback((_event: React.ChangeEvent<HTMLInputElement>) => {
+        setShowMainLogo((prev) => !prev);
     }, []);
     const handleChangeChromaKey = useCallback((event: SelectChangeEvent<TypeChromaKey>) => {
         setChromaKey(event.target.value as TypeChromaKey);
@@ -91,6 +97,7 @@ export const DialogFormBroadCast: FC<IProps> = ({
     const handleSave = useCallback(() => {
         const newBroadCast = {
             name,
+            showMainLogo,
             top,
             left,
             left2,
@@ -106,7 +113,22 @@ export const DialogFormBroadCast: FC<IProps> = ({
         } else {
             onSave(newBroadCast as IBroadCast);
         }
-    }, [name, top, left, left2, center, center2, right, right2, bottom, chromaKey, broadCast?._id, onUpdate, onSave]);
+    }, [
+        name,
+        showMainLogo,
+        top,
+        left,
+        left2,
+        center,
+        center2,
+        right,
+        right2,
+        bottom,
+        chromaKey,
+        broadCast?._id,
+        onUpdate,
+        onSave
+    ]);
 
     const handleDelete = useCallback(() => {
         if (broadCast) {
@@ -151,6 +173,10 @@ export const DialogFormBroadCast: FC<IProps> = ({
                     autoComplete="off"
                 >
                     <TextField fullWidth label="Name" error={!name} value={name} onChange={handleChangeName} />
+                    <FormControlLabel
+                        control={<Switch checked={showMainLogo} onChange={handleChangeShowMainLogo} />}
+                        label="Show main logo"
+                    />
                     <FormControl fullWidth>
                         <InputLabel id="chroma-key-label">Chroma key</InputLabel>
                         <Select<TypeChromaKey>

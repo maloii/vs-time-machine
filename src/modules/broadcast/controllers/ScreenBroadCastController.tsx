@@ -136,15 +136,21 @@ export const ScreenBroadCastController: FC = observer(() => {
 
     return (
         <div className={styles.root} style={{ background: broadCast?.chromaKey }}>
-            <div className={styles.top}>
-                <div className={styles.logo}>
-                    <img
-                        src={window.api.getFilePath(story.competition?.logo || window.api.DEFAULT_COMPETITION_LOGO)}
-                        alt="logo"
-                    />
+            {(broadCast?.showMainLogo || !!broadCast?.top) && (
+                <div className={styles.top}>
+                    {broadCast?.showMainLogo && (
+                        <div className={styles.logo}>
+                            <img
+                                src={window.api.getFilePath(
+                                    story.competition?.logo || window.api.DEFAULT_COMPETITION_LOGO
+                                )}
+                                alt="logo"
+                            />
+                        </div>
+                    )}
+                    {!!broadCast?.top && screenComponent(broadCast?.top)}
                 </div>
-                {!!broadCast?.top && screenComponent(broadCast?.top)}
-            </div>
+            )}
             <div className={styles.centerBlock}>
                 {(!!broadCast?.left || !!broadCast?.left2) && (
                     <div className={styles.left}>

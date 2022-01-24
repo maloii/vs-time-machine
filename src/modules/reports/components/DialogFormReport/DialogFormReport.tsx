@@ -50,10 +50,10 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
     const handleChangeNotCountedRounds = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setNotCountedRounds(Number(event.target.value));
     }, []);
-    const handleChangeOnlySportsmen = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeOnlySportsmen = useCallback((_event: React.ChangeEvent<HTMLInputElement>) => {
         setOnlySportsmen((prev) => !prev);
     }, []);
-    const handleChangeSimplified = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeSimplified = useCallback((_event: React.ChangeEvent<HTMLInputElement>) => {
         setSimplified((prev) => !prev);
     }, []);
     const handleChangeCount = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
