@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { observer } from 'mobx-react';
 import { StopWatch } from '@/modules/rounds/components/StopWatch/StopWatch';
 import { TableLaps } from '@/modules/rounds/components/TableLaps/TableLaps';
+import { TakeOffArea } from '@/modules/broadcast/components/TakeOffArea/TakeOffArea';
 import { story } from '@/story/story';
 import { getGroupInRaceAction, getRaceStatusAction, getStartTimeAction } from '@/actions/actionRaceRequest';
 import { handleLoadBroadCastByIdAction } from '@/actions/actionBroadcastRequest';
@@ -40,6 +41,10 @@ export const ScreenBroadCastController: FC = observer(() => {
                             <TableLaps round={roundInRace} group={group} readonly />
                         </>
                     );
+                }
+            } else if (idComponent === TypeBroadCastComponents.TAKE_OFF_AREA.toString()) {
+                if (roundInRace && group) {
+                    return <TakeOffArea round={roundInRace} group={group} raceStatus={raceStatus} />;
                 }
             } else if (idComponent) {
                 const report = _.find(story.reports, ['_id', idComponent]);
@@ -126,10 +131,10 @@ export const ScreenBroadCastController: FC = observer(() => {
             window.api.ipcRenderer.on('broadcast-delete-message', () =>
                 handleLoadBroadCastByIdAction(params.screenId!).then(setBroadCast)
             );
-            window.api.ipcRenderer.on('group-in-race', async (e: any, group: IGroup) => {
-                setRoundInRace(group?.round);
-                setGroupInRace(group);
-                setGroup(await loadGroupByIdAction(group._id));
+            window.api.ipcRenderer.on('group-in-race', async (e: any, newGroup: IGroup) => {
+                setRoundInRace(newGroup?.round);
+                setGroupInRace(newGroup);
+                setGroup(await loadGroupByIdAction(newGroup._id));
             });
         }
     }, [params.screenId]);

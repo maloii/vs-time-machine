@@ -98,7 +98,7 @@ export const TableSportsmen: FC<IProps> = observer(({ sportsmen, onUpdate, onDel
                 const photo = String(params.getValue(params.id, 'photo'));
                 return [
                     <Avatar
-                        alt="Remy Sharp"
+                        alt="Photo"
                         src={!!photo && photo !== window.api.DEFAULT_PHOTO ? window.api.getFilePath(photo) : undefined}
                     />
                 ];

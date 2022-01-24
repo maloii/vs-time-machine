@@ -118,6 +118,7 @@ class Race {
 
             this.selectedGroup = clearSearchTransponderInGroup(group);
             const count = await groupUpdate(this.selectedGroup._id, this.selectedGroup);
+            sendToAllMessage('group-in-race', this.selectedGroup);
             sendToAllMessage('group-update-response', count);
             this.timerSearch = setInterval(() => {
                 const transponders = getAllTranspondersAndColorInGroup(this.selectedGroup);

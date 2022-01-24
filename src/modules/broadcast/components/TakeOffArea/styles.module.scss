@@ -1,0 +1,58 @@
+.root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.nameGroup {
+  text-align: center;
+  font-size: 80px;
+  margin-top: 0;
+}
+.groups {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  margin-top: auto;
+}
+
+.nameSportsman {
+  margin-top: auto;
+  color: #5c5c5c;
+  text-align: center;
+}
+
+.photo {
+  width: 100% !important;
+  height: auto !important;
+  box-sizing: border-box;
+}
+
+.colorAndChannel {
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  font-size: 26px;
+  margin-top: -30px;
+  margin-bottom: 30px;
+  z-index: 9999;
+}
+
+.takeOff {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  margin: 20px 20px 0 20px;
+  padding: 5px;
+}
+
+.takeOffAria {
+  margin: -15px;
+  padding: 15px;
+  svg {
+    width: 100%;
+    height: auto;
+  }
+}

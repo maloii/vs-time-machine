@@ -8,9 +8,10 @@ import styles from './styles.module.scss';
 interface IProps {
     color: Color;
     channel: Channel;
+    className?: string;
 }
 
-export const ColorAndChannel: FC<IProps> = ({ color, channel }: IProps) => {
+export const ColorAndChannel: FC<IProps> = ({ color, channel, className }: IProps) => {
     const colorText = (): string => {
         switch (color) {
             case Color.BLACK:
@@ -20,7 +21,7 @@ export const ColorAndChannel: FC<IProps> = ({ color, channel }: IProps) => {
         return 'black';
     };
     return (
-        <Tooltip title={`${ChannelFrequencies[channel]} MHz`} arrow>
+        <Tooltip title={`${ChannelFrequencies[channel]} MHz`} arrow className={className}>
             <div
                 style={{
                     background: ColorCss[color],
