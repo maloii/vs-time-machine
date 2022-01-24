@@ -35,21 +35,27 @@ export const CountLapsReport: FC<IProps> = observer(({ report, rounds, teams, sp
                         <TableCell>Sportsman</TableCell>
                         <TableCell>Laps</TableCell>
                         <TableCell>Gap</TableCell>
-                        <TableCell>Rel.</TableCell>
-                        <TableCell>Min. Lap</TableCell>
+                        {!report.simplified && <TableCell>Rel.</TableCell>}
+                        {!report.simplified && <TableCell>Min. Lap</TableCell>}
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {rows.map((row, indx) => (
                         <TableRow key={row.memberGroupId}>
                             <TableCell>{indx + 1}</TableCell>
-                            <TableCell>{row.sportsman ? sportsmanName(row.sportsman) : row.team?.name}</TableCell>
+                            <TableCell>
+                                {row.sportsman ? sportsmanName(row.sportsman, report.simplified) : row.team?.name}
+                            </TableCell>
                             <TableCell style={{ whiteSpace: 'nowrap' }}>{row.count}</TableCell>
                             <TableCell style={{ whiteSpace: 'nowrap' }}>{row.gap ? row.gap : '-'}</TableCell>
-                            <TableCell style={{ whiteSpace: 'nowrap' }}>{row.rel ? row.rel : '-'}</TableCell>
-                            <TableCell style={{ whiteSpace: 'nowrap' }}>
-                                {row.minLap ? millisecondsToTimeString(row.minLap) : '--:--:---'}
-                            </TableCell>
+                            {!report.simplified && (
+                                <TableCell style={{ whiteSpace: 'nowrap' }}>{row.rel ? row.rel : '-'}</TableCell>
+                            )}
+                            {!report.simplified && (
+                                <TableCell style={{ whiteSpace: 'nowrap' }}>
+                                    {row.minLap ? millisecondsToTimeString(row.minLap) : '--:--:---'}
+                                </TableCell>
+                            )}
                         </TableRow>
                     ))}
                 </TableBody>

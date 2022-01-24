@@ -35,27 +35,33 @@ export const BestPitStopReport: FC<IProps> = observer(({ report, rounds, teams, 
                         <TableCell>Sportsman</TableCell>
                         <TableCell>Time</TableCell>
                         <TableCell>Gap</TableCell>
-                        <TableCell>Rel.</TableCell>
-                        <TableCell>Average</TableCell>
+                        {!report.simplified && <TableCell>Rel.</TableCell>}
+                        {!report.simplified && <TableCell>Average</TableCell>}
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {rows.map((row, indx) => (
                         <TableRow key={row.memberGroupId}>
                             <TableCell>{indx + 1}</TableCell>
-                            <TableCell>{row.sportsman ? sportsmanName(row.sportsman) : row.team?.name}</TableCell>
+                            <TableCell>
+                                {row.sportsman ? sportsmanName(row.sportsman, report.simplified) : row.team?.name}
+                            </TableCell>
                             <TableCell style={{ whiteSpace: 'nowrap' }}>
                                 {row.timeLap ? millisecondsToTimeString(row.timeLap) : '--:--:---'}
                             </TableCell>
                             <TableCell style={{ whiteSpace: 'nowrap' }}>
                                 {row.gap ? millisecondsToTimeString(row.gap) : '-'}
                             </TableCell>
-                            <TableCell style={{ whiteSpace: 'nowrap' }}>
-                                {row.rel ? millisecondsToTimeString(row.rel) : '-'}
-                            </TableCell>
-                            <TableCell style={{ whiteSpace: 'nowrap' }}>
-                                {row.average ? millisecondsToTimeString(row.average) : '--:--:---'}
-                            </TableCell>
+                            {!report.simplified && (
+                                <TableCell style={{ whiteSpace: 'nowrap' }}>
+                                    {row.rel ? millisecondsToTimeString(row.rel) : '-'}
+                                </TableCell>
+                            )}
+                            {!report.simplified && (
+                                <TableCell style={{ whiteSpace: 'nowrap' }}>
+                                    {row.average ? millisecondsToTimeString(row.average) : '--:--:---'}
+                                </TableCell>
+                            )}
                         </TableRow>
                     ))}
                 </TableBody>

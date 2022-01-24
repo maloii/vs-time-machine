@@ -35,6 +35,7 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
     const [typeRound, setTypeRound] = useState(report?.typeRound || TypeRoundReport.PRACTICE);
     const [notCountedRounds, setNotCountedRounds] = useState(report?.notCountedRounds || 1);
     const [onlySportsmen, setOnlySportsmen] = useState(report?.onlySportsmen || false);
+    const [simplified, setSimplified] = useState(report?.simplified || false);
     const [count, setCount] = useState(report?.count || 0);
 
     const handleChangeName = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +53,9 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
     const handleChangeOnlySportsmen = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setOnlySportsmen((prev) => !prev);
     }, []);
+    const handleChangeSimplified = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setSimplified((prev) => !prev);
+    }, []);
     const handleChangeCount = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setCount(Number(event.target.value));
     }, []);
@@ -63,6 +67,7 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
             typeRound,
             notCountedRounds,
             onlySportsmen,
+            simplified,
             count
         };
         if (report?._id) {
@@ -70,7 +75,7 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
         } else {
             onSave(newReport);
         }
-    }, [count, name, type, typeRound, notCountedRounds, onlySportsmen, report?._id, onUpdate, onSave]);
+    }, [count, name, type, typeRound, notCountedRounds, onlySportsmen, simplified, report?._id, onUpdate, onSave]);
 
     const handleDelete = useCallback(() => {
         if (report) {
@@ -124,6 +129,10 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
                             label="Only sportsmen"
                         />
                     )}
+                    <FormControlLabel
+                        control={<Switch checked={simplified} onChange={handleChangeSimplified} />}
+                        label="Simplified"
+                    />
                     {type === TypeReport.COUNT_LAPS && (
                         <TextField
                             fullWidth
