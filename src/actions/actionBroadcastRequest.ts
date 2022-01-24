@@ -4,12 +4,12 @@ export const openWindowBroadCastAction = (id: string): void => {
     window.api.ipcRenderer.send('open-window-broadcast-request', id);
 };
 
-export const loadReportsAction = (): void => {
-    window.api.ipcRenderer.send('load-reports-request');
+export const loadReportsAction = (competitionId: string): void => {
+    window.api.ipcRenderer.send('load-reports-request', competitionId);
 };
 
-export const handleLoadBroadCastsAction = (): Promise<Array<IBroadCast>> => {
-    return window.api.ipcRenderer.invoke('handle-load-broadcast-request');
+export const handleLoadBroadCastsAction = (competitionId: string): Promise<Array<IBroadCast>> => {
+    return window.api.ipcRenderer.invoke('handle-load-broadcast-request', competitionId);
 };
 
 export const handleLoadBroadCastByIdAction = (id: string): Promise<IBroadCast> => {
@@ -20,7 +20,10 @@ export const handleBroadCastInsertAction = (broadCast: Omit<IBroadCast, '_id'>):
     return window.api.ipcRenderer.invoke('handle-broadcast-insert-request', broadCast);
 };
 
-export const handleBroadCastUpdateAction = (_id: string, broadCast: Omit<IBroadCast, '_id'>): Promise<number> => {
+export const handleBroadCastUpdateAction = (
+    _id: string,
+    broadCast: Omit<IBroadCast, '_id' | 'competitionId'>
+): Promise<number> => {
     return window.api.ipcRenderer.invoke('handle-broadcast-update-request', _id, broadCast);
 };
 

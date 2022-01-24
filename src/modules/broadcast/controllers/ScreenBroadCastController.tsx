@@ -69,6 +69,7 @@ export const ScreenBroadCastController: FC = observer(() => {
     );
 
     useEffect(() => {
+        loadCompetitionsAction();
         Promise.all([getStartTimeAction(), getRaceStatusAction(), getGroupInRaceAction()]).then(
             async ([resStartTime, resRaceStatus, resGroupInRace]) => {
                 setStartTime(resStartTime);
@@ -105,8 +106,6 @@ export const ScreenBroadCastController: FC = observer(() => {
     useEffect(() => {
         if (params.screenId) {
             loadCompetitionsAction();
-            loadReportsAction();
-            loadReportsAction();
             handleLoadBroadCastByIdAction(params.screenId).then(setBroadCast);
             window.api.ipcRenderer.removeAllListeners('group-in-race');
             window.api.ipcRenderer.removeAllListeners('report-insert-response');
@@ -115,9 +114,9 @@ export const ScreenBroadCastController: FC = observer(() => {
             window.api.ipcRenderer.removeAllListeners('broadcast-insert-message');
             window.api.ipcRenderer.removeAllListeners('broadcast-update-message');
             window.api.ipcRenderer.removeAllListeners('broadcast-delete-message');
-            window.api.ipcRenderer.on('report-insert-response', () => loadReportsAction());
-            window.api.ipcRenderer.on('report-update-response', () => loadReportsAction());
-            window.api.ipcRenderer.on('report-delete-response', () => loadReportsAction());
+            window.api.ipcRenderer.on('report-insert-response', () => loadReportsAction(story.competition?._id!));
+            window.api.ipcRenderer.on('report-update-response', () => loadReportsAction(story.competition?._id!));
+            window.api.ipcRenderer.on('report-delete-response', () => loadReportsAction(story.competition?._id!));
             window.api.ipcRenderer.on('broadcast-insert-message', () =>
                 handleLoadBroadCastByIdAction(params.screenId!).then(setBroadCast)
             );

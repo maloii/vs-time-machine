@@ -1,7 +1,7 @@
 const { db } = require('./repository');
 
-const broadCastFindAll = () => {
-    return db.broadcast.find({});
+const broadCastFindByCompetitionId = (competitionId) => {
+    return db.broadcast.find({ competitionId });
 };
 
 const broadCastFindById = (_id) => {
@@ -27,4 +27,4 @@ const broadCastDelete = (_id) => {
     return db.broadcast.remove({ _id }, {});
 };
 
-module.exports = { broadCastFindAll, broadCastFindById, broadCastInsert, broadCastUpdate, broadCastDelete };
+module.exports = { broadCastFindByCompetitionId, broadCastFindById, broadCastInsert, broadCastUpdate, broadCastDelete };

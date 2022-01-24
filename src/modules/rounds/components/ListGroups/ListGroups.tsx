@@ -9,6 +9,7 @@ import styles from './styles.module.scss';
 interface IProps {
     groups: IGroup[];
     selectedGroup?: IGroup;
+    groupInRace?: IGroup;
     competition: ICompetition;
     onEdit: (id: string) => void;
     onSelect: (id: string) => void;
@@ -20,7 +21,7 @@ interface IProps {
 }
 
 export const ListGroups: FC<IProps> = observer(
-    ({ groups, selectedGroup, competition, onEdit, onSelect, onDelete, onUpdate }: IProps) => {
+    ({ groups, selectedGroup, groupInRace, competition, onEdit, onSelect, onDelete, onUpdate }: IProps) => {
         const handleEdit = useCallback((id: string) => () => onEdit(id), [onEdit]);
         const handleSelect = useCallback((id: string) => () => onSelect(id), [onSelect]);
         const handleDelete = useCallback((id: string) => () => onDelete(id), [onDelete]);
@@ -37,6 +38,7 @@ export const ListGroups: FC<IProps> = observer(
                         group={group}
                         selectedGroup={selectedGroup}
                         competition={competition}
+                        isGroupInRace={group._id === groupInRace?._id}
                         onSelect={handleSelect}
                         onEdit={handleEdit}
                         onDelete={handleDelete}

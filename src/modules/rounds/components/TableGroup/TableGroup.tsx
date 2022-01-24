@@ -14,6 +14,7 @@ interface IProps {
     group: IGroup;
     selectedGroup?: IGroup;
     competition: ICompetition;
+    isGroupInRace: boolean;
     onSelect: (id: string) => () => void;
     onEdit: (id: string) => () => void;
     onDelete: (id: string) => () => void;
@@ -24,6 +25,7 @@ export const TableGroup: FC<IProps> = ({
     group,
     selectedGroup,
     competition,
+    isGroupInRace,
     onSelect,
     onEdit,
     onDelete,
@@ -85,7 +87,7 @@ export const TableGroup: FC<IProps> = ({
             <List
                 dense
                 onClick={onSelect(innerGroup._id)}
-                className={styles.group}
+                className={cn(styles.group, { [styles.groupInRace]: isGroupInRace })}
                 component="nav"
                 subheader={
                     <ListSubheader

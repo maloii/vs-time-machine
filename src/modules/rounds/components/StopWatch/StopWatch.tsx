@@ -25,7 +25,8 @@ export const StopWatch: FC<IProps> = observer(({ round, startTime, raceStatus }:
                 refTimeRace.current.innerText = millisecondsToTimeString(timer);
             }
             if (refTimeLeft.current) {
-                refTimeLeft.current.innerText = millisecondsToTimeString(Number(round?.maxTimeRace) * 1000 - timer);
+                const timeLeft = Number(round?.maxTimeRace) * 1000 - timer;
+                refTimeLeft.current.innerText = millisecondsToTimeString(timeLeft > 0 ? timeLeft : 0);
             }
         },
         [round?.maxTimeRace]

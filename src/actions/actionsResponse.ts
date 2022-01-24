@@ -24,7 +24,7 @@ window.api.ipcRenderer.on('load-competitions-response', (e: any, competitions: I
         loadSportsmenAction(competition);
         loadTeamsAction(competition);
         loadRoundsAction(competition);
-        loadReportsAction();
+        loadReportsAction(competition._id);
     }
 });
 

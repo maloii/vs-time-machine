@@ -31,11 +31,15 @@ export const BroadCastController: FC = observer(() => {
         setOpenDialogEditBroadCast(undefined);
     }, []);
 
-    const handleLoadBroadCasts = useCallback(() => handleLoadBroadCastsAction().then(setBroadCasts), []);
+    const handleLoadBroadCasts = useCallback(() => {
+        if (story.competition) {
+            handleLoadBroadCastsAction(story.competition._id).then(setBroadCasts);
+        }
+    }, []);
     const handleAdd = useCallback(
-        async (broadCasts: Omit<IBroadCast, '_id'>) => {
-            if (broadCasts.name) {
-                await handleBroadCastInsertAction(broadCasts);
+        async (broadCasts: Omit<IBroadCast, '_id' | 'competitionId'>) => {
+            if (broadCasts.name && story.competition) {
+                await handleBroadCastInsertAction({ ...broadCasts, competitionId: story.competition._id });
                 await handleLoadBroadCasts();
                 handleCloseDialog();
             }
@@ -44,7 +48,7 @@ export const BroadCastController: FC = observer(() => {
     );
 
     const handleEdit = useCallback(
-        async (_id: string, broadCasts: Omit<IBroadCast, '_id'>) => {
+        async (_id: string, broadCasts: Omit<IBroadCast, '_id' | 'competitionId'>) => {
             if (broadCasts.name) {
                 await handleBroadCastUpdateAction(_id, broadCasts);
                 await handleLoadBroadCasts();

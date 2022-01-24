@@ -1,7 +1,7 @@
 const { db } = require('./repository');
 
-const reportFindAll = () => {
-    return db.report.find({});
+const reportFindByCompetitionId = (competitionId) => {
+    return db.report.find({ competitionId });
 };
 
 const reportInsert = async (report) => {
@@ -23,4 +23,4 @@ const reportDelete = async (_id) => {
     return db.report.remove({ _id }, {});
 };
 
-module.exports = { reportFindAll, reportInsert, reportUpdate, reportDelete };
+module.exports = { reportFindByCompetitionId, reportInsert, reportUpdate, reportDelete };

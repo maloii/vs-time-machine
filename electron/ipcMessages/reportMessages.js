@@ -1,14 +1,14 @@
-const { reportFindAll, reportInsert, reportUpdate, reportDelete } = require('../repository/reportRepository');
+const { reportFindByCompetitionId, reportInsert, reportUpdate, reportDelete } = require('../repository/reportRepository');
 const { ipcMain } = require('electron');
 const { sendToAllMessage } = require('./sendMessage');
 
-ipcMain.on('load-reports-request', async (e) => {
-    const reports = await reportFindAll();
+ipcMain.on('load-reports-request', async (e, competitionId) => {
+    const reports = await reportFindByCompetitionId(competitionId);
     e.reply('load-reports-response', reports);
 });
 
-ipcMain.handle('handle-load-reports-request', (e) => {
-    return reportFindAll();
+ipcMain.handle('handle-load-reports-request', (e, competitionId) => {
+    return reportFindByCompetitionId(competitionId);
 });
 
 ipcMain.on('report-insert-request', async (e, report) => {

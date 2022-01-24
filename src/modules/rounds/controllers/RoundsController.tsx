@@ -332,6 +332,7 @@ export const RoundsController: FC = observer(() => {
                         <ListGroups
                             groups={groups}
                             selectedGroup={selectedGroup}
+                            groupInRace={story.groupInRace}
                             onSelect={handleSelectGroup}
                             onDelete={handleDeleteGroup}
                             onEdit={handleOpenEditGroup}

@@ -3,7 +3,7 @@ const path = require('path');
 const isDev = require('electron-is-dev');
 const { v4 } = require('uuid');
 const {
-    broadCastFindAll,
+    broadCastFindByCompetitionId,
     broadCastInsert,
     broadCastUpdate,
     broadCastDelete,
@@ -37,13 +37,13 @@ ipcMain.on('open-window-broadcast-request', (e, id) => {
     createBroadCastWindow(id);
 });
 
-ipcMain.handle('load-broadcast-request', async (e) => {
-    const broadCasts = await broadCastFindAll();
+ipcMain.handle('load-broadcast-request', async (e, competitionId) => {
+    const broadCasts = await broadCastFindByCompetitionId(competitionId);
     e.reply('load-broadcast-response', broadCasts);
 });
 
-ipcMain.handle('handle-load-broadcast-request', (e) => {
-    return broadCastFindAll();
+ipcMain.handle('handle-load-broadcast-request', (e, competitionId) => {
+    return broadCastFindByCompetitionId(competitionId);
 });
 
 ipcMain.handle('handle-load-broadcast-request-by-id', (e, id) => {

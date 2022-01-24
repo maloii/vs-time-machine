@@ -40,9 +40,9 @@ export const ReportsController: FC = observer(() => {
     }, []);
 
     const handleAddReport = useCallback(
-        (report: Omit<IReport, '_id'>) => {
-            if (report.name) {
-                reportInsertAction(report);
+        (report: Omit<IReport, '_id' | 'competitionId'>) => {
+            if (report.name && story.competition) {
+                reportInsertAction({ ...report, competitionId: story.competition._id });
                 handleCloseDialog();
             }
         },
@@ -50,7 +50,7 @@ export const ReportsController: FC = observer(() => {
     );
 
     const handleEditReport = useCallback(
-        (_id: string, report: Omit<IReport, '_id'>) => {
+        (_id: string, report: Omit<IReport, '_id' | 'competitionId'>) => {
             if (report.name) {
                 reportUpdateAction(_id, report);
                 handleCloseDialog();
@@ -70,12 +70,14 @@ export const ReportsController: FC = observer(() => {
     );
 
     useEffect(() => {
-        window.api.ipcRenderer.removeAllListeners('report-insert-response');
-        window.api.ipcRenderer.removeAllListeners('report-update-response');
-        window.api.ipcRenderer.removeAllListeners('report-delete-response');
-        window.api.ipcRenderer.on('report-insert-response', () => loadReportsAction());
-        window.api.ipcRenderer.on('report-update-response', () => loadReportsAction());
-        window.api.ipcRenderer.on('report-delete-response', () => loadReportsAction());
+        if (story.competition) {
+            window.api.ipcRenderer.removeAllListeners('report-insert-response');
+            window.api.ipcRenderer.removeAllListeners('report-update-response');
+            window.api.ipcRenderer.removeAllListeners('report-delete-response');
+            window.api.ipcRenderer.on('report-insert-response', () => loadReportsAction(story.competition?._id!));
+            window.api.ipcRenderer.on('report-update-response', () => loadReportsAction(story.competition?._id!));
+            window.api.ipcRenderer.on('report-delete-response', () => loadReportsAction(story.competition?._id!));
+        }
     }, []);
 
     return (

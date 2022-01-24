@@ -22,8 +22,8 @@ import { TypeBroadCastComponents } from '@/types/TypeBroadCastComponents';
 interface IProps {
     open: boolean;
     onClose: () => void;
-    onSave: (report: Omit<IBroadCast, '_id'>) => void;
-    onUpdate: (_id: string, broadCast: Omit<IBroadCast, '_id'>) => void;
+    onSave: (report: Omit<IBroadCast, '_id' | 'competitionId'>) => void;
+    onUpdate: (_id: string, broadCast: Omit<IBroadCast, '_id' | 'competitionId'>) => void;
     onDelete: (_id: string) => void;
     reports: IReport[];
     broadCast?: IBroadCast;

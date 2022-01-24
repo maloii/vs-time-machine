@@ -2,6 +2,7 @@ import { TypeChromaKey } from '@/types/TypeChromaKey';
 
 export interface IBroadCast {
     _id: string;
+    competitionId: string;
     name: string;
     top: string;
     left: string;

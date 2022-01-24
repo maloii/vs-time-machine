@@ -23,8 +23,8 @@ import { TypeRoundReport } from '@/types/TypeRoundReport';
 interface IProps {
     open: boolean;
     onClose: () => void;
-    onSave: (report: Omit<IReport, '_id'>) => void;
-    onUpdate: (_id: string, report: Omit<IReport, '_id'>) => void;
+    onSave: (report: Omit<IReport, '_id' | 'competitionId'>) => void;
+    onUpdate: (_id: string, report: Omit<IReport, '_id' | 'competitionId'>) => void;
     onDelete: (_id: string) => void;
     report?: IReport;
 }

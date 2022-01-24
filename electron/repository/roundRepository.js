@@ -2,7 +2,7 @@ const _ = require('lodash');
 const { db } = require('./repository');
 const { competitionColorAndChannel } = require('../utils/competitionColorAndChannel');
 
-const roundsFindByCompetitionId = async (competitionId) => {
+const roundsFindByCompetitionId = (competitionId) => {
     return db.round.find({ competitionId });
 };
 
@@ -80,6 +80,7 @@ const generateRandomGroups = async (round) => {
                         const colorAndChannel = competitionColorAndChannel(startNumber, competition);
                         return {
                             ...item,
+                            startNumber,
                             color: colorAndChannel?.color,
                             channel: colorAndChannel?.channel
                         };
@@ -124,6 +125,7 @@ const generateRandomGroups = async (round) => {
                         const colorAndChannel = competitionColorAndChannel(startNumber, competition);
                         return {
                             ...item,
+                            startNumber,
                             color: colorAndChannel?.color,
                             channel: colorAndChannel?.channel
                         };
