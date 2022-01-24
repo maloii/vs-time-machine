@@ -44,10 +44,18 @@ export const BestPitStopReport: FC<IProps> = observer(({ report, rounds, teams, 
                         <TableRow key={row.memberGroupId}>
                             <TableCell>{indx + 1}</TableCell>
                             <TableCell>{row.sportsman ? sportsmanName(row.sportsman) : row.team?.name}</TableCell>
-                            <TableCell>{row.timeLap ? millisecondsToTimeString(row.timeLap) : '--:--:---'}</TableCell>
-                            <TableCell>{row.gap ? millisecondsToTimeString(row.gap) : '-'}</TableCell>
-                            <TableCell>{row.rel ? millisecondsToTimeString(row.rel) : '-'}</TableCell>
-                            <TableCell>{row.average ? millisecondsToTimeString(row.average) : '--:--:---'}</TableCell>
+                            <TableCell style={{ whiteSpace: 'nowrap' }}>
+                                {row.timeLap ? millisecondsToTimeString(row.timeLap) : '--:--:---'}
+                            </TableCell>
+                            <TableCell style={{ whiteSpace: 'nowrap' }}>
+                                {row.gap ? millisecondsToTimeString(row.gap) : '-'}
+                            </TableCell>
+                            <TableCell style={{ whiteSpace: 'nowrap' }}>
+                                {row.rel ? millisecondsToTimeString(row.rel) : '-'}
+                            </TableCell>
+                            <TableCell style={{ whiteSpace: 'nowrap' }}>
+                                {row.average ? millisecondsToTimeString(row.average) : '--:--:---'}
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

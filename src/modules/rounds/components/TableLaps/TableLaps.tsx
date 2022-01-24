@@ -224,7 +224,7 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
                                 <div className={styles.header}>
                                     <div>
                                         {item.sportsman ? (
-                                            <b>{`${sportsmanName(item?.sportsman!)}${
+                                            <b>{`${sportsmanName(item?.sportsman!, readonly)}${
                                                 readonly ? '' : ` - ${(item?.sportsman?.transponders || []).join(',')}`
                                             }`}</b>
                                         ) : (

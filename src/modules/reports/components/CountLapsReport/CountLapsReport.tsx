@@ -44,10 +44,12 @@ export const CountLapsReport: FC<IProps> = observer(({ report, rounds, teams, sp
                         <TableRow key={row.memberGroupId}>
                             <TableCell>{indx + 1}</TableCell>
                             <TableCell>{row.sportsman ? sportsmanName(row.sportsman) : row.team?.name}</TableCell>
-                            <TableCell>{row.count}</TableCell>
-                            <TableCell>{row.gap ? row.gap : '-'}</TableCell>
-                            <TableCell>{row.rel ? row.rel : '-'}</TableCell>
-                            <TableCell>{millisecondsToTimeString(row.minLap)}</TableCell>
+                            <TableCell style={{ whiteSpace: 'nowrap' }}>{row.count}</TableCell>
+                            <TableCell style={{ whiteSpace: 'nowrap' }}>{row.gap ? row.gap : '-'}</TableCell>
+                            <TableCell style={{ whiteSpace: 'nowrap' }}>{row.rel ? row.rel : '-'}</TableCell>
+                            <TableCell style={{ whiteSpace: 'nowrap' }}>
+                                {row.minLap ? millisecondsToTimeString(row.minLap) : '--:--:---'}
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
