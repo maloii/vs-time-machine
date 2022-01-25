@@ -81,6 +81,7 @@ export const TableTeams: FC<IProps> = ({ teams, onUpdate, onDelete, onOpenEdit }
         },
         { field: 'name', editable: true, headerName: 'Name', flex: 1 },
         { field: 'city', editable: true, headerName: 'City', flex: 1 },
+        { field: 'transponders', headerName: 'Transponders', flex: 1 },
         { field: 'country', editable: true, headerName: 'Country', flex: 1, hide: true },
         {
             field: 'photo',

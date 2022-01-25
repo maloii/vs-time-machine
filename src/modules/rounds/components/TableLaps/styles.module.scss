@@ -34,3 +34,13 @@
 .actionPos {
   padding: 0;
 }
+.lapWithPhoto {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+}
+
+.photo {
+  width: 20px !important;
+  height: 20px !important;;
+}

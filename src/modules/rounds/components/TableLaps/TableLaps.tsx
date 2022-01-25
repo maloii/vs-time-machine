@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import cn from 'classnames';
 import _ from 'lodash';
 import { DateTime } from 'luxon';
@@ -9,6 +9,7 @@ import { IRound } from '@/types/IRound';
 import { ISportsman } from '@/types/ISportsman';
 import { ILap } from '@/types/ILap';
 import {
+    Avatar,
     Badge,
     IconButton,
     Paper,
@@ -32,6 +33,7 @@ import { beep } from '@/utils/beep';
 import { TypeRaceStatus } from '@/types/TypeRaceStatus';
 import { matrixLapsWithPitStop } from '@/utils/matrixLapsWithPitStop';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { TypeRace } from '@/types/TypeRace';
 
 import styles from './styles.module.scss';
 
@@ -53,6 +55,12 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
         (count, item) => (laps[item._id].length > count ? laps[item._id].length : count),
         0
     );
+
+    const membersGroup = useMemo(() => [...group.sportsmen, ...group.teams], [group.sportsmen, group.teams]);
+    // Под вопросом, нужна ли сортировка группы по позиции.
+    // .sort(
+    //     (g1, g2) => (g1.position || 9999) - (g2.position || 9999)
+    // );
 
     let numLap = 0;
     const isLap = useCallback(
@@ -86,10 +94,26 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
             laps[memberGroupId]?.filter((item: ILap | undefined) => !!item && item.typeLap === TypeLap.OK),
             'timeLap'
         );
-        let textLap = '';
+        let textLap: ReactNode = '';
+        let photo: string | undefined = undefined;
         if (lap?.typeLap === TypeLap.START) textLap = 'Start';
-        if (lap?.typeLap && [TypeLap.OK, TypeLap.PIT_STOP_END].includes(lap.typeLap))
+        if (lap?.typeLap && [TypeLap.OK, TypeLap.PIT_STOP_END].includes(lap.typeLap)) {
             textLap = millisecondsToTimeString(lap.timeLap);
+        }
+        if (readonly) {
+            const team = _.find(group.teams, ['_id', lap?.memberGroupId]);
+            if (lap?.sportsmanId && team && team?.team?.sportsmen) {
+                photo = _.find(team.team.sportsmen, ['_id', lap.sportsmanId])?.photo;
+                if (photo) {
+                    textLap = (
+                        <div className={styles.lapWithPhoto}>
+                            {textLap}
+                            <Avatar alt="Photo" className={styles.photo} src={window.api.getFilePath(photo)} />
+                        </div>
+                    );
+                }
+            }
+        }
         if (minLap && lap && minLap.timeLap === lap.timeLap)
             return (
                 <TableCell>
@@ -109,12 +133,6 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
             </TableCell>
         );
     };
-
-    const membersGroup = useMemo(() => [...group.sportsmen, ...group.teams], [group.sportsmen, group.teams]);
-    // Под вопросом, нужна ли сортировка группы по позиции.
-    // .sort(
-    //     (g1, g2) => (g1.position || 9999) - (g2.position || 9999)
-    // );
 
     const handleOpenAllLaps = useCallback((id: string) => () => setOpenLapsMember(id), []);
 
@@ -164,31 +182,26 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
     );
 
     const handleCopyGroupLaps = useCallback(() => {
-        //laps
         const textGroupLaps = membersGroup
             .map((item) => {
                 let nLap = 0;
-                return (
-                    item.team?.name ||
-                    sportsmanName(item?.sportsman!) +
-                        '\n' +
-                        laps?.[item._id]
-                            ?.map((lap, index) => {
-                                if (!lap?.timeLap) return undefined;
-                                let stringLap = '';
-                                if (isLap(index)) {
-                                    nLap++;
-                                    stringLap = `  ${nLap} - `;
-                                }
-                                if (lap?.typeLap === TypeLap.PIT_STOP_END) {
-                                    stringLap = '  🛠 - ';
-                                }
-                                stringLap += millisecondsToTimeString(lap?.timeLap);
-                                return stringLap;
-                            })
-                            .filter((item) => item !== undefined)
-                            .join('\n')
-                );
+                const stringLaps = laps?.[item._id]
+                    ?.map((lap, index) => {
+                        if (!lap?.timeLap) return undefined;
+                        let stringLap = '';
+                        if (isLap(index)) {
+                            nLap++;
+                            stringLap = `  ${nLap} - `;
+                        }
+                        if (lap?.typeLap === TypeLap.PIT_STOP_END) {
+                            stringLap = '  🛠 - ';
+                        }
+                        stringLap += millisecondsToTimeString(lap?.timeLap);
+                        return stringLap;
+                    })
+                    .filter((lapItem) => lapItem !== undefined)
+                    .join('\n');
+                return (item.team?.name || sportsmanName(item?.sportsman!)) + '\n' + stringLaps;
             })
             .join('\n');
         navigator.clipboard.writeText(textGroupLaps).then(() => alert('Group laps copied to clipboard.'));
@@ -292,6 +305,19 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
                                 {!readonly && <TableCell />}
                             </TableRow>
                         ))}
+                    {[TypeRace.FIXED_COUNT_LAPS].includes(round.typeRace) && (
+                        <TableRow>
+                            <TableCell>
+                                <b>Total:</b>
+                            </TableCell>
+                            {membersGroup.map((item) => (
+                                <TableCell key={`total-${item._id}`}>
+                                    <b>{item.totalTime ? millisecondsToTimeString(item.totalTime) : '--:--:---'}</b>
+                                </TableCell>
+                            ))}
+                            {!readonly && <TableCell />}
+                        </TableRow>
+                    )}
                     <TableRow>
                         <TableCell>
                             <b>Pos:</b>

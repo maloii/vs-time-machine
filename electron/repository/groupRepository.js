@@ -18,7 +18,7 @@ const groupFindById = (_id) => {
     return db.group.findOne({ _id }).then(async (group) => {
         const sportsmen = await db.sportsman.find({ competitionId: group.competitionId });
         const teams = await db.team.find({ competitionId: group.competitionId });
-        const groupWithSportsman = {
+        return {
             ...group,
             sportsmen: group.sportsmen
                 ?.map((item) => ({
@@ -42,7 +42,6 @@ const groupFindById = (_id) => {
                 }))
                 .filter((item) => !!item.team)
         };
-        return groupWithSportsman;
     });
 };
 

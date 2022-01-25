@@ -4,7 +4,7 @@ const path = require('path');
 const { DateTime } = require('luxon');
 const { speech } = require('../speech/speech');
 const { connector } = require('../Connector');
-const { groupUpdate, groupSavePositions } = require('../repository/groupRepository');
+const { groupUpdate, groupSavePositions, groupFindById } = require('../repository/groupRepository');
 const {
     getAllTranspondersAndColorInGroup,
     clearSearchTransponderInGroup,
@@ -186,7 +186,6 @@ class Race {
 
                 if (['OK', 'START', 'SKIP_FIRST_GATE'].includes(typeLap)) {
                     this.lastTimeLap[membersGroup._id] = millisecond;
-                    // sound.play({ path: path.join(app.getPath('userData'), `/sounds/short_beep.mp3`) });
                 }
                 const newLap = await lapInsert({
                     millisecond,
@@ -200,7 +199,7 @@ class Race {
                     sportsmanId: sportsman._id,
                     transponder
                 });
-                groupSavePositions(this.selectedGroup._id).then((resGroup) => {
+                await groupSavePositions(this.selectedGroup._id).then((resGroup) => {
                     sendToAllMessage('group-update-response', resGroup);
                 });
 
@@ -208,6 +207,18 @@ class Race {
                     if (okLaps.length + 1 >= Number(round.countLap)) {
                         const text = `${getNameMemberInGroup(membersGroup)} финишировал!`;
                         speech(text);
+                        const group = await groupFindById(this.selectedGroup._id);
+                        if (
+                            [...(group.sportsmen || []), ...(group.teams || [])].reduce(
+                                (res, item) => item.finished && res,
+                                true
+                            )
+                        ) {
+                            setTimeout(() => {
+                                speech('Все пилоты финишировали!');
+                            }, 3000);
+                            this.stop();
+                        }
                     }
                 }
 
