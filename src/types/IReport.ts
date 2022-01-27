@@ -4,6 +4,7 @@ import { TypeRoundReport } from '@/types/TypeRoundReport';
 export interface IReport {
     _id: string;
     competitionId: string;
+    roundId?: string;
     name: string;
     type: TypeReport;
     typeRound: TypeRoundReport;

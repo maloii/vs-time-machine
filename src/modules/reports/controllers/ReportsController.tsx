@@ -96,6 +96,7 @@ export const ReportsController: FC = observer(() => {
             {(openDialogAddReport || openDialogEditReport) && (
                 <DialogFormReport
                     report={openDialogEditReport}
+                    rounds={story.rounds}
                     open={openDialogAddReport || !!openDialogEditReport}
                     onClose={handleCloseDialog}
                     onSave={handleAddReport}

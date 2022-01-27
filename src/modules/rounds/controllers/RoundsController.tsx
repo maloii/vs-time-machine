@@ -50,38 +50,7 @@ export const RoundsController: FC = observer(() => {
     const teams = _.sortBy(story.teams, 'name');
 
     const rounds = [...(story.rounds || [])].sort((a, b) => a.sort - b.sort);
-    const groups = [...(story.groups || [])]
-        .sort((a, b) => a.sort - b.sort)
-        .map((group) => ({
-            ...group,
-            sportsmen: group.sportsmen
-                ?.map(
-                    (item): IMembersGroup => ({
-                        ...item,
-                        sportsman: _.find<ISportsman>(story.sportsmen, ['_id', item._id])
-                    })
-                )
-                .filter((item) => !!item.sportsman),
-            teams: group.teams
-                ?.map(
-                    (item): IMembersGroup => ({
-                        ...item,
-                        team: _.find<ITeam>(story.teams, ['_id', item._id])
-                    })
-                )
-                .map(
-                    (item): IMembersGroup => ({
-                        ...item,
-                        team: {
-                            ...item.team!,
-                            sportsmen: (item?.team?.sportsmenIds || []).map<ISportsman>(
-                                (sportsmanId) => _.find<ISportsman>(story.sportsmen, ['_id', sportsmanId])!
-                            )
-                        }
-                    })
-                )
-                .filter((item) => !!item.team)
-        }));
+    const groups = [...(story.groups || [])];
 
     const selectedRound = rounds.find((round) => round.selected);
     const selectedGroup = groups.find((group) => group.selected);

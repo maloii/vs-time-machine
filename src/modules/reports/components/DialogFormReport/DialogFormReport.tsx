@@ -19,6 +19,7 @@ import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { TypeReport } from '@/types/TypeReport';
 import _ from 'lodash';
 import { TypeRoundReport } from '@/types/TypeRoundReport';
+import { IRound } from '@/types/IRound';
 
 interface IProps {
     open: boolean;
@@ -27,9 +28,10 @@ interface IProps {
     onUpdate: (_id: string, report: Omit<IReport, '_id' | 'competitionId'>) => void;
     onDelete: (_id: string) => void;
     report?: IReport;
+    rounds?: IRound[];
 }
 
-export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, onDelete, report }: IProps) => {
+export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, onDelete, report, rounds }: IProps) => {
     const [name, setName] = useState(report?.name || '');
     const [type, setType] = useState(report?.type || TypeReport.BEST_LAP);
     const [typeRound, setTypeRound] = useState(report?.typeRound || TypeRoundReport.PRACTICE);
@@ -37,6 +39,7 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
     const [onlySportsmen, setOnlySportsmen] = useState(report?.onlySportsmen || false);
     const [simplified, setSimplified] = useState(report?.simplified || false);
     const [count, setCount] = useState(report?.count || 0);
+    const [roundId, setRoundId] = useState(report?.roundId);
 
     const handleChangeName = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
@@ -59,6 +62,9 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
     const handleChangeCount = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setCount(Number(event.target.value));
     }, []);
+    const handleChangeRoundId = useCallback((event: SelectChangeEvent) => {
+        setRoundId(event.target.value as TypeReport);
+    }, []);
 
     const handleSave = useCallback(() => {
         const newReport = {
@@ -68,14 +74,27 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
             notCountedRounds,
             onlySportsmen,
             simplified,
-            count
+            count,
+            roundId
         };
         if (report?._id) {
             onUpdate(report?._id, _.cloneDeep(newReport));
         } else {
             onSave(newReport);
         }
-    }, [count, name, type, typeRound, notCountedRounds, onlySportsmen, simplified, report?._id, onUpdate, onSave]);
+    }, [
+        count,
+        name,
+        type,
+        typeRound,
+        notCountedRounds,
+        onlySportsmen,
+        simplified,
+        report?._id,
+        roundId,
+        onUpdate,
+        onSave
+    ]);
 
     const handleDelete = useCallback(() => {
         if (report) {
@@ -123,6 +142,19 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
                             </Select>
                         </FormControl>
                     )}
+                    {type === TypeReport.ROUND_GROUPS && (
+                        <FormControl fullWidth>
+                            <InputLabel id="round-label">Round</InputLabel>
+                            <Select labelId="round-label" value={roundId} label="Round" onChange={handleChangeRoundId}>
+                                {(rounds || []).map((round) => (
+                                    <MenuItem key={round._id} value={round._id}>
+                                        {round.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    )}
+
                     {type === TypeReport.BEST_LAP && (
                         <FormControlLabel
                             control={<Switch checked={onlySportsmen} onChange={handleChangeOnlySportsmen} />}

@@ -9,8 +9,8 @@ export const loadGroupsByIdAction = (_id: string): void => {
     window.api.ipcRenderer.send('load-groups-for-round-request', _id);
 };
 
-export const loadGroupsByRoundAction = (round: IRound): Promise<Array<IGroup>> => {
-    return window.api.ipcRenderer.invoke('handle-load-groups-for-round-request', round._id);
+export const loadGroupsByRoundAction = (roundId: string): Promise<Array<IGroup>> => {
+    return window.api.ipcRenderer.invoke('handle-load-groups-for-round-request', roundId);
 };
 
 export const loadGroupsByRoundsAction = (rounds: IRound[]): Promise<Array<IGroup>> => {

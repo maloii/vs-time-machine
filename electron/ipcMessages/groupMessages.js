@@ -4,7 +4,8 @@ const {
     groupInsert,
     groupUpdate,
     groupSelect,
-    groupDelete, groupFindById
+    groupDelete,
+    groupFindById
 } = require('../repository/groupRepository');
 const { ipcMain } = require('electron');
 

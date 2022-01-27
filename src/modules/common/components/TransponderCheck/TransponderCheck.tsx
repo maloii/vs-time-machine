@@ -1,13 +1,20 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { IconButton, Paper } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import _ from 'lodash';
+import { observer } from 'mobx-react';
+import { story } from '@/story/story';
+import { ISportsman } from '@/types/ISportsman';
+import { sportsmanName } from '@/utils/sportsmanName';
+
 import styles from './styles.module.scss';
 
-export const TransponderCheck: FC = () => {
+export const TransponderCheck: FC = observer(() => {
     const [transponder, setTransponder] = useState<string>();
     const [numberPackage, setNumberPackager] = useState<string>();
     const [gateNumber, setGateNumber] = useState<string>();
     const [startNumber, setStartNumber] = useState<string>();
+    const [sportsman, setSportsman] = useState<ISportsman | undefined>(undefined);
 
     const handleCopy = useCallback(
         (tr: string) => async () => {
@@ -29,6 +36,10 @@ export const TransponderCheck: FC = () => {
                 _gateNumber: string,
                 _startNumber: string
             ) => {
+                const _sportsman = _.find(story.sportsmen || [], (sportsman) =>
+                    (sportsman.transponders || []).map((item) => Number(item)).includes(Number(_transponder))
+                );
+                setSportsman(_sportsman);
                 setTransponder(_transponder);
                 setNumberPackager(_numberPackage);
                 setGateNumber(_gateNumber);
@@ -58,6 +69,7 @@ export const TransponderCheck: FC = () => {
                         <ContentCopyIcon fontSize="small" />
                     </IconButton>
                 </div>
+                {sportsman && <div className={styles.sportsman}>{sportsmanName(sportsman, true)}</div>}
                 <div className={styles.gateData}>{`Gate: ${gateNumber}`}</div>
                 <div className={styles.packData}>
                     {numberPackage && <div>{`Pack: ${numberPackage}`}</div>}
@@ -66,4 +78,4 @@ export const TransponderCheck: FC = () => {
             </Paper>
         </div>
     );
-};
+});

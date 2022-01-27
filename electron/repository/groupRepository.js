@@ -2,8 +2,11 @@ const _ = require('lodash');
 const { db } = require('./repository');
 const { groupLapsByMemberGroup, positionCalculation } = require('../race/positionCalculation');
 
-const groupsFindByRoundId = (roundId) => {
-    return db.group.find({ roundId });
+const groupsFindByRoundId = async (roundId) => {
+    const groups = await db.group.find({ roundId });
+    return Promise.all(
+        groups.sort((a, b) => a.sort - b.sort).map(async (group) => await enrichGroupSportsmenAndTeams(group))
+    );
 };
 
 const groupsFindByRoundIds = (roundIds) => {
@@ -15,34 +18,36 @@ const groupInsert = (group) => {
 };
 
 const groupFindById = (_id) => {
-    return db.group.findOne({ _id }).then(async (group) => {
-        const sportsmen = await db.sportsman.find({ competitionId: group.competitionId });
-        const teams = await db.team.find({ competitionId: group.competitionId });
-        return {
-            ...group,
-            sportsmen: group.sportsmen
-                ?.map((item) => ({
-                    ...item,
-                    sportsman: _.find(sportsmen, ['_id', item._id])
-                }))
-                .filter((item) => !!item.sportsman),
-            teams: group.teams
-                ?.map((item) => ({
-                    ..._.cloneDeep(item),
-                    team: _.find(teams, ['_id', item._id])
-                }))
-                .map((item) => ({
-                    ..._.cloneDeep(item),
-                    team: {
-                        ..._.cloneDeep(item.team),
-                        sportsmen: (item?.team?.sportsmenIds || []).map((sportsmanId) =>
-                            _.find(sportsmen, ['_id', sportsmanId])
-                        )
-                    }
-                }))
-                .filter((item) => !!item.team)
-        };
-    });
+    return db.group.findOne({ _id }).then(async (group) => await enrichGroupSportsmenAndTeams(group));
+};
+
+const enrichGroupSportsmenAndTeams = async (group) => {
+    const sportsmen = await db.sportsman.find({ competitionId: group.competitionId });
+    const teams = await db.team.find({ competitionId: group.competitionId });
+    return {
+        ...group,
+        sportsmen: group.sportsmen
+            ?.map((item) => ({
+                ...item,
+                sportsman: _.find(sportsmen, ['_id', item._id])
+            }))
+            .filter((item) => !!item.sportsman),
+        teams: group.teams
+            ?.map((item) => ({
+                ..._.cloneDeep(item),
+                team: _.find(teams, ['_id', item._id])
+            }))
+            .map((item) => ({
+                ..._.cloneDeep(item),
+                team: {
+                    ..._.cloneDeep(item.team),
+                    sportsmen: (item?.team?.sportsmenIds || []).map((sportsmanId) =>
+                        _.find(sportsmen, ['_id', sportsmanId])
+                    )
+                }
+            }))
+            .filter((item) => !!item.team)
+    };
 };
 
 const groupUpdate = (_id, group) => {
