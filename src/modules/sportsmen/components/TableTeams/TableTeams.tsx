@@ -1,14 +1,7 @@
 import React, { FC, useCallback } from 'react';
 import _ from 'lodash';
 import { ITeam } from '@/types/ITeam';
-import {
-    DataGrid,
-    GridActionsCellItem,
-    GridCellEditCommitParams,
-    GridColumns,
-    GridRowParams,
-    GridToolbar
-} from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridCellEditCommitParams, GridColumns, GridRowParams } from '@mui/x-data-grid';
 import { Avatar, Checkbox } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -131,9 +124,6 @@ export const TableTeams: FC<IProps> = ({ teams, onUpdate, onDelete, onOpenEdit }
                 onCellEditCommit={handleCellEditCommit}
                 getRowId={(row) => row._id}
                 hideFooterPagination
-                components={{
-                    Toolbar: GridToolbar
-                }}
             />
         </div>
     );

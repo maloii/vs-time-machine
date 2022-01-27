@@ -5,14 +5,7 @@ import { observer } from 'mobx-react';
 import { Avatar, Checkbox } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import {
-    DataGrid,
-    GridCellEditCommitParams,
-    GridColumns,
-    GridActionsCellItem,
-    GridRowParams,
-    GridToolbar
-} from '@mui/x-data-grid';
+import { DataGrid, GridCellEditCommitParams, GridColumns, GridActionsCellItem, GridRowParams } from '@mui/x-data-grid';
 
 import styles from './styles.module.scss';
 
@@ -139,9 +132,6 @@ export const TableSportsmen: FC<IProps> = observer(({ sportsmen, onUpdate, onDel
                 onCellEditCommit={handleCellEditCommit}
                 getRowId={(row) => row._id}
                 hideFooterPagination
-                components={{
-                    Toolbar: GridToolbar
-                }}
             />
         </div>
     );

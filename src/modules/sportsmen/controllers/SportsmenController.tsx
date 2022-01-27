@@ -1,6 +1,9 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react';
 import _ from 'lodash';
+import { Box, Button, IconButton, InputAdornment, Tab, Tabs, TextField } from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
+import AddIcon from '@mui/icons-material/Add';
 import { TableSportsmen } from '@/modules/sportsmen/components/TableSportsmen/TableSportsmen';
 import { TableTeams } from '@/modules/sportsmen/components/TableTeams/TableTeams';
 import { story } from '@/story/story';
@@ -18,24 +21,63 @@ import {
 } from '@/actions/actionRequest';
 import { DialogSportsmanEdit } from '@/modules/sportsmen/components/DialogSportsmanEdit/DialogSportsmanEdit';
 import { DialogTeamEdit } from '@/modules/sportsmen/components/DialogTeamEdit/DialogTeamEdit';
-import { Box, Button, Tab, Tabs } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 
 import styles from './styles.module.scss';
 
 export const SportsmenController: FC = observer(() => {
     const [tabSelected, setTabSelected] = useState('Sportsmen');
+    const [searchSportsmen, setSearchSportsmen] = useState('');
+    const [searchTeams, setSearchTeams] = useState('');
 
     const [openDialogAddSportsman, setOpenDialogAddSportsman] = useState(false);
     const [openDialogAddTeam, setOpenDialogAddTeam] = useState(false);
     const [sportsmanEdit, setSportsmanEdit] = useState<ISportsman>();
     const [teamEdit, setTeamEdit] = useState<ITeam>();
 
-    const sportsmen = _.sortBy(story.sportsmen, 'lastName');
-    const teams = _.sortBy(story.teams, 'name');
+    const sportsmen = useMemo(
+        () =>
+            _.sortBy(story.sportsmen, 'lastName').filter((sportsman) => {
+                if (!searchSportsmen) return true;
+                return (
+                    `${sportsman.lastName} ${sportsman.firstName} ${sportsman.middleName} ${sportsman.transponders.join(
+                        ' '
+                    )}`
+                        .toUpperCase()
+                        .indexOf(searchSportsmen.toUpperCase()) >= 0
+                );
+            }),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [story.sportsmen, searchSportsmen]
+    );
+
+    const teams = useMemo(
+        () =>
+            _.sortBy(story.teams, 'name').filter((team) => {
+                if (!searchTeams) return true;
+                return team.name.toUpperCase().indexOf(searchTeams.toUpperCase()) >= 0;
+            }),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [story.teams, searchTeams]
+    );
 
     const handleChangeTab = useCallback((event: React.SyntheticEvent, id: string) => {
         setTabSelected(id);
+    }, []);
+
+    const handleChangeSearchSportsmen = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+        setSearchSportsmen(event.target.value);
+    }, []);
+
+    const handleChangeSearchTeams = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+        setSearchTeams(event.target.value);
+    }, []);
+
+    const handleClearSearchSportsmen = useCallback(() => {
+        setSearchSportsmen('');
+    }, []);
+
+    const handleClearSearchTeams = useCallback(() => {
+        setSearchTeams('');
     }, []);
 
     const handleClose = useCallback(() => {
@@ -170,6 +212,22 @@ export const SportsmenController: FC = observer(() => {
                         Add sportsman
                     </Button>
                 </div>
+                <TextField
+                    className={styles.search}
+                    size="small"
+                    label="Search"
+                    value={searchSportsmen}
+                    onChange={handleChangeSearchSportsmen}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton onClick={handleClearSearchSportsmen}>
+                                    <ClearIcon />
+                                </IconButton>
+                            </InputAdornment>
+                        )
+                    }}
+                />
                 <TableSportsmen
                     sportsmen={sportsmen}
                     onUpdate={handleUpdateSportsman}
@@ -183,6 +241,22 @@ export const SportsmenController: FC = observer(() => {
                         Add team
                     </Button>
                 </div>
+                <TextField
+                    className={styles.search}
+                    size="small"
+                    label="Search"
+                    value={searchTeams}
+                    onChange={handleChangeSearchTeams}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton onClick={handleClearSearchTeams}>
+                                    <ClearIcon />
+                                </IconButton>
+                            </InputAdornment>
+                        )
+                    }}
+                />
                 <TableTeams
                     teams={teams}
                     onUpdate={handleUpdateTeam}
