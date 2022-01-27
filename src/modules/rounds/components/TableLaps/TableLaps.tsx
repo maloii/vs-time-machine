@@ -95,7 +95,6 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
             'timeLap'
         );
         let textLap: ReactNode = '';
-        let photo: string | undefined = undefined;
         if (lap?.typeLap === TypeLap.START) textLap = 'Start';
         if (lap?.typeLap && [TypeLap.OK, TypeLap.PIT_STOP_END].includes(lap.typeLap)) {
             textLap = millisecondsToTimeString(lap.timeLap);
@@ -103,12 +102,20 @@ export const TableLaps: FC<IProps> = observer(({ round, group, readonly, raceSta
         if (readonly) {
             const team = _.find(group.teams, ['_id', lap?.memberGroupId]);
             if (lap?.sportsmanId && team && team?.team?.sportsmen) {
-                photo = _.find(team.team.sportsmen, ['_id', lap.sportsmanId])?.photo;
-                if (photo) {
+                const sportsman = _.find(team.team.sportsmen, ['_id', lap.sportsmanId]);
+                console.log(sportsman);
+                if (sportsman?.photo) {
+                    const name = sportsmanName(sportsman)?.[0] || '';
+                    const photo =
+                        sportsman.photo !== window.api.DEFAULT_PHOTO
+                            ? window.api.getFilePath(sportsman.photo)
+                            : undefined;
                     textLap = (
                         <div className={styles.lapWithPhoto}>
                             {textLap}
-                            <Avatar alt="Photo" className={styles.photo} src={window.api.getFilePath(photo)} />
+                            <Avatar alt={name} className={styles.photo} src={photo}>
+                                {name?.[0] || ''}
+                            </Avatar>
                         </div>
                     );
                 }

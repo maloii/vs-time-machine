@@ -62,10 +62,16 @@ class Race {
             await sleep(8000);
             speech('Удачной гонки!');
             await sleep(1500);
+            this.raceStatus = 'COUNTDOWN_3';
+            this.sendRaceStatus();
             await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`) });
             await sleep(100);
+            this.raceStatus = 'COUNTDOWN_2';
+            this.sendRaceStatus();
             await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`) });
             await sleep(100);
+            this.raceStatus = 'COUNTDOWN_1';
+            this.sendRaceStatus();
             await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`) });
             await sleep(400);
 
