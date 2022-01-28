@@ -19,6 +19,7 @@ class Connector {
         }
         if (this.connector.connect(this.receive, ...params)) {
             this.isConnect = true;
+            this.sendSyncTime();
         }
     };
 
