@@ -119,6 +119,7 @@ export const TableTeams: FC<IProps> = ({ teams, onUpdate, onDelete, onOpenEdit }
     return (
         <div className={styles.dataGrid}>
             <DataGrid
+                hideFooter
                 columns={columns}
                 rows={teams.map((item, indx) => ({ ...item, num: indx + 1 }))}
                 onCellEditCommit={handleCellEditCommit}
