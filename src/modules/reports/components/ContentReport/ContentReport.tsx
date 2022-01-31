@@ -8,6 +8,7 @@ import { CountLapsReport } from '@/modules/reports/components/CountLapsReport/Co
 import { BestPitStopReport } from '@/modules/reports/components/BestPitStopReport/BestPitStopReport';
 import { PositionSportsmenReport } from '@/modules/reports/components/PositionSportsmenReport/PositionSportsmenReport';
 import { RoundGroupsReport } from '@/modules/reports/components/RoundGroupsReport/RoundGroupsReport';
+import { RoundGroupsLaps } from '@/modules/reports/components/RoundGroupsLaps/RoundGroupsLaps';
 
 interface IProps {
     report: IReport;
@@ -38,6 +39,7 @@ export const ContentReport: FC<IProps> = observer(({ report }: IProps) => {
             {report.type === TypeReport.POSITION_SPORTSMEN && (
                 <PositionSportsmenReport report={report} sportsmen={story.sportsmen} teams={story.teams} />
             )}
+            {report.type === TypeReport.ROUND_GROUPS_LAPS && <RoundGroupsLaps report={report} rounds={story.rounds} />}
             {report.type === TypeReport.ROUND_GROUPS && <RoundGroupsReport report={report} />}
         </>
     );

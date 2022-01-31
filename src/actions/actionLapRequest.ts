@@ -7,8 +7,8 @@ export const loadLapsForGroupAction = (group: IGroup): void => {
     window.api.ipcRenderer.send('load-laps-for-group-request', group._id);
 };
 
-export const loadLapsForRoundAction = (round: IRound): Promise<Array<ILap>> => {
-    return window.api.ipcRenderer.invoke('handle-load-laps-for-round-request', round._id);
+export const loadLapsForRoundAction = (roundId: string): Promise<Array<ILap>> => {
+    return window.api.ipcRenderer.invoke('handle-load-laps-for-round-request', roundId);
 };
 
 export const loadLapsForRoundsAction = (rounds: IRound[]): Promise<Array<ILap>> => {

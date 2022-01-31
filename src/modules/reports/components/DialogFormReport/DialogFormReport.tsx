@@ -142,7 +142,7 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
                             </Select>
                         </FormControl>
                     )}
-                    {type === TypeReport.ROUND_GROUPS && (
+                    {[TypeReport.ROUND_GROUPS, TypeReport.ROUND_GROUPS_LAPS].includes(type) && (
                         <FormControl fullWidth>
                             <InputLabel id="round-label">Round</InputLabel>
                             <Select labelId="round-label" value={roundId} label="Round" onChange={handleChangeRoundId}>

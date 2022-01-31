@@ -5,6 +5,7 @@ import { ITeam } from '@/types/ITeam';
 import { ISportsman } from '@/types/ISportsman';
 import { ICompetition } from '@/types/ICompetition';
 import { IRound } from '@/types/IRound';
+import { ILap } from '@/types/ILap';
 
 export interface IMembersGroup {
     _id: string;
@@ -34,4 +35,5 @@ export interface IGroup {
     teams: IMembersGroup[];
     competition?: ICompetition;
     round?: IRound;
+    laps?: ILap[];
 }
