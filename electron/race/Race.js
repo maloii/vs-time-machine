@@ -35,6 +35,7 @@ class Race {
     lastTimeLap = {};
     lastTimePitStopBegin = {};
     lastTimePitStopEnd = {};
+    lastTimeGates = {};
     timerSearch;
     timerStop;
 
@@ -137,8 +138,6 @@ class Race {
         }
     };
 
-    newGate = async (millisecond, transponder, gateNumber) => {};
-
     newLap = async (millisecond, transponder, numberPackage, gateNumber) => {
         connector.setRace(this);
         if (this.raceStatus === 'RUN' && !this.numberPackages.includes(numberPackage)) {
@@ -146,17 +145,21 @@ class Race {
             const sportsman = findInMembersGroupSportsmanByTransponder(membersGroup, transponder);
             const competition = this.selectedGroup.competition || {};
             const round = this.selectedGroup.round || {};
-            let gate = _.find(competition.gates, (gate) => gate.number === Number(gateNumber));
+            let gate = _.find(competition.gates, (gate) => Number(gate.number) === Number(gateNumber));
             if (!gate) {
                 gate = _.find(competition.gates, (gate) => gate.type === 'FINISH');
             }
+            const gates = (competition.gates || [])
+                .filter((item) => item.type === 'GATE')
+                .sort((a, b) => a.position - b.position);
+
+            const gateDelay = gate.delay * 1000;
 
             if (membersGroup && gate?.type === 'FINISH') {
                 const laps = (await lapsFindByMemberGroupId(membersGroup._id, this.selectedGroup._id)) || [];
                 const okLaps = laps.filter((lap) => lap.typeLap === 'OK');
                 const timeLap = millisecond - this.lastTimeLap[membersGroup._id];
                 this.lastTimePitStopBegin[membersGroup._id] = undefined;
-                const gateDelay = gate.delay * 1000;
                 let typeLap = (gateDelay > 0 && gateDelay < timeLap) || gateDelay === 0 ? 'OK' : 'HIDDEN';
                 //Проверка если указано максимальное время гонки
                 if (round.maxTimeRace && Number(round.maxTimeRace) > 0) {
@@ -188,6 +191,16 @@ class Race {
                 }
                 if (laps.length === 0 && round.typeStartRace === 'START_AFTER_FIRST_GATE') {
                     typeLap = 'START';
+                }
+
+                if (typeLap === 'OK' && gates.length > 0) {
+                    if (
+                        gates.reduce((res, curr) => !!this.lastTimeGates?.[membersGroup._id]?.[curr._id] && res, true)
+                    ) {
+                        this.lastTimeGates[membersGroup._id] = {};
+                    } else {
+                        typeLap = 'HIDDEN';
+                    }
                 }
 
                 if (['OK', 'START', 'SKIP_FIRST_GATE'].includes(typeLap)) {
@@ -230,8 +243,7 @@ class Race {
 
                 sendToAllMessage('new-lap-update', newLap);
                 this.numberPackages.push(numberPackage);
-            } else {
-                const gateDelay = gate.delay * 1000;
+            } else if (['PIT_STOP_BEGIN', 'PIT_STOP_END'].includes(gate?.type)) {
                 if (
                     ('PIT_STOP_BEGIN' === gate?.type &&
                         ((gateDelay > 0 && gateDelay < millisecond - this.lastTimePitStopBegin[membersGroup._id]) ||
@@ -266,6 +278,41 @@ class Race {
                     sendToAllMessage('new-lap-update', newLap);
                     // sound.play({ path: path.join(app.getPath('userData'), `/sounds/short_beep.mp3`) });
                 }
+            } else if (gate?.type === 'GATE') {
+                const inxCurrGate = _.findIndex(gates, ['_id', gate._id]);
+                let typeLap = 'HIDDEN';
+                let timeLap = undefined;
+                if (
+                    (inxCurrGate === 0 && !this.lastTimeGates?.[membersGroup._id]?.[gate._id]) || //first gate
+                    (inxCurrGate > 0 &&
+                        !!this.lastTimeGates?.[membersGroup._id]?.[gates[inxCurrGate - 1]._id] &&
+                        !this.lastTimeGates?.[membersGroup._id]?.[gate._id])
+                ) {
+                    this.lastTimeGates[membersGroup._id] = {
+                        ...(this.lastTimeGates[membersGroup._id] || {}),
+                        [gate._id]: millisecond
+                    };
+                    timeLap =
+                        inxCurrGate === 0
+                            ? millisecond - this.lastTimeLap[membersGroup._id]
+                            : millisecond - this.lastTimeGates[membersGroup._id][gates[inxCurrGate - 1]._id];
+
+                    typeLap = 'GATE';
+                }
+
+                const newLap = await lapInsert({
+                    millisecond,
+                    timeLap,
+                    typeLap,
+                    competitionId: competition._id,
+                    roundId: round._id,
+                    groupId: this.selectedGroup._id,
+                    gateId: gate._id,
+                    memberGroupId: membersGroup._id,
+                    sportsmanId: sportsman._id,
+                    transponder
+                });
+                sendToAllMessage('new-lap-update', newLap);
             }
         }
     };

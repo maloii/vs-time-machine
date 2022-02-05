@@ -221,7 +221,10 @@ export const TableLaps: FC<IProps> = observer(
             window.api.ipcRenderer.on('new-lap-update', (e: any, newLap: ILap) => {
                 loadLapsForGroupAction(group);
                 if (
-                    [TypeLap.OK, TypeLap.START, TypeLap.PIT_STOP_END, TypeLap.PIT_STOP_BEGIN].includes(newLap.typeLap)
+                    !readonly &&
+                    [TypeLap.OK, TypeLap.START, TypeLap.PIT_STOP_END, TypeLap.PIT_STOP_BEGIN, TypeLap.GATE].includes(
+                        newLap.typeLap
+                    )
                 ) {
                     beep(20, 1000, 1, 'sine');
                 }
@@ -231,7 +234,7 @@ export const TableLaps: FC<IProps> = observer(
                     }
                 }, 1);
             });
-        }, [group]);
+        }, [group, readonly]);
 
         const countLapsForMember = (id: string) =>
             ((groupLaps || story.laps || []).filter((lap: ILap) => lap.memberGroupId === id) || []).length;
