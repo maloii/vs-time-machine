@@ -137,6 +137,7 @@ export const ListAllLaps: FC<IProps> = ({
                 <TableCell>{lap.timeLap ? millisecondsToTimeString(lap.timeLap) : '--:--:---'}</TableCell>
                 <TableCell>{lap.typeLap}</TableCell>
                 <TableCell>{lap.gate?.number}</TableCell>
+                <TableCell>{lap.gate?.position}</TableCell>
                 <TableCell>{lap.transponder}</TableCell>
                 <TableCell>{sportsmanName(lap.sportsman!)}</TableCell>
                 <TableCell>
@@ -183,7 +184,8 @@ export const ListAllLaps: FC<IProps> = ({
                                     <TableCell>DateTime</TableCell>
                                     <TableCell>Time</TableCell>
                                     <TableCell>Type</TableCell>
-                                    <TableCell>Gate</TableCell>
+                                    <TableCell>Gate num.</TableCell>
+                                    <TableCell>Gate pos.</TableCell>
                                     <TableCell>Transponder</TableCell>
                                     <TableCell>Sportsman</TableCell>
                                     <TableCell />
