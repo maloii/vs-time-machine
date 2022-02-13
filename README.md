@@ -2,6 +2,10 @@
 
 Project for a timekeeping system VS Time machine
 
+####Before the start, you need to rebuild the serialport library by running the command
+
+### `npm run rebuild`
+
 ## Available Scripts
 
 In the project directory, you can run:
