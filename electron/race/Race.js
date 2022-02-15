@@ -39,12 +39,33 @@ class Race {
     lastTimeGates = {};
     timerSearch;
     timerStop;
+    timersSayTime = [];
 
     invitation = async (group) => {
         this.selectedGroup = group;
         sendToAllMessage('group-in-race', this.selectedGroup);
         const text = `На старт приглашается ${group.name}. ${getAllNameMembersInGroup(group).join(', ')}`;
         speech(text);
+    };
+
+    sayTimeLeft = (maxTimeRace) => {
+        let indexTimer = 0;
+        if (maxTimeRace >= 1000 * 60 * 2) {
+            this.timersSayTime[indexTimer++] = setTimeout(() => {
+                speech('До конца гонки осталась одна минута');
+            }, maxTimeRace - 1000 * 60);
+        }
+        if (maxTimeRace >= 1000 * 60 * 9) {
+            this.timersSayTime[indexTimer++] = setTimeout(() => {
+                speech('До конца гонки осталась пять минут');
+            }, maxTimeRace - 1000 * 60 * 5);
+        }
+
+        if (maxTimeRace >= 1000 * 60 * 15) {
+            this.timersSayTime[indexTimer++] = setTimeout(() => {
+                speech('До конца гонки осталась десять минут');
+            }, maxTimeRace - 1000 * 60 * 10);
+        }
     };
 
     start = async (group) => {
@@ -91,6 +112,7 @@ class Race {
                     sound.play({ path: path.join(app.getPath('userData'), `/sounds/long_beep.wav`) });
                     speech('Гонка завершена!');
                 }, maxTimeRace);
+                this.sayTimeLeft(maxTimeRace);
             }
 
             this.lastTimeLap = {};
@@ -114,6 +136,12 @@ class Race {
         }
         if (this.timerStop) {
             clearInterval(this.timerStop);
+        }
+        if (this.timersSayTime?.length > 0) {
+            for (const timerToClear of this.timersSayTime) {
+                clearInterval(timerToClear);
+            }
+            this.timersSayTime = [];
         }
         this.sendRaceStatus();
     };

@@ -40,9 +40,9 @@ const competitionDelete = async (_id) => {
         count += await db.sportsman.remove({ competitionId: _id }, { multi: true });
         count += await db.team.remove({ competitionId: _id }, { multi: true });
         const rounds = await db.round.find({ competitionId: _id });
-        for (const round in rounds) {
+        for (const round of rounds) {
             const groups = await db.group.find({ roundId: round._id });
-            for (const group in groups) {
+            for (const group of groups) {
                 count += await db.lap.remove({ groupId: group._id }, { multi: true });
             }
             count += await db.group.remove({ roundId: round._id }, { multi: true });
