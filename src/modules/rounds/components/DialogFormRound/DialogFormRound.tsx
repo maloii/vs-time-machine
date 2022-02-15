@@ -219,7 +219,7 @@ export const DialogFormRound: FC<IProps> = ({ open, onClose, onSave, onUpdate, o
                     {!round && (
                         <>
                             <Divider style={{ width: 'calc(50ch + 16px)' }} />
-                            {[TypeRound.PRACTICE, TypeRound.QUALIFICATION].includes(typeRound) && (
+                            {[TypeRound.PRACTICE, TypeRound.QUALIFICATION, TypeRound.RACE].includes(typeRound) && (
                                 <>
                                     <FormControl sx={{ m: 1, minWidth: 120 }}>
                                         <InputLabel id="auto-generate-label">Auto generate</InputLabel>
@@ -266,7 +266,9 @@ export const DialogFormRound: FC<IProps> = ({ open, onClose, onSave, onUpdate, o
                             {[TypeRound.RACE, TypeRound.FINAL].includes(typeRound) && (
                                 <>
                                     <FormControl sx={{ m: 1, minWidth: 120 }}>
-                                        <InputLabel id="type-parentEntity-label">Auto generate race</InputLabel>
+                                        <InputLabel id="type-parentEntity-label">
+                                            Auto generate race elimination
+                                        </InputLabel>
                                         <Select<TypeRaceElimination>
                                             labelId="type-parentEntity-label"
                                             value={typeRaceElimination}
