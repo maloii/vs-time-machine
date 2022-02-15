@@ -8,6 +8,7 @@ import { loadLapsForRoundsAction } from '@/actions/actionLapRequest';
 import _ from 'lodash';
 import { ILap } from '@/types/ILap';
 import { TypeLap } from '@/types/TypeLap';
+import { loadGroupsByRoundsAction } from '@/actions/actionGroupRequest';
 
 export const calculateCountLapsReport = async (
     report: IReport,
@@ -19,11 +20,22 @@ export const calculateCountLapsReport = async (
         report.typeRound !== TypeRoundReport.ALL ? round.typeRound.toString() === report.typeRound.toString() : true
     );
     const allLaps = await loadLapsForRoundsAction(reportRounds);
-    let resRows = _.chain(allLaps)
-        .groupBy('memberGroupId')
-        .map((laps: ILap[], memberGroupId: string) => {
-            let okLaps = laps.filter((lap) => lap.typeLap === TypeLap.OK);
-            const groupedByGroupIdLaps = _.groupBy(okLaps, 'groupId');
+    const allGroups = await loadGroupsByRoundsAction(reportRounds);
+    let resRows = _.chain([...sportsmen, ...teams].map((item) => item._id))
+        .map((memberGroupId) => {
+            let okLaps = allLaps.filter((lap) => lap.memberGroupId === memberGroupId && lap.typeLap === TypeLap.OK);
+            const allGroupsForMemberId = allGroups.filter(
+                (group) =>
+                    [
+                        ...group.sportsmen.map((sportsman) => sportsman._id),
+                        ...group.teams.map((team) => team._id)
+                    ].includes(memberGroupId) && Boolean(group.timeStart)
+            );
+            const groupedByGroupIdLaps: Record<string, ILap[]> = allGroupsForMemberId.reduce(
+                (res, group) => ({ ...res, [group._id]: okLaps.filter((lap) => lap.groupId === group._id) }),
+                {}
+            );
+
             if (Object.keys(groupedByGroupIdLaps).length - (report?.notCountedRounds || 0) > 0) {
                 const sortedGroupedByGroupIdLaps = _.orderBy(
                     Object.values(groupedByGroupIdLaps).map((lapsInGroup) => {

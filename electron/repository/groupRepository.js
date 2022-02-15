@@ -2,6 +2,10 @@ const _ = require('lodash');
 const { db } = require('./repository');
 const { groupLapsByMemberGroup, positionCalculation } = require('../race/positionCalculation');
 
+const groupsFindByCompetitionId = async (competitionId) => {
+    return db.group.find({ competitionId });
+};
+
 const groupsFindByRoundId = async (roundId) => {
     const groups = await db.group.find({ roundId });
     return Promise.all(
@@ -83,6 +87,7 @@ const groupDelete = async (_id) => {
 };
 
 module.exports = {
+    groupsFindByCompetitionId,
     groupsFindByRoundId,
     groupsFindByRoundIds,
     groupFindById,

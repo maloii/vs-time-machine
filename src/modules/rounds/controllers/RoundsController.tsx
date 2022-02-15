@@ -10,7 +10,7 @@ import {
     groupInsertAction,
     groupSelectAction,
     groupUpdateAction,
-    loadGroupsAction,
+    loadGroupsByRoundIdAction,
     loadLapsForGroupAction,
     loadRoundsAction
 } from '@/actions/actionRequest';
@@ -198,7 +198,12 @@ export const RoundsController: FC = observer(() => {
 
     const handleStartRace = useCallback(() => {
         if (selectedGroup) {
-            if (raceReadyToStart) {
+            if (
+                raceReadyToStart &&
+                (story.laps?.length > 0
+                    ? window.confirm('There is lap data in the group, if you restart the race it will be deleted!')
+                    : true)
+            ) {
                 startRaceAction({
                     ..._.cloneDeep(selectedGroup),
                     competition: _.cloneDeep(story.competition),
@@ -253,19 +258,19 @@ export const RoundsController: FC = observer(() => {
 
     useEffect(() => {
         if (selectedRound) {
-            loadGroupsAction(selectedRound);
+            loadGroupsByRoundIdAction(selectedRound._id);
             window.api.ipcRenderer.removeAllListeners('group-insert-response');
             window.api.ipcRenderer.removeAllListeners('group-update-response');
             window.api.ipcRenderer.removeAllListeners('group-select-response');
             window.api.ipcRenderer.removeAllListeners('group-delete-response');
             window.api.ipcRenderer.removeAllListeners('lap-update-response');
             window.api.ipcRenderer.removeAllListeners('lap-delete-response');
-            window.api.ipcRenderer.on('group-insert-response', () => loadGroupsAction(selectedRound));
-            window.api.ipcRenderer.on('group-update-response', () => loadGroupsAction(selectedRound));
-            window.api.ipcRenderer.on('group-select-response', () => loadGroupsAction(selectedRound));
-            window.api.ipcRenderer.on('group-delete-response', () => loadGroupsAction(selectedRound));
-            window.api.ipcRenderer.on('lap-update-response', () => loadGroupsAction(selectedRound));
-            window.api.ipcRenderer.on('lap-delete-response', () => loadGroupsAction(selectedRound));
+            window.api.ipcRenderer.on('group-insert-response', () => loadGroupsByRoundIdAction(selectedRound._id));
+            window.api.ipcRenderer.on('group-update-response', () => loadGroupsByRoundIdAction(selectedRound._id));
+            window.api.ipcRenderer.on('group-select-response', () => loadGroupsByRoundIdAction(selectedRound._id));
+            window.api.ipcRenderer.on('group-delete-response', () => loadGroupsByRoundIdAction(selectedRound._id));
+            window.api.ipcRenderer.on('lap-update-response', () => loadGroupsByRoundIdAction(selectedRound._id));
+            window.api.ipcRenderer.on('lap-delete-response', () => loadGroupsByRoundIdAction(selectedRound._id));
         }
     }, [selectedRound]);
 

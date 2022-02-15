@@ -1,12 +1,8 @@
 import { IRound } from '@/types/IRound';
 import { IGroup } from '@/types/IGroup';
 
-export const loadGroupsAction = (round: IRound): void => {
-    window.api.ipcRenderer.send('load-groups-for-round-request', round._id);
-};
-
-export const loadGroupsByIdAction = (_id: string): void => {
-    window.api.ipcRenderer.send('load-groups-for-round-request', _id);
+export const loadGroupsByRoundIdAction = (roundId: string): void => {
+    window.api.ipcRenderer.send('load-groups-for-round-request', roundId);
 };
 
 export const loadGroupsByRoundAction = (roundId: string): Promise<Array<IGroup>> => {
@@ -26,6 +22,10 @@ export const loadGroupByIdAction = (_id: string): Promise<IGroup> => {
 
 export const groupInsertAction = (group: Omit<IGroup, '_id'>): void => {
     window.api.ipcRenderer.send('group-insert-request', group);
+};
+
+export const loadGroupsByCompetitionIdAction = (competitionId: string): void => {
+    return window.api.ipcRenderer.invoke('handle-groups-for-competition-request', competitionId);
 };
 
 export const groupUpdateAction = (

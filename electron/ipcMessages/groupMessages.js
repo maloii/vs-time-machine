@@ -1,4 +1,5 @@
 const {
+    groupsFindByCompetitionId,
     groupsFindByRoundId,
     groupsFindByRoundIds,
     groupInsert,
@@ -24,6 +25,10 @@ ipcMain.handle('handle-load-groups-for-rounds-request', async (e, roundIds) => {
 
 ipcMain.handle('handle-load-group-by-id-request', async (e, _id) => {
     return groupFindById(_id);
+});
+
+ipcMain.handle('handle-groups-for-competition-request', async (e, competitionId) => {
+    return groupsFindByCompetitionId(competitionId);
 });
 
 ipcMain.on('group-insert-request', async (e, group) => {
