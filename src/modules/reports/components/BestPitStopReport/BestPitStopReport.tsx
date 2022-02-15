@@ -65,13 +65,6 @@ export const BestPitStopReport: FC<IProps> = observer(({ report, rounds, teams, 
                         </TableRow>
                     ))}
                 </TableBody>
-                <tfoot>
-                    <tr>
-                        <td colSpan={6}>
-                            <div />
-                        </td>
-                    </tr>
-                </tfoot>
             </Table>
         </TableContainer>
     );

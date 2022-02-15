@@ -32,9 +32,6 @@ export const DialogReportController: FC<IProps> = observer(({ open, onClose, rep
                 <DialogContent>
                     <ContentReport key={v4()} report={report} />
                 </DialogContent>
-                <footer className={styles.footerLogo}>
-                    <img src={window.api.getFilePath(window.api.DEFAULT_COMPETITION_LOGO)} alt="logo" />
-                </footer>
             </div>
             <DialogActions>
                 <ReactToPrint content={() => refReport.current}>

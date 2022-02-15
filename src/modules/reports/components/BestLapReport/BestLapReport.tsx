@@ -65,13 +65,6 @@ export const BestLapReport: FC<IProps> = observer(({ report, rounds, teams, spor
                         </TableRow>
                     ))}
                 </TableBody>
-                <tfoot>
-                    <tr>
-                        <td colSpan={6}>
-                            <div />
-                        </td>
-                    </tr>
-                </tfoot>
             </Table>
         </TableContainer>
     );

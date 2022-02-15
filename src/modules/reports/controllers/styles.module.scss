@@ -14,19 +14,7 @@
 
 .report {
   overflow-x: visible;
-  tfoot {
-    display: none;
-  }
   @media print {
-    tfoot {
-      display: table-footer-group;
-      div {
-        background: white;
-        width: calc(100% + 4px);
-        height: 35px;
-        margin: -2px;
-      }
-    }
     table {
       page-break-inside:auto;
     }
@@ -49,19 +37,5 @@
   padding: 24px 0 20px 24px;
   img {
     height: 60px;
-  }
-}
-
-.footerLogo {
-  display: none;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  @media print {
-    display: flex;
-    justify-content: center;
-  }
-  img {
-    height: 20px;
   }
 }

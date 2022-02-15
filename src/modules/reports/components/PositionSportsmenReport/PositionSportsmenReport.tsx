@@ -40,13 +40,6 @@ export const PositionSportsmenReport: FC<IProps> = ({ report, teams, sportsmen }
                         </TableRow>
                     ))}
                 </TableBody>
-                <tfoot>
-                    <tr>
-                        <td colSpan={4}>
-                            <div />
-                        </td>
-                    </tr>
-                </tfoot>
             </Table>
         </TableContainer>
     );
