@@ -1,6 +1,7 @@
 const { app } = require('electron');
 const sound = require('node-wav-player');
 const path = require('path');
+const { Worker } = require('worker_threads');
 const { DateTime } = require('luxon');
 const { speech } = require('../speech/speech');
 const { connector } = require('../Connector');
@@ -200,6 +201,9 @@ class Race {
                         this.lastTimeGates[membersGroup._id] = {};
                     } else {
                         typeLap = 'HIDDEN';
+                        if (competition.playFail) {
+                            runServicePlay('fail.mp3');
+                        }
                     }
                 }
 
@@ -276,7 +280,6 @@ class Race {
                         transponder
                     });
                     sendToAllMessage('new-lap-update', newLap);
-                    // sound.play({ path: path.join(app.getPath('userData'), `/sounds/short_beep.mp3`) });
                 }
             } else if (gate?.type === 'GATE') {
                 const inxCurrGate = _.findIndex(gates, ['_id', gate._id]);
@@ -300,6 +303,9 @@ class Race {
                     typeLap = 'GATE';
                 }
 
+                if (competition.playFail && typeLap === 'HIDDEN') {
+                    runServicePlay('fail.mp3');
+                }
                 const newLap = await lapInsert({
                     millisecond,
                     timeLap,
@@ -336,5 +342,17 @@ class Race {
         sendToAllMessage('race-status-message', this.raceStatus, startTime);
     };
 }
+
+const runServicePlay = (file) => {
+    return new Promise((resolve, reject) => {
+        const fullPathToFile = path.join(app.getPath('userData'), `/sounds/${file}`);
+        const worker = new Worker(path.join(__dirname, '../utils/play.js'), { workerData: { file: fullPathToFile } });
+        worker.on('message', resolve);
+        worker.on('error', reject);
+        worker.on('exit', (code) => {
+            if (code !== 0) reject(new Error(`stopped with  ${code} exit code`));
+        });
+    });
+};
 
 module.exports = { race: new Race() };

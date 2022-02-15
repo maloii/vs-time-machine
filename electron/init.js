@@ -8,6 +8,7 @@ const SOUNDS_FOLDER = 'sounds';
 const SOUND_BEEP = 'beep.wav';
 const SOUND_LONG_BEEP = 'long_beep.wav';
 const SOUND_SHORT_BEEP = 'short_beep.mp3';
+const SOUND_FAIL = 'fail.mp3';
 
 const copyDefaultImages = () => {
     const pathImages = `${app.getPath('userData')}/${IMAGES_FOLDER}`;
@@ -44,6 +45,11 @@ const copyDefaultImages = () => {
     if (!fs.existsSync(`${pathSounds}/${SOUND_LONG_BEEP}`)) {
         fsPromise
             .copyFile(path.join(__dirname, `../assets/${SOUND_LONG_BEEP}`), `${pathSounds}/${SOUND_LONG_BEEP}`)
+            .then(() => {});
+    }
+    if (!fs.existsSync(`${pathSounds}/${SOUND_FAIL}`)) {
+        fsPromise
+            .copyFile(path.join(__dirname, `../assets/${SOUND_FAIL}`), `${pathSounds}/${SOUND_FAIL}`)
             .then(() => {});
     }
 };

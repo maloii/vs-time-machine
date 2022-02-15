@@ -46,6 +46,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
     const [name, setName] = useState<string>(competition?.name || '');
     const [selected, setSelected] = useState(competition?.selected || false);
     const [skipFirstGate, setSkipFirstGate] = useState(competition?.skipFirstGate || false);
+    const [playFail, setPlayFail] = useState(competition?.playFail || false);
     const [logo, setLogo] = useState(competition?.logo || window.api.DEFAULT_COMPETITION_LOGO);
 
     const [color1, setColor1] = useState<Color>(competition?.color1 || Color.BLUE);
@@ -97,6 +98,10 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
 
     const handleChangeSkipFirstGate = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setSkipFirstGate((prev) => !prev);
+    }, []);
+
+    const handleChangePlayFail = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setPlayFail((prev) => !prev);
     }, []);
 
     const handleChangeLogo = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
@@ -172,6 +177,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                 gates: _.cloneDeep(gates),
                 selected,
                 skipFirstGate,
+                playFail,
                 color1,
                 color2,
                 color3,
@@ -219,7 +225,8 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
         name,
         onClose,
         selected,
-        skipFirstGate
+        skipFirstGate,
+        playFail
     ]);
 
     const handleDelete = useCallback(() => {
@@ -299,6 +306,10 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                             <FormControlLabel
                                 control={<Switch checked={skipFirstGate} onChange={handleChangeSkipFirstGate} />}
                                 label="Skip the first gate"
+                            />
+                            <FormControlLabel
+                                control={<Switch checked={playFail} onChange={handleChangePlayFail} />}
+                                label="Play a violation sound"
                             />
                         </Box>
                     </div>
