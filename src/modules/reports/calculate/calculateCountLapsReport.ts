@@ -21,7 +21,9 @@ export const calculateCountLapsReport = async (
     );
     const allLaps = await loadLapsForRoundsAction(reportRounds);
     const allGroups = await loadGroupsByRoundsAction(reportRounds);
-    let resRows = _.chain([...sportsmen, ...teams].map((item) => item._id))
+    const allMemberGroupId = allGroups.flatMap((group) => [...group.sportsmen, ...group.teams].map((item) => item._id));
+    let resRows = _.chain(allMemberGroupId)
+        .uniq()
         .map((memberGroupId) => {
             let okLaps = allLaps.filter((lap) => lap.memberGroupId === memberGroupId && lap.typeLap === TypeLap.OK);
             const allGroupsForMemberId = allGroups.filter(
