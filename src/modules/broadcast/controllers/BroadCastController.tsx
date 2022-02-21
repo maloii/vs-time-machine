@@ -48,12 +48,10 @@ export const BroadCastController: FC = observer(() => {
     );
 
     const handleEdit = useCallback(
-        async (_id: string, broadCasts: Omit<IBroadCast, '_id' | 'competitionId'>) => {
-            if (broadCasts.name) {
-                await handleBroadCastUpdateAction(_id, broadCasts);
-                await handleLoadBroadCasts();
-                handleCloseDialog();
-            }
+        async (_id: string, broadCasts: Omit<IBroadCast, '_id' | 'competitionId'> | Pick<IBroadCast, 'background'>) => {
+            await handleBroadCastUpdateAction(_id, broadCasts);
+            await handleLoadBroadCasts();
+            handleCloseDialog();
         },
         [handleCloseDialog, handleLoadBroadCasts]
     );

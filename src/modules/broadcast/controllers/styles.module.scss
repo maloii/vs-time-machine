@@ -2,6 +2,7 @@
   padding: 25px;
   height: 100%;
   box-sizing: border-box;
+  background-size: cover;
 }
 
 .top {
@@ -54,4 +55,9 @@
   img {
     height: 50px;
   }
+}
+
+.broadcastReportStyle {
+  width: 1000px;
+  margin: 100px auto 0 auto;
 }

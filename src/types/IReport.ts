@@ -12,4 +12,5 @@ export interface IReport {
     onlySportsmen?: boolean;
     simplified?: boolean;
     count?: number;
+    broadCastStyle?: boolean;
 }

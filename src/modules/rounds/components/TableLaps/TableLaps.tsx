@@ -212,8 +212,10 @@ export const TableLaps: FC<IProps> = observer(
                     return (item.team?.name || sportsmanName(item?.sportsman!)) + '\n' + stringLaps;
                 })
                 .join('\n');
-            navigator.clipboard.writeText(textGroupLaps).then(() => alert('Group laps copied to clipboard.'));
-        }, [isLap, laps, membersGroup]);
+            navigator.clipboard
+                .writeText(`⏱ ${round.name} ${group.name} ⏱ \n\n ${textGroupLaps}`)
+                .then(() => alert('Group laps copied to clipboard.'));
+        }, [group.name, isLap, laps, membersGroup, round.name]);
 
         useEffect(() => {
             if (group) loadLapsForGroupAction(group);

@@ -4,6 +4,7 @@ export interface IBroadCast {
     _id: string;
     competitionId: string;
     showMainLogo: boolean;
+    showTitleReport: boolean;
     name: string;
     top: string;
     left: string;
@@ -14,4 +15,5 @@ export interface IBroadCast {
     right2: string;
     bottom: string;
     chromaKey: TypeChromaKey;
+    background?: string;
 }

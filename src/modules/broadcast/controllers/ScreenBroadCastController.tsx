@@ -1,6 +1,7 @@
-import React, { FC, ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import _ from 'lodash';
+import cn from 'classnames';
 import { observer } from 'mobx-react';
 import { StopWatch } from '@/modules/rounds/components/StopWatch/StopWatch';
 import { TableLaps } from '@/modules/rounds/components/TableLaps/TableLaps';
@@ -15,6 +16,7 @@ import { TypeBroadCastComponents } from '@/types/TypeBroadCastComponents';
 import { ContentReport } from '@/modules/reports/components/ContentReport/ContentReport';
 import { loadReportsAction } from '@/actions/actionReportRequest';
 import { loadCompetitionsAction } from '@/actions/actionCompetitionRequest';
+import { TypeChromaKey } from '@/types/TypeChromaKey';
 
 import styles from './styles.module.scss';
 
@@ -51,8 +53,12 @@ export const ScreenBroadCastController: FC = observer(() => {
                 if (report)
                     return (
                         <>
-                            <h2 className={styles.header}>{report.name}</h2>
-                            <ContentReport report={report} />
+                            {broadCast?.showTitleReport && <h2 className={styles.header}>{report.name}</h2>}
+                            <ContentReport
+                                report={report}
+                                isBroadcast
+                                className={cn({ [styles.broadcastReportStyle]: report.broadCastStyle })}
+                            />
                         </>
                     );
             }
@@ -60,6 +66,7 @@ export const ScreenBroadCastController: FC = observer(() => {
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [
+            broadCast?.showTitleReport,
             group,
             groupInRace,
             raceStatus,
@@ -72,6 +79,15 @@ export const ScreenBroadCastController: FC = observer(() => {
             story.laps
         ]
     );
+
+    const style = useMemo(() => {
+        if (broadCast?.chromaKey !== TypeChromaKey.NONE) {
+            return { background: broadCast?.chromaKey };
+        }
+        if (broadCast?.background) {
+            return { backgroundImage: `url('${window.api.getFilePath(broadCast?.background)}')` };
+        }
+    }, [broadCast?.background, broadCast?.chromaKey]);
 
     useEffect(() => {
         loadCompetitionsAction();
@@ -140,7 +156,7 @@ export const ScreenBroadCastController: FC = observer(() => {
     }, [params.screenId]);
 
     return (
-        <div className={styles.root} style={{ background: broadCast?.chromaKey }}>
+        <div className={styles.root} style={style}>
             {(broadCast?.showMainLogo || !!broadCast?.top) && (
                 <div className={styles.top}>
                     {broadCast?.showMainLogo && (

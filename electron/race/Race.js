@@ -71,6 +71,7 @@ class Race {
     start = async (group) => {
         connector.setRace(this);
         if (this.raceStatus === 'STOP') {
+            this.clear();
             connector.sendSyncTime();
             this.selectedGroup = clearPositionInGroup(group);
             let count = await groupUpdate(this.selectedGroup._id, this.selectedGroup);
@@ -117,6 +118,7 @@ class Race {
 
             this.lastTimeLap = {};
             this.lastTimePitStopBegin = {};
+            this.lastTimeGates = {};
             (this.selectedGroup.sportsmen || []).forEach((membersGroup) => {
                 this.lastTimeLap[membersGroup._id] = this.startTime;
             });
@@ -131,6 +133,11 @@ class Race {
     stop = () => {
         connector.setRace(this);
         this.raceStatus = 'STOP';
+        this.clear();
+        this.sendRaceStatus();
+    };
+
+    clear = () => {
         if (this.timerSearch) {
             clearInterval(this.timerSearch);
         }
@@ -143,7 +150,6 @@ class Race {
             }
             this.timersSayTime = [];
         }
-        this.sendRaceStatus();
     };
 
     search = async (group) => {
@@ -176,7 +182,24 @@ class Race {
             const round = this.selectedGroup.round || {};
             let gate = _.find(competition.gates, (gate) => Number(gate.number) === Number(gateNumber));
             if (!gate) {
-                gate = _.find(competition.gates, (gate) => gate.type === 'FINISH');
+                gate = _.find(competition.gates, (gate) => gate.type === 'FINISH' && gate.number === undefined);
+            }
+            if (!gate) {
+                const newLap = await lapInsert({
+                    millisecond,
+                    timeLap: undefined,
+                    typeLap: 'HIDDEN',
+                    competitionId: competition._id,
+                    roundId: round._id,
+                    groupId: this.selectedGroup._id,
+                    gateId: 'NOT_FOUND',
+                    gateNumber,
+                    memberGroupId: membersGroup._id,
+                    sportsmanId: sportsman._id,
+                    transponder
+                });
+                sendToAllMessage('new-lap-update', newLap);
+                return;
             }
             const gates = (competition.gates || [])
                 .filter((item) => item.type === 'GATE')
@@ -246,6 +269,7 @@ class Race {
                     roundId: round._id,
                     groupId: this.selectedGroup._id,
                     gateId: gate._id,
+                    gateNumber,
                     memberGroupId: membersGroup._id,
                     sportsmanId: sportsman._id,
                     transponder
@@ -303,6 +327,7 @@ class Race {
                         roundId: round._id,
                         groupId: this.selectedGroup._id,
                         gateId: gate._id,
+                        gateNumber,
                         memberGroupId: membersGroup._id,
                         sportsmanId: sportsman._id,
                         transponder
@@ -342,6 +367,7 @@ class Race {
                     roundId: round._id,
                     groupId: this.selectedGroup._id,
                     gateId: gate._id,
+                    gateNumber,
                     memberGroupId: membersGroup._id,
                     sportsmanId: sportsman._id,
                     transponder

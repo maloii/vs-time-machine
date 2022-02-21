@@ -37,14 +37,19 @@ export const DialogGateEdit: FC<IProps> = ({ open, onClose, gate, onSave, onUpda
     const [anyNumber, setAnyNumber] = useState<boolean>(!gate?.number);
     const [availableGates, setAvailableGates] = useState<string[]>([]);
 
-    const handleChangeTypeGate = useCallback((event: SelectChangeEvent<TypeGate>) => {
-        const newType = event.target.value as TypeGate;
-        if (newType !== TypeGate.FINISH) {
-            setAnyNumber(false);
-            setNumber(1);
-        }
-        setType(newType);
-    }, []);
+    const handleChangeTypeGate = useCallback(
+        (event: SelectChangeEvent<TypeGate>) => {
+            const newType = event.target.value as TypeGate;
+            if (newType !== TypeGate.FINISH) {
+                setAnyNumber(false);
+                if (!number) {
+                    setNumber(1);
+                }
+            }
+            setType(newType);
+        },
+        [number]
+    );
 
     const handleChangeAnyNumber = useCallback(
         (_event: React.ChangeEvent<HTMLInputElement>) => {

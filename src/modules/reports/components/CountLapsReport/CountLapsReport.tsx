@@ -10,21 +10,36 @@ import { ICountLapsReportRow } from '@/types/ICountLapsReportRow';
 import { calculateCountLapsReport } from '@/modules/reports/calculate/calculateCountLapsReport';
 import { observer } from 'mobx-react';
 import { story } from '@/story/story';
+import { ILap } from '@/types/ILap';
 
 interface IProps {
     report: IReport;
     rounds: IRound[];
     teams: ITeam[];
     sportsmen: ISportsman[];
+    isBroadcast?: boolean;
 }
 
-export const CountLapsReport: FC<IProps> = observer(({ report, rounds, teams, sportsmen }: IProps) => {
+export const CountLapsReport: FC<IProps> = observer(({ report, rounds, teams, sportsmen, isBroadcast }: IProps) => {
     const [rows, setRows] = useState<Array<ICountLapsReportRow>>([]);
 
     useEffect(() => {
         calculateCountLapsReport(report, rounds, teams, sportsmen).then(setRows);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [report, report.typeRound, rounds, sportsmen, teams, story.laps]);
+
+    useEffect(() => {
+        if (isBroadcast) {
+            window.api.ipcRenderer.removeAllListeners('new-lap-update');
+            window.api.ipcRenderer.removeAllListeners('race-status-message');
+            window.api.ipcRenderer.on('new-lap-update', (e: any, newLap: ILap) => {
+                calculateCountLapsReport(report, rounds, teams, sportsmen).then(setRows);
+            });
+            window.api.ipcRenderer.on('race-status-message', (e: any, newLap: ILap) => {
+                calculateCountLapsReport(report, rounds, teams, sportsmen).then(setRows);
+            });
+        }
+    });
 
     return (
         <TableContainer component={Paper} variant="outlined">

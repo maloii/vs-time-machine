@@ -22,7 +22,7 @@ export const handleBroadCastInsertAction = (broadCast: Omit<IBroadCast, '_id'>):
 
 export const handleBroadCastUpdateAction = (
     _id: string,
-    broadCast: Omit<IBroadCast, '_id' | 'competitionId'>
+    broadCast: Omit<IBroadCast, '_id' | 'competitionId'> | Pick<IBroadCast, 'background'>
 ): Promise<number> => {
     return window.api.ipcRenderer.invoke('handle-broadcast-update-request', _id, broadCast);
 };

@@ -136,7 +136,7 @@ export const ListAllLaps: FC<IProps> = ({
                 <TableCell>{DateTime.fromMillis(lap.millisecond).toFormat('dd.MM.yyyy hh:mm.ss')}</TableCell>
                 <TableCell>{lap.timeLap ? millisecondsToTimeString(lap.timeLap) : '--:--:---'}</TableCell>
                 <TableCell>{lap.typeLap}</TableCell>
-                <TableCell>{lap.gate?.number}</TableCell>
+                <TableCell>{lap.gate?.number || <b>{lap.gateNumber}</b>}</TableCell>
                 <TableCell>{lap.gate?.position}</TableCell>
                 <TableCell>{lap.transponder}</TableCell>
                 <TableCell>{sportsmanName(lap.sportsman!)}</TableCell>

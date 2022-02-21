@@ -38,6 +38,7 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
     const [notCountedRounds, setNotCountedRounds] = useState(report?.notCountedRounds || 1);
     const [onlySportsmen, setOnlySportsmen] = useState(report?.onlySportsmen || false);
     const [simplified, setSimplified] = useState(report?.simplified || false);
+    const [broadCastStyle, setBroadCastStyle] = useState(report?.broadCastStyle || false);
     const [count, setCount] = useState(report?.count || 0);
     const [roundId, setRoundId] = useState(report?.roundId);
 
@@ -59,6 +60,9 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
     const handleChangeSimplified = useCallback((_event: React.ChangeEvent<HTMLInputElement>) => {
         setSimplified((prev) => !prev);
     }, []);
+    const handleChangeBroadCastStyle = useCallback((_event: React.ChangeEvent<HTMLInputElement>) => {
+        setBroadCastStyle((prev) => !prev);
+    }, []);
     const handleChangeCount = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setCount(Number(event.target.value));
     }, []);
@@ -74,6 +78,7 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
             notCountedRounds,
             onlySportsmen,
             simplified,
+            broadCastStyle,
             count,
             roundId
         };
@@ -90,6 +95,7 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
         notCountedRounds,
         onlySportsmen,
         simplified,
+        broadCastStyle,
         report?._id,
         roundId,
         onUpdate,
@@ -164,6 +170,10 @@ export const DialogFormReport: FC<IProps> = ({ open, onClose, onSave, onUpdate, 
                     <FormControlLabel
                         control={<Switch checked={simplified} onChange={handleChangeSimplified} />}
                         label="Simplified"
+                    />
+                    <FormControlLabel
+                        control={<Switch checked={broadCastStyle} onChange={handleChangeBroadCastStyle} />}
+                        label="Broadсast style"
                     />
                     {type === TypeReport.COUNT_LAPS && (
                         <TextField

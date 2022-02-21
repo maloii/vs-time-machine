@@ -12,16 +12,19 @@ import { RoundGroupsLaps } from '@/modules/reports/components/RoundGroupsLaps/Ro
 
 interface IProps {
     report: IReport;
+    className?: string;
+    isBroadcast?: boolean;
 }
 
-export const ContentReport: FC<IProps> = observer(({ report }: IProps) => {
+export const ContentReport: FC<IProps> = observer(({ report, isBroadcast, className }: IProps) => {
     return (
-        <>
+        <div className={className}>
             {report.type === TypeReport.BEST_LAP && (
                 <BestLapReport report={report} rounds={story.rounds} sportsmen={story.sportsmen} teams={story.teams} />
             )}
             {report.type === TypeReport.COUNT_LAPS && (
                 <CountLapsReport
+                    isBroadcast={isBroadcast}
                     report={report}
                     rounds={story.rounds}
                     sportsmen={story.sportsmen}
@@ -41,6 +44,6 @@ export const ContentReport: FC<IProps> = observer(({ report }: IProps) => {
             )}
             {report.type === TypeReport.ROUND_GROUPS_LAPS && <RoundGroupsLaps report={report} rounds={story.rounds} />}
             {report.type === TypeReport.ROUND_GROUPS && <RoundGroupsReport report={report} />}
-        </>
+        </div>
     );
 });

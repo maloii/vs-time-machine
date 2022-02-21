@@ -11,6 +11,7 @@ export interface ILap {
     roundId: string;
     groupId: string;
     gateId: string;
+    gateNumber?: string;
     memberGroupId: string;
     sportsmanId: string;
     transponder: string;
