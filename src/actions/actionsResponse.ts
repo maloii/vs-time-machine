@@ -53,7 +53,6 @@ window.api.ipcRenderer.on('load-broadcast-response', (e: any, broadCasts: IBroad
 });
 
 window.api.ipcRenderer.on('load-laps-for-group-response', (e: any, laps: ILap[]) => {
-    console.log(laps);
     story.setLaps(laps);
 });
 

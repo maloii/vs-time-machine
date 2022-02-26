@@ -299,7 +299,6 @@ class Race {
                 }
 
                 sendToAllMessage('new-lap-update', newLap);
-                this.numberPackages.push(numberPackage);
             } else if (['PIT_STOP_BEGIN', 'PIT_STOP_END'].includes(gate?.type)) {
                 if (
                     ('PIT_STOP_BEGIN' === gate?.type &&
@@ -359,7 +358,6 @@ class Race {
 
                 if (competition.playFail && typeLap === 'HIDDEN') {
                     //runServicePlay('fail.mp3');
-                    //sportsman
                     speech(`${sportsman.nick} мимо!`);
                 }
                 const newLap = await lapInsert({
@@ -377,6 +375,7 @@ class Race {
                 });
                 sendToAllMessage('new-lap-update', newLap);
             }
+            this.numberPackages.push(numberPackage);
         }
     };
 

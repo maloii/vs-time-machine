@@ -45,6 +45,20 @@ export const TableSportsmen: FC<IProps> = observer(({ sportsmen, onUpdate, onDel
         [onUpdate, sportsmen]
     );
 
+    const handleHasTransponder = useCallback(
+        (_id: string) => () => {
+            const editSportsman = _.find(sportsmen, ['_id', _id]);
+            if (editSportsman) {
+                onUpdate(editSportsman._id, {
+                    ...editSportsman,
+                    transponders: [...editSportsman.transponders],
+                    hasTransponder: !editSportsman.hasTransponder
+                });
+            }
+        },
+        [onUpdate, sportsmen]
+    );
+
     const handleDeleteClick = useCallback(
         (id: string) => () => {
             onDelete(id);
@@ -78,6 +92,18 @@ export const TableSportsmen: FC<IProps> = observer(({ sportsmen, onUpdate, onDel
         { field: 'middleName', editable: true, headerName: 'Middle name', flex: 1 },
         { field: 'nick', editable: true, headerName: 'Nick', flex: 1 },
         { field: 'transponders', headerName: 'Transponders', flex: 1 },
+        {
+            field: 'hasTransponder',
+            headerName: 'Has trans...',
+            type: 'actions',
+            width: 110,
+            getActions: (params: GridRowParams) => [
+                <Checkbox
+                    checked={Boolean(params.getValue(params.id, 'hasTransponder'))}
+                    onChange={handleHasTransponder(params.id as string)}
+                />
+            ]
+        },
         { field: 'team', editable: true, headerName: 'Team', flex: 1, hide: true },
         { field: 'city', editable: true, headerName: 'City', flex: 1, hide: true },
         { field: 'country', editable: true, headerName: 'Country', flex: 1, hide: true },

@@ -120,7 +120,11 @@ export const DialogSportsmanEdit: FC<IProps> = observer(
                 position: Number(position) || undefined
             };
             if (sportsman?._id) {
-                onUpdate(sportsman?._id, { ...newDataSportsman, selected: sportsman.selected });
+                onUpdate(sportsman?._id, {
+                    ...newDataSportsman,
+                    selected: sportsman.selected,
+                    hasTransponder: sportsman.hasTransponder
+                });
             } else {
                 onSave({ ...newDataSportsman, selected: true });
             }
@@ -139,6 +143,7 @@ export const DialogSportsmanEdit: FC<IProps> = observer(
             photo,
             position,
             sportsman?._id,
+            sportsman?.hasTransponder,
             sportsman?.selected,
             team,
             transponders

@@ -15,4 +15,5 @@ export interface ISportsman {
     country: string;
     position?: number;
     selected: boolean;
+    hasTransponder?: boolean;
 }

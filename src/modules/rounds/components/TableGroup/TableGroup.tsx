@@ -2,13 +2,16 @@ import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import _ from 'lodash';
 import { IGroup, IMembersGroup } from '@/types/IGroup';
 import styles from '@/modules/rounds/components/ListGroups/styles.module.scss';
-import { IconButton, List, ListItem, ListItemText, ListSubheader, Paper } from '@mui/material';
+import { IconButton, List, ListItem, ListItemText, ListSubheader, MenuItem, Paper, Menu } from '@mui/material';
 import cn from 'classnames';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { sportsmanName } from '@/utils/sportsmanName';
 import { ColorAndChannel } from '@/modules/rounds/components/ColorAndChannel/ColorAndChannel';
 import { ICompetition } from '@/types/ICompetition';
+import { DialogFormMembersGroup } from '@/modules/rounds/components/DialogFormMembersGroup/DialogFormMembersGroup';
+import { Color } from '@/types/Color';
+import { Channel } from '@/types/VTXChannel';
 
 interface IProps {
     group: IGroup;
@@ -33,7 +36,73 @@ export const TableGroup: FC<IProps> = ({
 }: IProps) => {
     const draggedItem = useRef<string | undefined>(undefined);
     const [innerGroup, setInnerGroup] = useState(_.cloneDeep(group));
+    const [contextMenu, setContextMenu] = React.useState<
+        | {
+              mouseX: number;
+              mouseY: number;
+              membersGroup: IMembersGroup;
+          }
+        | undefined
+    >(undefined);
+    const [openEdit, setOpenEdit] = useState<IMembersGroup>();
+
     const isSelected = (item: IGroup) => selectedGroup?._id === item._id;
+
+    const handleContextMenu = useCallback(
+        (membersGroup: IMembersGroup) => (event: React.MouseEvent<HTMLLIElement>) => {
+            event.preventDefault();
+            setContextMenu(
+                contextMenu === undefined
+                    ? {
+                          mouseX: event.clientX - 2,
+                          mouseY: event.clientY - 4,
+                          membersGroup
+                      }
+                    : undefined
+            );
+        },
+        [contextMenu]
+    );
+
+    const handleClose = useCallback(() => {
+        setOpenEdit(undefined);
+        setContextMenu(undefined);
+    }, []);
+
+    const handleOpenEditDialog = useCallback(() => {
+        setOpenEdit(contextMenu?.membersGroup);
+        setContextMenu(undefined);
+    }, [contextMenu?.membersGroup]);
+
+    const handleUpdateMemberGroup = useCallback(
+        (_id: string, color: Color, channel: Channel) => {
+            onUpdate(innerGroup._id, {
+                ...innerGroup,
+                teams: innerGroup.teams.map((item) => {
+                    if (item._id === _id) {
+                        return {
+                            ...item,
+                            color,
+                            channel
+                        };
+                    }
+                    return item;
+                }),
+                sportsmen: innerGroup.sportsmen.map((item) => {
+                    if (item._id === _id) {
+                        return {
+                            ...item,
+                            color,
+                            channel
+                        };
+                    }
+                    return item;
+                })
+            });
+            handleClose();
+        },
+        [innerGroup, onUpdate, handleClose]
+    );
 
     const onDragItemStart = useCallback(
         (id: string) => (e: React.DragEvent<HTMLLIElement>) => {
@@ -116,6 +185,7 @@ export const TableGroup: FC<IProps> = ({
                         onDragStart={onDragItemStart(item._id)}
                         onDragOver={onDragItemOver(item._id)}
                         onDragEnd={onDragItemEnd}
+                        onContextMenu={handleContextMenu(item)}
                     >
                         {item.startNumber}
                         &nbsp;-&nbsp;
@@ -126,6 +196,24 @@ export const TableGroup: FC<IProps> = ({
                     </ListItem>
                 ))}
             </List>
+            <Menu
+                open={contextMenu !== undefined}
+                onClose={handleClose}
+                anchorReference="anchorPosition"
+                anchorPosition={
+                    contextMenu !== undefined ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined
+                }
+            >
+                <MenuItem onClick={handleOpenEditDialog}>Edit</MenuItem>
+            </Menu>
+            {!!openEdit && (
+                <DialogFormMembersGroup
+                    open={!!openEdit}
+                    membersGroup={openEdit}
+                    onClose={handleClose}
+                    onUpdate={handleUpdateMemberGroup}
+                />
+            )}
         </Paper>
     );
 };
