@@ -253,7 +253,8 @@ class Race {
                     } else {
                         typeLap = 'HIDDEN';
                         if (competition.playFail) {
-                            runServicePlay('fail.mp3');
+                            //runServicePlay('fail.mp3');
+                            speech(`${sportsman.nick} мимо!`);
                         }
                     }
                 }
@@ -357,7 +358,9 @@ class Race {
                 }
 
                 if (competition.playFail && typeLap === 'HIDDEN') {
-                    runServicePlay('fail.mp3');
+                    //runServicePlay('fail.mp3');
+                    //sportsman
+                    speech(`${sportsman.nick} мимо!`);
                 }
                 const newLap = await lapInsert({
                     millisecond,
