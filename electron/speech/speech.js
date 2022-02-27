@@ -1,5 +1,5 @@
 const Say = require('say').Say;
-const say = new Say('darwin' || 'win32' || 'linux');
+const say = new Say();
 
 const speech = (text) => {
     say.speak(text);
