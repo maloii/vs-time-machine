@@ -74,6 +74,39 @@ const mainMenu = Menu.buildFromTemplate([
             { type: 'separator' },
             { role: 'togglefullscreen' }
         ]
+    },
+    {
+        label: 'Edit',
+        submenu: [
+            { role: 'undo' },
+            { role: 'redo' },
+            { type: 'separator' },
+            { role: 'cut' },
+            { role: 'copy' },
+            { role: 'paste' },
+            ...(isMac
+                ? [
+                      { role: 'pasteAndMatchStyle' },
+                      { role: 'delete' },
+                      { role: 'selectAll' },
+                      { type: 'separator' },
+                      {
+                          label: 'Speech',
+                          submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }]
+                      }
+                  ]
+                : [{ role: 'delete' }, { type: 'separator' }, { role: 'selectAll' }])
+        ]
+    },
+    {
+        label: 'Window',
+        submenu: [
+            { role: 'minimize' },
+            { role: 'zoom' },
+            ...(isMac
+                ? [{ type: 'separator' }, { role: 'front' }, { type: 'separator' }, { role: 'window' }]
+                : [{ role: 'close' }])
+        ]
     }
 ]);
 
