@@ -6,7 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { TableReports } from '@/modules/reports/components/TableReports/TableReports';
 import { IReport } from '@/types/IReport';
 import { DialogFormReport } from '@/modules/reports/components/DialogFormReport/DialogFormReport';
-import { DialogReportController } from '@/modules/reports/controllers/DialogReportController';
+import { DialogReportContainer } from '@/modules/reports/containers/DialogReportContainer';
 import {
     loadReportsAction,
     reportDeleteAction,
@@ -16,7 +16,7 @@ import {
 
 import styles from './styles.module.scss';
 
-export const ReportsController: FC = observer(() => {
+export const ReportsContainer: FC = observer(() => {
     const [openDialogAddReport, setOpenDialogAddReport] = useState(false);
     const [openDialogEditReport, setOpenDialogEditReport] = useState<IReport>();
     const [openDialogReport, setOpenDialogReport] = useState<IReport>();
@@ -105,7 +105,7 @@ export const ReportsController: FC = observer(() => {
                 />
             )}
             {openDialogReport && (
-                <DialogReportController
+                <DialogReportContainer
                     report={openDialogReport}
                     open={!!openDialogReport}
                     onClose={handleCloseDialog}

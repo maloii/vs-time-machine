@@ -20,7 +20,7 @@ import { TypeChromaKey } from '@/types/TypeChromaKey';
 
 import styles from './styles.module.scss';
 
-export const ScreenBroadCastController: FC = observer(() => {
+export const ScreenBroadCastContainer: FC = observer(() => {
     const [broadCast, setBroadCast] = useState<IBroadCast>();
 
     const [startTime, setStartTime] = useState(story.startTime);

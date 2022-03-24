@@ -1,8 +1,9 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, Menu } = require('electron');
 const path = require('path');
 const isDev = require('electron-is-dev');
 const stayAwake = require('stay-awake');
 const { init } = require('./init');
+const { mainMenu } = require('./menu/mainMenu');
 require('./ipcMessages');
 
 function createWindow() {
@@ -29,7 +30,7 @@ app.allowRendererProcessReuse = false;
 app.whenReady().then(() => {
     global.windows = {};
     createWindow();
-
+    Menu.setApplicationMenu(mainMenu);
     app.on('activate', function () {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });

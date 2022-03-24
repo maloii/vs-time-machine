@@ -39,7 +39,7 @@ import { sportsmanName } from '@/utils/sportsmanName';
 import { ColorCss } from '@/types/Color';
 import { DialogChangePositionsInGroup } from '@/modules/rounds/components/DialogChangePositionsInGroup/DialogChangePositionsInGroup';
 
-export const RoundsController: FC = observer(() => {
+export const RoundsContainer: FC = observer(() => {
     const [openDialogAddRound, setOpenDialogAddRound] = useState(false);
     const [openDialogEditRound, setOpenDialogEditRound] = useState(false);
     const [openDialogAddGroup, setOpenDialogAddGroup] = useState(false);

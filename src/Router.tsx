@@ -1,17 +1,19 @@
 import React, { FC } from 'react';
 import { observer } from 'mobx-react';
 import { BrowserRouter, HashRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
-import { SportsmenController } from '@/modules/sportsmen/controllers/SportsmenController';
-import { RoundsController } from '@/modules/rounds/controllers/RoundsController';
-import { ReportsController } from '@/modules/reports/controllers/ReportsController';
-import { BroadCastController } from '@/modules/broadcast/controllers/BroadCastController';
-import { ScreenBroadCastController } from '@/modules/broadcast/controllers/ScreenBroadCastController';
+import { SportsmenContainer } from '@/modules/sportsmen/containers/SportsmenContainer';
+import { RoundsContainer } from '@/modules/rounds/containers/RoundsContainer';
+import { ReportsContainer } from '@/modules/reports/containers/ReportsContainer';
+import { BroadCastContainer } from '@/modules/broadcast/containers/BroadCastContainer';
+import { ScreenBroadCastContainer } from '@/modules/broadcast/containers/ScreenBroadCastContainer';
 import { MainLayout } from '@/modules/common/components/MainLayout/MainLayout';
+import { ImportFromRcPilotsProContainer } from '@/modules/import/containers/ImportFromRcPilotsProContainer';
 
 export const Router: FC = observer(() => {
     const routers = (
         <Routes>
-            <Route path="/screen/:screenId" element={<ScreenBroadCastController />} />
+            <Route path="/screen/:screenId" element={<ScreenBroadCastContainer />} />
+            <Route path="/import/rcpilots" element={<ImportFromRcPilotsProContainer />} />
             <Route
                 element={
                     <MainLayout>
@@ -19,10 +21,10 @@ export const Router: FC = observer(() => {
                     </MainLayout>
                 }
             >
-                <Route path="/main/rounds" element={<RoundsController />} />
-                <Route path="/main/sportsmen" element={<SportsmenController />} />
-                <Route path="/main/reports" element={<ReportsController />} />
-                <Route path="/main/broadcasts" element={<BroadCastController />} />
+                <Route path="/main/rounds" element={<RoundsContainer />} />
+                <Route path="/main/sportsmen" element={<SportsmenContainer />} />
+                <Route path="/main/reports" element={<ReportsContainer />} />
+                <Route path="/main/broadcasts" element={<BroadCastContainer />} />
                 <Route path="*" element={<Navigate replace to="/main/sportsmen" />} />
             </Route>
         </Routes>

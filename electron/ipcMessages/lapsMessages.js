@@ -11,7 +11,7 @@ const { sendToAllMessage } = require('./sendMessage');
 
 ipcMain.on('load-laps-for-group-request', async (e, groupId) => {
     const laps = await lapsFindByGroupId(groupId);
-    e.reply('load-laps-for-group-response', laps);
+    sendToAllMessage('load-laps-for-group-response', laps);
 });
 
 ipcMain.handle('handle-load-laps-for-round-request', async (event, roundId) => {
@@ -29,10 +29,10 @@ ipcMain.on('lap-insert-request', async (e, lap) => {
 
 ipcMain.on('lap-update-request', async (e, _id, lap) => {
     const count = await lapUpdate(_id, lap);
-    e.reply('lap-update-response', count);
+    sendToAllMessage('lap-update-response', count);
 });
 
 ipcMain.on('lap-delete-request', async (e, _id) => {
     const count = await lapDelete(_id);
-    e.reply('lap-delete-response', count);
+    sendToAllMessage('lap-delete-response', count);
 });

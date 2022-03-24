@@ -9,13 +9,13 @@ import {
     handlebroadCastDeleteAction
 } from '@/actions/actionBroadcastRequest';
 import { IBroadCast } from '@/types/IBroadCast';
-import styles from '@/modules/reports/controllers/styles.module.scss';
+import styles from '@/modules/reports/containers/styles.module.scss';
 import AddIcon from '@mui/icons-material/Add';
 import { TableBroadCast } from '@/modules/broadcast/components/TableBroadCast/TableBroadCast';
 import { DialogFormBroadCast } from '@/modules/broadcast/components/DialogFormBroadCast/DialogFormBroadCast';
 import { story } from '@/story/story';
 
-export const BroadCastController: FC = observer(() => {
+export const BroadCastContainer: FC = observer(() => {
     const [openDialogAddBroadCast, setOpenDialogAddBroadCast] = useState(false);
     const [openDialogEditBroadCast, setOpenDialogEditBroadCast] = useState<IBroadCast>();
     const [broadCasts, setBroadCasts] = useState<Array<IBroadCast>>();

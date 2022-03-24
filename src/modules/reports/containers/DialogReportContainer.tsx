@@ -16,7 +16,7 @@ interface IProps {
     report: IReport;
 }
 
-export const DialogReportController: FC<IProps> = observer(({ open, onClose, report }: IProps) => {
+export const DialogReportContainer: FC<IProps> = observer(({ open, onClose, report }: IProps) => {
     const refReport = useRef<HTMLDivElement>(null);
 
     return (

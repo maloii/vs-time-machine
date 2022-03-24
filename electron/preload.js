@@ -7,6 +7,7 @@ const {
     DEFAULT_COMPETITION_LOGO,
     getFilePath,
     copyFile,
+    saveFile,
     deleteFile
 } = require('./utils/fileUtils');
 
@@ -16,6 +17,7 @@ const API = {
     DEFAULT_COMPETITION_LOGO,
     getFilePath: (file) => getFilePath(file),
     copyFile: (file) => copyFile(file),
+    saveFile: (fileName, blob) => saveFile(fileName, blob),
     deleteFile: (file) => deleteFile(file),
     ipcRenderer: {
         on: (channel, ...data) => ipcRenderer.on(channel, ...data),

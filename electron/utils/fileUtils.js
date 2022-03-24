@@ -27,6 +27,18 @@ const copyFile = (file) => {
     return fsPromise.copyFile(file, `${pathPhoto}/${newPhotoName}`).then(() => newPhotoName);
 };
 
+const saveFile = async (fileName, blob) => {
+    const pathPhoto = `${global.userData}/${IMAGES_FOLDER}`;
+    const newPhotoName = `${v4()}.${fileName.split('.').pop()}`;
+    const buffer = Buffer.from(await blob.arrayBuffer());
+    fs.writeFile(`${pathPhoto}/${newPhotoName}`, buffer, (error, data) => {
+        if (error) {
+            console.error('error: ' + error);
+        }
+    });
+    return newPhotoName;
+};
+
 const deleteFile = (file) => {
     const pathPhoto = `${global.userData}/${IMAGES_FOLDER}`;
     if (![DEFAULT_COMPETITION_LOGO, DEFAULT_PHOTO].includes(file)) {
@@ -34,4 +46,12 @@ const deleteFile = (file) => {
     }
 };
 
-module.exports = { IMAGES_FOLDER, DEFAULT_PHOTO, DEFAULT_COMPETITION_LOGO, getFilePath, copyFile, deleteFile };
+module.exports = {
+    IMAGES_FOLDER,
+    DEFAULT_PHOTO,
+    DEFAULT_COMPETITION_LOGO,
+    getFilePath,
+    copyFile,
+    deleteFile,
+    saveFile
+};

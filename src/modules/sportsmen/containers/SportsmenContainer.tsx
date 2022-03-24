@@ -24,7 +24,7 @@ import { DialogTeamEdit } from '@/modules/sportsmen/components/DialogTeamEdit/Di
 
 import styles from './styles.module.scss';
 
-export const SportsmenController: FC = observer(() => {
+export const SportsmenContainer: FC = observer(() => {
     const [tabSelected, setTabSelected] = useState('Sportsmen');
     const [searchSportsmen, setSearchSportsmen] = useState('');
     const [searchTeams, setSearchTeams] = useState('');

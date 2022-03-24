@@ -39,7 +39,7 @@ ipcMain.on('open-window-broadcast-request', (e, id) => {
 
 ipcMain.handle('load-broadcast-request', async (e, competitionId) => {
     const broadCasts = await broadCastFindByCompetitionId(competitionId);
-    e.reply('load-broadcast-response', broadCasts);
+    sendToAllMessage('load-broadcast-response', broadCasts);
 });
 
 ipcMain.handle('handle-load-broadcast-request', (e, competitionId) => {

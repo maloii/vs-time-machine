@@ -5,6 +5,10 @@ export const loadSportsmenAction = (competition: ICompetition): void => {
     window.api.ipcRenderer.send('load-sportsmen-for-competition-request', competition._id);
 };
 
+export const handleLoadSportsmenAction = (_id: string): Promise<Array<ISportsman>> => {
+    return window.api.ipcRenderer.invoke('handle-load-sportsmen-for-competition-request', _id);
+};
+
 export const sportsmanInsertAction = (sportsman: Omit<ISportsman, '_id'>): void => {
     window.api.ipcRenderer.send('sportsman-insert-request', sportsman);
 };

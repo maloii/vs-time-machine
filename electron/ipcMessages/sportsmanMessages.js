@@ -5,20 +5,25 @@ const {
     sportsmanUpdate,
     sportsmanDelete
 } = require('../repository/sportsmanRepository');
+const { sendToAllMessage } = require("./sendMessage");
 
 ipcMain.on('load-sportsmen-for-competition-request', async (e, competitionId) => {
     const sportsmen = await sportsmenFindByCompetitionId(competitionId);
     e.reply('load-sportsmen-for-competition-response', sportsmen);
 });
 
+ipcMain.handle('handle-load-sportsmen-for-competition-request', async (e, competitionId) => {
+    return sportsmenFindByCompetitionId(competitionId);
+});
+
 ipcMain.on('sportsman-insert-request', async (e, sportsman) => {
     const count = await sportsmanInsert(sportsman);
-    e.reply('sportsman-insert-response', count);
+    sendToAllMessage('sportsman-insert-response', count);
 });
 
 ipcMain.on('sportsman-update-request', async (e, _id, sportsman) => {
     const count = await sportsmanUpdate(_id, sportsman);
-    e.reply('sportsman-update-response', count);
+    sendToAllMessage('sportsman-update-response', count);
 });
 
 ipcMain.handle('sportsman-delete-request', async (e, _id) => {

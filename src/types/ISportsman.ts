@@ -16,4 +16,5 @@ export interface ISportsman {
     position?: number;
     selected: boolean;
     hasTransponder?: boolean;
+    externalId?: string;
 }
