@@ -54,6 +54,7 @@ export const ScreenBroadCastContainer: FC = observer(() => {
             );
         } else if (idComponent === TypeBroadCastComponents.CURRENT_GROUP.toString()) {
             if (story.groupInRace && story.groupInRace.round) {
+                const selectedGroup = (story.groups || []).find((group) => group.selected);
                 return (
                     <>
                         <h2
@@ -61,7 +62,7 @@ export const ScreenBroadCastContainer: FC = observer(() => {
                         >{`${story.groupInRace.round.name} - ${story.groupInRace.name}`}</h2>
                         <TableLaps
                             round={story.groupInRace.round}
-                            group={story.groupInRace}
+                            group={selectedGroup || story.groupInRace}
                             groupLaps={story.laps}
                             raceStatus={story.raceStatus}
                             readonly

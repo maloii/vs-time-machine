@@ -33,6 +33,7 @@ export const calculateBestLapReport = async (
                 average
             };
         })
+        .filter((item) => Boolean(item.timeLap))
         .sortBy('timeLap')
         .value();
     if (resRows.length > 0) {

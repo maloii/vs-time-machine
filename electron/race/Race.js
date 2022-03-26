@@ -184,6 +184,7 @@ class Race {
     newLap = async (millisecond, transponder, numberPackage, gateNumber) => {
         connector.setRace(this);
         if (this.raceStatus === 'RUN' && !this.numberPackages.includes(numberPackage)) {
+            this.numberPackages.push(numberPackage);
             const membersGroup = findMembersGroupByTransponder(this.selectedGroup, transponder);
             const sportsman = findInMembersGroupSportsmanByTransponder(membersGroup, transponder);
             const competition = this.selectedGroup.competition || {};
@@ -262,7 +263,7 @@ class Race {
                         typeLap = 'HIDDEN';
                         if (competition.playFail) {
                             //runServicePlay('fail.mp3');
-                            speech(`${sportsman.nick} мимо!`);
+                            speech(`${sportsman.lastName} мимо!`);
                         }
                     }
                 }
@@ -366,7 +367,7 @@ class Race {
 
                 if (competition.playFail && typeLap === 'HIDDEN') {
                     //runServicePlay('fail.mp3');
-                    speech(`${sportsman.nick} мимо!`);
+                    speech(`${sportsman.lastName} мимо!`);
                 }
                 const newLap = await lapInsert({
                     millisecond,
@@ -383,7 +384,6 @@ class Race {
                 });
                 sendToAllMessage('new-lap-update', newLap);
             }
-            this.numberPackages.push(numberPackage);
         }
     };
 
