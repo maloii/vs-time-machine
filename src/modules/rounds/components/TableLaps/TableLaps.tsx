@@ -29,7 +29,6 @@ import { story } from '@/story/story';
 import { millisecondsToTimeString } from '@/utils/millisecondsToTimeString';
 import { ListAllLaps } from '@/modules/rounds/components/ListAllLaps/ListAllLaps';
 import { lapDeleteAction, lapInsertAction, lapUpdateAction, loadLapsForGroupAction } from '@/actions/actionLapRequest';
-import { beep } from '@/utils/beep';
 import { TypeRaceStatus } from '@/types/TypeRaceStatus';
 import { matrixLapsWithPitStop } from '@/utils/matrixLapsWithPitStop';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -51,7 +50,7 @@ export const TableLaps: FC<IProps> = observer(
         const [openLapsMember, setOpenLapsMember] = useState<string | undefined>(undefined);
         const refTableContainer = useRef<HTMLDivElement>(null);
         const laps = matrixLapsWithPitStop(
-            window.api.groupLapsByMemberGroup(_.cloneDeep(group), _.cloneDeep(groupLaps || story.laps), true)
+            window.api.groupLapsByMemberGroup(_.cloneDeep(group), _.cloneDeep(groupLaps), true)
         );
         const maxCountLap = [...group.sportsmen, ...group.teams].reduce(
             (count, item) => (laps[item._id].length > count ? laps[item._id].length : count),
@@ -218,28 +217,19 @@ export const TableLaps: FC<IProps> = observer(
         }, [group.name, isLap, laps, membersGroup, round.name]);
 
         useEffect(() => {
-            if (group) loadLapsForGroupAction(group);
-            window.api.ipcRenderer.removeAllListeners('new-lap-update');
-            window.api.ipcRenderer.on('new-lap-update', (e: any, newLap: ILap) => {
-                loadLapsForGroupAction(group);
-                if (
-                    !readonly &&
-                    [TypeLap.OK, TypeLap.START, TypeLap.PIT_STOP_END, TypeLap.PIT_STOP_BEGIN, TypeLap.GATE].includes(
-                        newLap.typeLap
-                    )
-                ) {
-                    beep(20, 1000, 1, 'sine');
-                }
-                setTimeout(() => {
-                    if (refTableContainer.current) {
-                        refTableContainer.current.scrollTop = refTableContainer.current.scrollHeight;
-                    }
-                }, 1);
-            });
+            if (group) loadLapsForGroupAction(group._id);
         }, [group, readonly]);
 
+        useEffect(() => {
+            setTimeout(() => {
+                if (refTableContainer.current) {
+                    refTableContainer.current.scrollTop = refTableContainer.current.scrollHeight;
+                }
+            }, 1);
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [groupLaps]);
         const countLapsForMember = (id: string) =>
-            ((groupLaps || story.laps || []).filter((lap: ILap) => lap.memberGroupId === id) || []).length;
+            ((groupLaps || []).filter((lap: ILap) => lap.memberGroupId === id) || []).length;
 
         return (
             <TableContainer component={Paper} variant="outlined" className={styles.root} ref={refTableContainer}>
@@ -364,7 +354,7 @@ export const TableLaps: FC<IProps> = observer(
                 {!!openLapsMember && (
                     <ListAllLaps
                         laps={_.sortBy(
-                            (story.laps || []).filter((lap: ILap) => lap.memberGroupId === openLapsMember) || [],
+                            (groupLaps || []).filter((lap: ILap) => lap.memberGroupId === openLapsMember) || [],
                             ['millisecond']
                         )}
                         gates={story.competition?.gates}

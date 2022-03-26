@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import { observer } from 'mobx-react';
 import { story } from '@/story/story';
 import { Button } from '@mui/material';
@@ -7,12 +7,7 @@ import { TableReports } from '@/modules/reports/components/TableReports/TableRep
 import { IReport } from '@/types/IReport';
 import { DialogFormReport } from '@/modules/reports/components/DialogFormReport/DialogFormReport';
 import { DialogReportContainer } from '@/modules/reports/containers/DialogReportContainer';
-import {
-    loadReportsAction,
-    reportDeleteAction,
-    reportInsertAction,
-    reportUpdateAction
-} from '@/actions/actionReportRequest';
+import { reportDeleteAction, reportInsertAction, reportUpdateAction } from '@/actions/actionReportRequest';
 
 import styles from './styles.module.scss';
 
@@ -68,17 +63,6 @@ export const ReportsContainer: FC = observer(() => {
         },
         [handleCloseDialog]
     );
-
-    useEffect(() => {
-        if (story.competition) {
-            window.api.ipcRenderer.removeAllListeners('report-insert-response');
-            window.api.ipcRenderer.removeAllListeners('report-update-response');
-            window.api.ipcRenderer.removeAllListeners('report-delete-response');
-            window.api.ipcRenderer.on('report-insert-response', () => loadReportsAction(story.competition?._id!));
-            window.api.ipcRenderer.on('report-update-response', () => loadReportsAction(story.competition?._id!));
-            window.api.ipcRenderer.on('report-delete-response', () => loadReportsAction(story.competition?._id!));
-        }
-    }, []);
 
     return (
         <div className={styles.root}>

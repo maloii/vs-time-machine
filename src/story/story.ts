@@ -27,6 +27,7 @@ export class Story {
     public connected: boolean = false;
     public startTime: number | undefined = undefined;
     public groupInRace: IGroup | undefined = undefined;
+    public connectorMessage: string | undefined = undefined;
 
     public constructor() {
         makeAutoObservable(this);
@@ -90,6 +91,10 @@ export class Story {
 
     public setGroupInRace = (newGroupInRace: IGroup | undefined): void => {
         this.groupInRace = newGroupInRace;
+    };
+
+    public setConnectorMessage = (newConnectorMessage: string | undefined): void => {
+        this.connectorMessage = newConnectorMessage;
     };
 }
 

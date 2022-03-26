@@ -20,7 +20,6 @@ import { DateTime } from 'luxon';
 import ClearIcon from '@mui/icons-material/Clear';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import { story } from '@/story/story';
-import { loadCompetitionsAction } from '@/actions/actionCompetitionRequest';
 import { rcPilotsTransform, rcPilotsUpdate } from '@/modules/import/utils/rcPilotsTransform';
 import {
     handleLoadSportsmenAction,
@@ -78,7 +77,6 @@ export const ImportFromRcPilotsProContainer: FC = observer(() => {
     );
 
     useEffect(() => {
-        loadCompetitionsAction();
         setLoading(true);
         axios
             .get<IRcPilotsResponse>(URL_RC_PILOTS)

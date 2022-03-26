@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
+import { intercept } from 'mobx';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { sportsmanName } from '@/utils/sportsmanName';
 import { millisecondsToTimeString } from '@/utils/millisecondsToTimeString';
@@ -26,20 +27,7 @@ export const CountLapsReport: FC<IProps> = observer(({ report, rounds, teams, sp
     useEffect(() => {
         calculateCountLapsReport(report, rounds, teams, sportsmen).then(setRows);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [report, report.typeRound, rounds, sportsmen, teams, story.laps]);
-
-    useEffect(() => {
-        if (isBroadcast) {
-            window.api.ipcRenderer.removeAllListeners('new-lap-update');
-            window.api.ipcRenderer.removeAllListeners('race-status-message');
-            window.api.ipcRenderer.on('new-lap-update', (e: any, newLap: ILap) => {
-                calculateCountLapsReport(report, rounds, teams, sportsmen).then(setRows);
-            });
-            window.api.ipcRenderer.on('race-status-message', (e: any, newLap: ILap) => {
-                calculateCountLapsReport(report, rounds, teams, sportsmen).then(setRows);
-            });
-        }
-    });
+    }, [report, report.typeRound, rounds, sportsmen, teams, story.laps, story.raceStatus]);
 
     return (
         <TableContainer component={Paper} variant="outlined">

@@ -1,10 +1,9 @@
 import _ from 'lodash';
-import { IGroup } from '@/types/IGroup';
 import { ILap } from '@/types/ILap';
 import { IRound } from '@/types/IRound';
 
-export const loadLapsForGroupAction = (group: IGroup): void => {
-    window.api.ipcRenderer.send('load-laps-for-group-request', group._id);
+export const loadLapsForGroupAction = (_id: string): void => {
+    window.api.ipcRenderer.send('load-laps-for-group-request', _id);
 };
 
 export const loadLapsForRoundAction = (roundId: string): Promise<Array<ILap>> => {

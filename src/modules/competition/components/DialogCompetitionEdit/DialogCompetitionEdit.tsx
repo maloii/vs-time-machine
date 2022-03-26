@@ -31,8 +31,7 @@ import { DialogGateEdit } from '@/modules/competition/components/DIalogGateEdit/
 import {
     competitionDeleteAction,
     competitionInsertAction,
-    competitionUpdateAction,
-    loadCompetitionsAction
+    competitionUpdateAction
 } from '@/actions/actionCompetitionRequest';
 
 interface IProps {
@@ -240,15 +239,6 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
             onClose();
         }
     }, [competition, onClose]);
-
-    useEffect(() => {
-        window.api.ipcRenderer.removeAllListeners('competition-insert-response');
-        window.api.ipcRenderer.removeAllListeners('competition-update-response');
-        window.api.ipcRenderer.removeAllListeners('competition-delete-response');
-        window.api.ipcRenderer.on('competition-insert-response', () => loadCompetitionsAction());
-        window.api.ipcRenderer.on('competition-update-response', () => loadCompetitionsAction());
-        window.api.ipcRenderer.on('competition-delete-response', () => loadCompetitionsAction());
-    }, []);
 
     return (
         <Dialog open={open} onClose={onClose}>

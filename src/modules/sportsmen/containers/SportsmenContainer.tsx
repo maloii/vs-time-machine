@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import { observer } from 'mobx-react';
 import _ from 'lodash';
 import { Box, Button, IconButton, InputAdornment, Tab, Tabs, TextField } from '@mui/material';
@@ -186,16 +186,7 @@ export const SportsmenContainer: FC = observer(() => {
         },
         [handleClose]
     );
-    useEffect(() => {
-        window.api.ipcRenderer.removeAllListeners('team-insert-response');
-        window.api.ipcRenderer.removeAllListeners('team-update-response');
-        window.api.ipcRenderer.removeAllListeners('sportsman-insert-response');
-        window.api.ipcRenderer.removeAllListeners('sportsman-update-response');
-        window.api.ipcRenderer.on('team-insert-response', () => loadTeamsAction(story.competition!));
-        window.api.ipcRenderer.on('team-update-response', () => loadTeamsAction(story.competition!));
-        window.api.ipcRenderer.on('sportsman-insert-response', () => loadSportsmenAction(story.competition!));
-        window.api.ipcRenderer.on('sportsman-update-response', () => loadSportsmenAction(story.competition!));
-    }, []);
+
     if (!story.competition) return null;
 
     return (

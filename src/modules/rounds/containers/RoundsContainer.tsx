@@ -10,9 +10,7 @@ import {
     groupInsertAction,
     groupSelectAction,
     groupUpdateAction,
-    loadGroupsByRoundIdAction,
-    loadLapsForGroupAction,
-    loadRoundsAction
+    loadLapsForGroupAction
 } from '@/actions/actionRequest';
 import { Button, Grid, IconButton, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -20,9 +18,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { DialogFormRound } from '@/modules/rounds/components/DialogFormRound/DialogFormRound';
 import { ListGroups } from '@/modules/rounds/components/ListGroups/ListGroups';
 import { DialogFormGroup } from '@/modules/rounds/components/DialogFormGroup/DialogFormGroup';
-import { IGroup, IMembersGroup } from '@/types/IGroup';
-import { ISportsman } from '@/types/ISportsman';
-import { ITeam } from '@/types/ITeam';
+import { IGroup } from '@/types/IGroup';
 import { TableLaps } from '@/modules/rounds/components/TableLaps/TableLaps';
 import {
     roundDeleteAction,
@@ -246,37 +242,8 @@ export const RoundsContainer: FC = observer(() => {
     }, [groups]);
 
     useEffect(() => {
-        window.api.ipcRenderer.removeAllListeners('round-insert-response');
-        window.api.ipcRenderer.removeAllListeners('round-update-response');
-        window.api.ipcRenderer.removeAllListeners('round-select-response');
-        window.api.ipcRenderer.removeAllListeners('round-delete-response');
-        window.api.ipcRenderer.on('round-insert-response', () => loadRoundsAction(story.competition!));
-        window.api.ipcRenderer.on('round-update-response', () => loadRoundsAction(story.competition!));
-        window.api.ipcRenderer.on('round-select-response', () => loadRoundsAction(story.competition!));
-        window.api.ipcRenderer.on('round-delete-response', () => loadRoundsAction(story.competition!));
-    }, []);
-
-    useEffect(() => {
-        if (selectedRound) {
-            loadGroupsByRoundIdAction(selectedRound._id);
-            window.api.ipcRenderer.removeAllListeners('group-insert-response');
-            window.api.ipcRenderer.removeAllListeners('group-update-response');
-            window.api.ipcRenderer.removeAllListeners('group-select-response');
-            window.api.ipcRenderer.removeAllListeners('group-delete-response');
-            window.api.ipcRenderer.removeAllListeners('lap-update-response');
-            window.api.ipcRenderer.removeAllListeners('lap-delete-response');
-            window.api.ipcRenderer.on('group-insert-response', () => loadGroupsByRoundIdAction(selectedRound._id));
-            window.api.ipcRenderer.on('group-update-response', () => loadGroupsByRoundIdAction(selectedRound._id));
-            window.api.ipcRenderer.on('group-select-response', () => loadGroupsByRoundIdAction(selectedRound._id));
-            window.api.ipcRenderer.on('group-delete-response', () => loadGroupsByRoundIdAction(selectedRound._id));
-            window.api.ipcRenderer.on('lap-update-response', () => loadGroupsByRoundIdAction(selectedRound._id));
-            window.api.ipcRenderer.on('lap-delete-response', () => loadGroupsByRoundIdAction(selectedRound._id));
-        }
-    }, [selectedRound]);
-
-    useEffect(() => {
         if (selectedGroup) {
-            loadLapsForGroupAction(selectedGroup);
+            loadLapsForGroupAction(selectedGroup._id);
         }
     }, [selectedGroup]);
 
@@ -353,6 +320,7 @@ export const RoundsContainer: FC = observer(() => {
                                     round={selectedRound}
                                     group={selectedGroup}
                                     raceStatus={story.raceStatus}
+                                    groupLaps={story.laps}
                                     onChangePosition={handleOpenChangePositions}
                                 />
                             </div>

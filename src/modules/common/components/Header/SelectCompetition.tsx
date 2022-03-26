@@ -1,10 +1,9 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Divider, FormControl, MenuItem, TextField } from '@mui/material';
 import { DialogCompetitionEdit } from '../../../competition/components/DialogCompetitionEdit/DialogCompetitionEdit';
 import { story } from '@/story/story';
 import { ICompetition } from '@/types/ICompetition';
-import { loadCompetitionsAction } from '@/actions/actionCompetitionRequest';
 
 export const SelectCompetition: FC = observer(() => {
     const [open, setOpen] = useState(false);
@@ -24,10 +23,6 @@ export const SelectCompetition: FC = observer(() => {
     const handleClose = useCallback(() => {
         setOpen(false);
         setOpenEditCompetition(undefined);
-    }, []);
-
-    useEffect(() => {
-        loadCompetitionsAction();
     }, []);
 
     return (

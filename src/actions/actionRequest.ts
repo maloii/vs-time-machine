@@ -1,5 +1,3 @@
-import './actionsResponse';
-
 export * from './actionCompetitionRequest';
 export * from './actionTeamRequest';
 export * from './actionSportsmanRequest';

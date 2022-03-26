@@ -15,6 +15,7 @@ import { IWlanStatus } from '@/types/IWlanStatus';
 import { IReport } from '@/types/IReport';
 import { loadReportsAction } from '@/actions/actionReportRequest';
 import { IBroadCast } from '@/types/IBroadCast';
+import { getGroupInRaceAction, getRaceStatusAction } from '@/actions/actionRaceRequest';
 
 window.api.ipcRenderer.on('load-competitions-response', (e: any, competitions: ICompetition[]) => {
     story.setCompetitions(competitions);
@@ -25,6 +26,8 @@ window.api.ipcRenderer.on('load-competitions-response', (e: any, competitions: I
         loadTeamsAction(competition);
         loadRoundsAction(competition);
         loadReportsAction(competition._id);
+        getGroupInRaceAction().then(story.setGroupInRace);
+        getRaceStatusAction().then(story.setRaceStatus);
     }
 });
 
@@ -83,4 +86,8 @@ window.api.ipcRenderer.on('status-connect', (e: any, wlanStatus: IWlanStatus, se
 
 window.api.ipcRenderer.on('group-in-race', (e: any, group: IGroup) => {
     story.setGroupInRace(group);
+});
+
+window.api.ipcRenderer.on('connector-message', (e: any, res: string) => {
+    story.setConnectorMessage(res);
 });
