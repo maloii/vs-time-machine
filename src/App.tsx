@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
-import { useParams } from 'react-router-dom';
 import { Router } from '@/Router';
 import { init, initByCompetition, initByRound, initLaps } from '@/init';
 import { story } from '@/story/story';
