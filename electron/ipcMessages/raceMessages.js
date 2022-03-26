@@ -2,15 +2,15 @@ const { race } = require('../race/Race');
 const { ipcMain } = require('electron');
 
 ipcMain.on('race-invitation-request', async (e, group) => {
-    race.invitation(group);
+    await race.invitation(group);
 });
 
 ipcMain.on('race-start-request', async (e, group) => {
-    race.start(group);
+    await race.start(group);
 });
 
 ipcMain.on('search-start-request', async (e, group) => {
-    race.search(group);
+    await race.search(group);
 });
 
 ipcMain.on('race-stop-request', async (e) => {

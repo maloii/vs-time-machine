@@ -50,6 +50,14 @@ class Race {
 
     sayTimeLeft = (maxTimeRace) => {
         let indexTimer = 0;
+        if (maxTimeRace >= 1000 * 60) {
+            this.timersSayTime[indexTimer++] = setTimeout(() => {
+                speech('десять секунд');
+            }, maxTimeRace - 1000 * 10);
+            this.timersSayTime[indexTimer++] = setTimeout(() => {
+                speech('тридцать секунд');
+            }, maxTimeRace - 1000 * 30);
+        }
         if (maxTimeRace >= 1000 * 60 * 2) {
             this.timersSayTime[indexTimer++] = setTimeout(() => {
                 speech('До конца гонки осталась одна минута');
@@ -89,11 +97,11 @@ class Race {
             this.raceStatus = 'COUNTDOWN_3';
             this.sendRaceStatus();
             await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`) });
-            await sleep(100);
+            await sleep(200);
             this.raceStatus = 'COUNTDOWN_2';
             this.sendRaceStatus();
             await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`) });
-            await sleep(100);
+            await sleep(200);
             this.raceStatus = 'COUNTDOWN_1';
             this.sendRaceStatus();
             await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`) });
