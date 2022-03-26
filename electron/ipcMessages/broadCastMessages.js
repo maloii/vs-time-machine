@@ -37,7 +37,7 @@ ipcMain.on('open-window-broadcast-request', (e, id) => {
     createBroadCastWindow(id);
 });
 
-ipcMain.handle('load-broadcast-request', async (e, competitionId) => {
+ipcMain.on('load-broadcast-request', async (e, competitionId) => {
     const broadCasts = await broadCastFindByCompetitionId(competitionId);
     sendToAllMessage('load-broadcast-response', broadCasts);
 });
@@ -50,17 +50,32 @@ ipcMain.handle('handle-load-broadcast-request-by-id', (e, id) => {
     return broadCastFindById(id);
 });
 
+ipcMain.on('broadcast-insert-request', async (e, broadCast) => {
+    const count = await broadCastInsert(broadCast);
+    sendToAllMessage('broadcast-insert-response', count);
+});
+
 ipcMain.handle('handle-broadcast-insert-request', (e, broadCast) => {
-    sendToAllMessage('broadcast-insert-message', 1);
+    sendToAllMessage('broadcast-insert-response', 1);
     return broadCastInsert(broadCast);
 });
 
+ipcMain.on('broadcast-update-request', async (e, _id, broadCast) => {
+    const count = await broadCastUpdate(_id, broadCast);
+    sendToAllMessage('broadcast-update-response', count);
+});
+
 ipcMain.handle('handle-broadcast-update-request', (e, _id, broadCast) => {
-    sendToAllMessage('broadcast-update-message', 1);
+    sendToAllMessage('broadcast-update-response', 1);
     return broadCastUpdate(_id, broadCast);
 });
 
-ipcMain.handle('handle-broadcast-delete-request', async (e, _id) => {
-    sendToAllMessage('broadcast-delete-message', 1);
+ipcMain.on('broadcast-delete-request', async (e, _id) => {
+    const count = await broadCastDelete(_id);
+    sendToAllMessage('broadcast-delete-response', count);
+});
+
+ipcMain.handle('handle-broadcast-delete-request', (e, _id) => {
+    sendToAllMessage('broadcast-delete-response', 1);
     return broadCastDelete(_id);
 });

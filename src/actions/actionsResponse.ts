@@ -16,6 +16,7 @@ import { IReport } from '@/types/IReport';
 import { loadReportsAction } from '@/actions/actionReportRequest';
 import { IBroadCast } from '@/types/IBroadCast';
 import { getGroupInRaceAction, getRaceStatusAction } from '@/actions/actionRaceRequest';
+import { loadBroadCastsAction } from '@/actions/actionBroadcastRequest';
 
 window.api.ipcRenderer.on('load-competitions-response', (e: any, competitions: ICompetition[]) => {
     story.setCompetitions(competitions);
@@ -26,6 +27,7 @@ window.api.ipcRenderer.on('load-competitions-response', (e: any, competitions: I
         loadTeamsAction(competition);
         loadRoundsAction(competition);
         loadReportsAction(competition._id);
+        loadBroadCastsAction(competition._id);
         getGroupInRaceAction().then(story.setGroupInRace);
         getRaceStatusAction().then(story.setRaceStatus);
     }

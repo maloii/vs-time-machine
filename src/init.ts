@@ -6,6 +6,7 @@ import { ICompetition } from '@/types/ICompetition';
 import { loadReportsAction } from '@/actions/actionReportRequest';
 import { loadTeamsAction } from '@/actions/actionTeamRequest';
 import { loadSportsmenAction } from '@/actions/actionSportsmanRequest';
+import { loadBroadCastsAction } from '@/actions/actionBroadcastRequest';
 
 import './actions/actionsResponse';
 import { ILap } from '@/types/ILap';
@@ -51,6 +52,9 @@ export const initByCompetition = (competition?: ICompetition) => {
         window.api.ipcRenderer.removeAllListeners('report-insert-response');
         window.api.ipcRenderer.removeAllListeners('report-update-response');
         window.api.ipcRenderer.removeAllListeners('report-delete-response');
+        window.api.ipcRenderer.removeAllListeners('broadcast-insert-response');
+        window.api.ipcRenderer.removeAllListeners('broadcast-update-response');
+        window.api.ipcRenderer.removeAllListeners('broadcast-delete-response');
         window.api.ipcRenderer.removeAllListeners('team-insert-response');
         window.api.ipcRenderer.removeAllListeners('team-update-response');
         window.api.ipcRenderer.removeAllListeners('sportsman-insert-response');
@@ -62,6 +66,9 @@ export const initByCompetition = (competition?: ICompetition) => {
         window.api.ipcRenderer.on('report-insert-response', () => loadReportsAction(competition._id));
         window.api.ipcRenderer.on('report-update-response', () => loadReportsAction(competition._id));
         window.api.ipcRenderer.on('report-delete-response', () => loadReportsAction(competition._id));
+        window.api.ipcRenderer.on('broadcast-insert-response', () => loadBroadCastsAction(competition._id));
+        window.api.ipcRenderer.on('broadcast-update-response', () => loadBroadCastsAction(competition._id));
+        window.api.ipcRenderer.on('broadcast-delete-response', () => loadBroadCastsAction(competition._id));
         window.api.ipcRenderer.on('team-insert-response', () => loadTeamsAction(competition));
         window.api.ipcRenderer.on('team-update-response', () => loadTeamsAction(competition));
         window.api.ipcRenderer.on('sportsman-insert-response', () => loadSportsmenAction(competition));

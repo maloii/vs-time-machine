@@ -1,12 +1,11 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Button } from '@mui/material';
 import {
-    handleLoadBroadCastsAction,
     openWindowBroadCastAction,
-    handleBroadCastInsertAction,
-    handleBroadCastUpdateAction,
-    handlebroadCastDeleteAction
+    broadCastUpdateAction,
+    broadCastDeleteAction,
+    broadCastInsertAction
 } from '@/actions/actionBroadcastRequest';
 import { IBroadCast } from '@/types/IBroadCast';
 import styles from '@/modules/reports/containers/styles.module.scss';
@@ -18,7 +17,7 @@ import { story } from '@/story/story';
 export const BroadCastContainer: FC = observer(() => {
     const [openDialogAddBroadCast, setOpenDialogAddBroadCast] = useState(false);
     const [openDialogEditBroadCast, setOpenDialogEditBroadCast] = useState<IBroadCast>();
-    const [broadCasts, setBroadCasts] = useState<Array<IBroadCast>>();
+
     const handleOpenWindowBroadCast = useCallback(
         (broadCast: IBroadCast) => openWindowBroadCastAction(broadCast._id),
         []
@@ -31,45 +30,33 @@ export const BroadCastContainer: FC = observer(() => {
         setOpenDialogEditBroadCast(undefined);
     }, []);
 
-    const handleLoadBroadCasts = useCallback(() => {
-        if (story.competition) {
-            handleLoadBroadCastsAction(story.competition._id).then(setBroadCasts);
-        }
-    }, []);
     const handleAdd = useCallback(
         async (broadCasts: Omit<IBroadCast, '_id' | 'competitionId'>) => {
             if (broadCasts.name && story.competition) {
-                await handleBroadCastInsertAction({ ...broadCasts, competitionId: story.competition._id });
-                await handleLoadBroadCasts();
+                broadCastInsertAction({ ...broadCasts, competitionId: story.competition._id });
                 handleCloseDialog();
             }
         },
-        [handleCloseDialog, handleLoadBroadCasts]
+        [handleCloseDialog]
     );
 
     const handleEdit = useCallback(
         async (_id: string, broadCasts: Omit<IBroadCast, '_id' | 'competitionId'> | Pick<IBroadCast, 'background'>) => {
-            await handleBroadCastUpdateAction(_id, broadCasts);
-            await handleLoadBroadCasts();
+            broadCastUpdateAction(_id, broadCasts);
             handleCloseDialog();
         },
-        [handleCloseDialog, handleLoadBroadCasts]
+        [handleCloseDialog]
     );
 
     const handleDelete = useCallback(
         async (_id: string) => {
             if (window.confirm('Are you sure you want to delete the report?')) {
-                await handlebroadCastDeleteAction(_id);
-                await handleLoadBroadCasts();
+                broadCastDeleteAction(_id);
                 handleCloseDialog();
             }
         },
-        [handleCloseDialog, handleLoadBroadCasts]
+        [handleCloseDialog]
     );
-
-    useEffect(() => {
-        handleLoadBroadCasts();
-    }, [handleLoadBroadCasts]);
 
     return (
         <div>
@@ -79,7 +66,7 @@ export const BroadCastContainer: FC = observer(() => {
                 </Button>
             </div>
             <TableBroadCast
-                broadCasts={broadCasts || []}
+                broadCasts={story.broadCasts || []}
                 onEdit={handleOpenEdit}
                 onDelete={handleDelete}
                 onOpen={handleOpenWindowBroadCast}
