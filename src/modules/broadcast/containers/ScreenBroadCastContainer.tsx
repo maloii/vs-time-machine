@@ -7,7 +7,7 @@ import { StopWatch } from '@/modules/rounds/components/StopWatch/StopWatch';
 import { TableLaps } from '@/modules/rounds/components/TableLaps/TableLaps';
 import { TakeOffArea } from '@/modules/broadcast/components/TakeOffArea/TakeOffArea';
 import { story } from '@/story/story';
-import { handleLoadBroadCastByIdAction } from '@/actions/actionBroadcastRequest';
+import { handleLoadBroadCastByIdAction, loadBroadCastsAction } from '@/actions/actionBroadcastRequest';
 import { IBroadCast } from '@/types/IBroadCast';
 import { TypeBroadCastComponents } from '@/types/TypeBroadCastComponents';
 import { ContentReport } from '@/modules/reports/components/ContentReport/ContentReport';
@@ -32,18 +32,21 @@ export const ScreenBroadCastContainer: FC = observer(() => {
     useEffect(() => {
         if (params.screenId) {
             handleLoadBroadCastByIdAction(params.screenId).then(setBroadCast);
-            window.api.ipcRenderer.removeAllListeners('broadcast-insert-message');
-            window.api.ipcRenderer.removeAllListeners('broadcast-update-message');
-            window.api.ipcRenderer.removeAllListeners('broadcast-delete-message');
-            window.api.ipcRenderer.on('broadcast-insert-message', () =>
-                handleLoadBroadCastByIdAction(params.screenId!).then(setBroadCast)
-            );
-            window.api.ipcRenderer.on('broadcast-update-message', () =>
-                handleLoadBroadCastByIdAction(params.screenId!).then(setBroadCast)
-            );
-            window.api.ipcRenderer.on('broadcast-delete-message', () =>
-                handleLoadBroadCastByIdAction(params.screenId!).then(setBroadCast)
-            );
+            window.api.ipcRenderer.removeAllListeners('broadcast-insert-response');
+            window.api.ipcRenderer.removeAllListeners('broadcast-update-response');
+            window.api.ipcRenderer.removeAllListeners('broadcast-delete-response');
+            window.api.ipcRenderer.on('broadcast-insert-response', () => {
+                handleLoadBroadCastByIdAction(params.screenId!).then(setBroadCast);
+                if (story?.competition?._id) loadBroadCastsAction(story.competition._id!);
+            });
+            window.api.ipcRenderer.on('broadcast-update-response', () => {
+                handleLoadBroadCastByIdAction(params.screenId!).then(setBroadCast);
+                if (story?.competition?._id) loadBroadCastsAction(story.competition._id!);
+            });
+            window.api.ipcRenderer.on('broadcast-delete-response', () => {
+                handleLoadBroadCastByIdAction(params.screenId!).then(setBroadCast);
+                if (story?.competition?._id) loadBroadCastsAction(story.competition._id!);
+            });
         }
     }, [params.screenId]);
 

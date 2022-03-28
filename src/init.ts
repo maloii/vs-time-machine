@@ -13,6 +13,7 @@ import { ILap } from '@/types/ILap';
 import { loadLapsForGroupAction } from '@/actions/actionLapRequest';
 import { TypeLap } from '@/types/TypeLap';
 import { beep } from '@/utils/beep';
+import { IGroup } from '@/types/IGroup';
 
 export const init = () => {
     loadCompetitionsAction();
@@ -76,10 +77,12 @@ export const initByCompetition = (competition?: ICompetition) => {
     }
 };
 
-export const initLaps = (readonly: boolean) => {
+export const initLaps = (selectedGroup: IGroup | undefined, readonly: boolean) => {
     window.api.ipcRenderer.removeAllListeners('new-lap-update');
     window.api.ipcRenderer.on('new-lap-update', (e: any, newLap: ILap) => {
-        loadLapsForGroupAction(newLap.groupId);
+        if (selectedGroup?._id === newLap.groupId) {
+            loadLapsForGroupAction(newLap.groupId);
+        }
         if (
             !readonly &&
             [TypeLap.OK, TypeLap.START, TypeLap.PIT_STOP_END, TypeLap.PIT_STOP_BEGIN, TypeLap.GATE].includes(

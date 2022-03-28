@@ -20,9 +20,9 @@ export const Connect: FC = observer(() => {
         }
     }, [portPath]);
 
-    const handleOpenWlan = useCallback(() => {
-        window.api.ipcRenderer.send('connect-wlan-request', '192.168.197.255', 8889, 8888);
-    }, []);
+    // const handleOpenWlan = useCallback(() => {
+    //     window.api.ipcRenderer.send('connect-wlan-request', '192.168.197.255', 8889, 8888);
+    // }, []);
 
     const handleClose = useCallback(() => {
         if (window.confirm('Are you sure you want to disconnect?')) {
@@ -44,20 +44,20 @@ export const Connect: FC = observer(() => {
 
     return (
         <div className={styles.selectSerialPort}>
-            {story?.wlanStatus?.isOpen ? (
-                <Button size="small" variant="outlined" onClick={handleClose}>
-                    WLAN Disconnect
-                </Button>
-            ) : (
-                <Button
-                    size="small"
-                    variant="outlined"
-                    disabled={story?.serialPortStatus?.isOpen}
-                    onClick={handleOpenWlan}
-                >
-                    WLAN Connect
-                </Button>
-            )}
+            {/*{story?.wlanStatus?.isOpen ? (*/}
+            {/*    <Button size="small" variant="outlined" onClick={handleClose}>*/}
+            {/*        WLAN Disconnect*/}
+            {/*    </Button>*/}
+            {/*) : (*/}
+            {/*    <Button*/}
+            {/*        size="small"*/}
+            {/*        variant="outlined"*/}
+            {/*        disabled={story?.serialPortStatus?.isOpen}*/}
+            {/*        onClick={handleOpenWlan}*/}
+            {/*    >*/}
+            {/*        WLAN Connect*/}
+            {/*    </Button>*/}
+            {/*)}*/}
             <FormControl variant="standard" sx={{ m: 1, minWidth: 200 }}>
                 <TextField
                     select

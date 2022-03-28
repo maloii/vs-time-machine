@@ -387,10 +387,11 @@ class Race {
         }
     };
 
-    transponderHasBeenFound = (transponder) => {
+    transponderHasBeenFound = async (transponder) => {
         connector.setRace(this);
         if (this.raceStatus === 'SEARCH' && this.selectedGroup) {
-            this.selectedGroup = searchAndMarkTransponderInGroup(this.selectedGroup, transponder);
+            const group = await groupFindById(this.selectedGroup._id);
+            this.selectedGroup = searchAndMarkTransponderInGroup(group, transponder);
 
             groupUpdate(this.selectedGroup._id, this.selectedGroup).then((count) => {
                 sendToAllMessage('group-update-response', count);
