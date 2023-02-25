@@ -4,7 +4,8 @@ const {
     lapsFindByRoundIds,
     lapUpdate,
     lapDelete,
-    lapInsert
+    lapInsert,
+    reCalculateLapsForMember
 } = require('../repository/lapRepository');
 const { ipcMain } = require('electron');
 const { sendToAllMessage } = require('./sendMessage');
@@ -24,6 +25,7 @@ ipcMain.handle('handle-load-laps-for-rounds-request', async (event, roundIds) =>
 
 ipcMain.on('lap-insert-request', async (e, lap) => {
     const newLap = await lapInsert(lap);
+    await reCalculateLapsForMember(newLap._id);
     sendToAllMessage('new-lap-update', newLap);
 });
 

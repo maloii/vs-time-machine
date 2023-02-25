@@ -30,3 +30,27 @@
     align-self: center;
   };
 }
+
+.captureVtx {
+  display: flex;
+
+  .selectDevices {
+    width: 230px;
+  }
+
+  .containerVideoPlayer {
+    position: relative;
+    width: 72px;
+    height: 40px;
+    margin-left: 8px;
+    .videoPlayer {
+      height: 40px;
+      border-radius: 4px;
+      &:hover {
+        position: absolute;
+        height: 300px;
+        z-index: 3;
+      }
+    }
+  }
+}

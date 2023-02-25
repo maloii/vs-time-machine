@@ -1,10 +1,16 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import _ from 'lodash';
+import { Button, Grid, IconButton, Tooltip } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
-import { TabRounds } from '@/modules/rounds/components/TabRounds/TabRounds';
 import { story } from '@/story/story';
+
 import { IRound } from '@/types/IRound';
+import { TypeRaceStatus } from '@/types/TypeRaceStatus';
+import { IGroup } from '@/types/IGroup';
+import { ColorCss } from '@/types/Color';
 import {
     groupDeleteAction,
     groupInsertAction,
@@ -12,14 +18,6 @@ import {
     groupUpdateAction,
     loadLapsForGroupAction
 } from '@/actions/actionRequest';
-import { Button, Grid, IconButton, Tooltip } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import { DialogFormRound } from '@/modules/rounds/components/DialogFormRound/DialogFormRound';
-import { ListGroups } from '@/modules/rounds/components/ListGroups/ListGroups';
-import { DialogFormGroup } from '@/modules/rounds/components/DialogFormGroup/DialogFormGroup';
-import { IGroup } from '@/types/IGroup';
-import { TableLaps } from '@/modules/rounds/components/TableLaps/TableLaps';
 import {
     roundDeleteAction,
     roundInsertAction,
@@ -27,13 +25,18 @@ import {
     roundUpdateAction
 } from '@/actions/actionRoundRequest';
 import { invitationRaceAction, startRaceAction, startSearchAction, stopRaceAction } from '@/actions/actionRaceRequest';
-import { TypeRaceStatus } from '@/types/TypeRaceStatus';
+import { DialogFormRound } from '@/modules/rounds/components/DialogFormRound/DialogFormRound';
+import { ListGroups } from '@/modules/rounds/components/ListGroups/ListGroups';
+import { DialogFormGroup } from '@/modules/rounds/components/DialogFormGroup/DialogFormGroup';
+import { TableLaps } from '@/modules/rounds/components/TableLaps/TableLaps';
 import { StopWatch } from '@/modules/rounds/components/StopWatch/StopWatch';
+import { TabRounds } from '@/modules/rounds/components/TabRounds/TabRounds';
+import { DialogChangePositionsInGroup } from '@/modules/rounds/components/DialogChangePositionsInGroup/DialogChangePositionsInGroup';
+import { VtxVideo } from '@/modules/rounds/components/VTXVideo/VTXVideo';
+
+import { sportsmanName } from '@/utils/sportsmanName';
 
 import styles from './styles.module.scss';
-import { sportsmanName } from '@/utils/sportsmanName';
-import { ColorCss } from '@/types/Color';
-import { DialogChangePositionsInGroup } from '@/modules/rounds/components/DialogChangePositionsInGroup/DialogChangePositionsInGroup';
 
 export const RoundsContainer: FC = observer(() => {
     const [openDialogAddRound, setOpenDialogAddRound] = useState(false);
@@ -41,6 +44,7 @@ export const RoundsContainer: FC = observer(() => {
     const [openDialogAddGroup, setOpenDialogAddGroup] = useState(false);
     const [openDialogEditGroup, setOpenDialogEditGroup] = useState<IGroup>();
     const [openDialogChangePositions, setOpenDialogChangePositions] = useState<IGroup>();
+    const [videoCurrentTime, setVideoCurrentTime] = useState<number>();
 
     const sportsmen = _.sortBy(story.sportsmen, 'lastName');
     const teams = _.sortBy(story.teams, 'name');
@@ -74,6 +78,10 @@ export const RoundsContainer: FC = observer(() => {
         },
         [groups]
     );
+
+    const handleSelectVideoCurrentTime = useCallback((currentTime: number) => {
+        setVideoCurrentTime(currentTime);
+    }, []);
 
     const handleCloseDialog = useCallback(() => {
         setOpenDialogAddRound(false);
@@ -123,12 +131,7 @@ export const RoundsContainer: FC = observer(() => {
     );
 
     const handleAddGroup = useCallback(
-        (
-            group: Omit<
-                IGroup,
-                '_id' | 'competitionId' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'
-            >
-        ) => {
+        (group: Omit<IGroup, '_id' | 'competitionId' | 'roundId' | 'close' | 'sort' | 'timeStart'>) => {
             if (story.competition && selectedRound && group.name) {
                 groupInsertAction({
                     ...group,
@@ -143,13 +146,7 @@ export const RoundsContainer: FC = observer(() => {
         [groups, handleCloseDialog, selectedRound]
     );
     const handleEditGroup = useCallback(
-        (
-            _id: string,
-            group: Omit<
-                IGroup,
-                '_id' | 'competitionId' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'
-            >
-        ) => {
+        (_id: string, group: Omit<IGroup, '_id' | 'competitionId' | 'roundId' | 'close' | 'sort' | 'timeStart'>) => {
             if (story.competition && group.name) {
                 groupUpdateAction(_id, group);
             }
@@ -322,6 +319,13 @@ export const RoundsContainer: FC = observer(() => {
                                     raceStatus={story.raceStatus}
                                     groupLaps={story.laps}
                                     onChangePosition={handleOpenChangePositions}
+                                    onSelectVideoCurrentTime={handleSelectVideoCurrentTime}
+                                />
+                                <VtxVideo
+                                    key={selectedGroup?.videoSrc}
+                                    round={selectedRound}
+                                    group={selectedGroup}
+                                    currentTime={videoCurrentTime}
                                 />
                             </div>
                         )}

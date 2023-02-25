@@ -1,0 +1,11 @@
+.root {
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0;
+  .selectMembersGroup {
+    min-width: 200px;
+  }
+}

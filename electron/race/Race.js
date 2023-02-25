@@ -89,6 +89,9 @@ class Race {
             sendToAllMessage('group-in-race', this.selectedGroup);
             this.numberPackages = [];
             this.raceStatus = 'READY';
+            groupUpdate(this.selectedGroup._id, { timeReady: DateTime.now().toMillis() }).then((count) => {
+                sendToAllMessage('group-update-response', count);
+            });
             this.sendRaceStatus();
             speech('10 секунд до старта.');
             await sleep(8000);
@@ -141,6 +144,9 @@ class Race {
     stop = () => {
         connector.setRace(this);
         this.raceStatus = 'STOP';
+        groupUpdate(this.selectedGroup._id, { timeStop: DateTime.now().toMillis() }).then((count) => {
+            sendToAllMessage('group-update-response', count);
+        });
         this.clear();
         this.sendRaceStatus();
     };

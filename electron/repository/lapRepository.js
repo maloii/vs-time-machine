@@ -88,5 +88,6 @@ module.exports = {
     lapInsert,
     lapUpdate,
     lapDelete,
-    lapDeleteByGroupId
+    lapDeleteByGroupId,
+    reCalculateLapsForMember
 };

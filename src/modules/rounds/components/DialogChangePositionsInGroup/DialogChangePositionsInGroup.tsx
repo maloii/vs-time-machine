@@ -10,7 +10,7 @@ interface IProps {
     onClose: () => void;
     onUpdate: (
         _id: string,
-        group: Omit<IGroup, '_id' | 'competitionId' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'>
+        group: Omit<IGroup, '_id' | 'competitionId' | 'roundId' | 'close' | 'sort' | 'timeStart'>
     ) => void;
 }
 
