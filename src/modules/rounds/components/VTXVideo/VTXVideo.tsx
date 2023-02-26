@@ -4,7 +4,10 @@ import { Button, MenuItem, TextField } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
 import { story } from '@/story/story';
+
+import { showFileInFolderAction } from '@/actions/actionCaptureRequest';
 import { lapInsertAction } from '@/actions/actionLapRequest';
+
 import { IGroup } from '@/types/IGroup';
 import { IRound } from '@/types/IRound';
 import { TypeLap } from '@/types/TypeLap';
@@ -64,6 +67,10 @@ export const VtxVideo: FC<IProps> = ({ round, group, currentTime }: IProps) => {
         }
     }, [group._id, group.sportsmen, group.teams, group?.timeStart, memberGroupId, round._id]);
 
+    const handleShowFileInFolder = useCallback(() => {
+        showFileInFolderAction(group.videoSrc!);
+    }, [group.videoSrc]);
+
     useEffect(() => {
         if (videoRef.current && currentTime !== undefined) {
             videoRef.current.currentTime = currentTime;
@@ -82,6 +89,9 @@ export const VtxVideo: FC<IProps> = ({ round, group, currentTime }: IProps) => {
                 </Button>
                 <Button color="primary" onClick={handleToStop}>
                     TO FINISH
+                </Button>
+                <Button color="primary" onClick={handleShowFileInFolder}>
+                    OPEN FILE
                 </Button>
                 <div style={{ flex: 1 }} />
                 <TextField

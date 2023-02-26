@@ -2,7 +2,6 @@ import { Buffer } from 'buffer';
 import { captureSaveAction } from '@/actions/actionCaptureRequest';
 
 let recorder: MediaRecorder | undefined;
-let blobs: Blob[] = [];
 
 function toArrayBuffer(blob: Blob, cb: any) {
     let fileReader = new FileReader();
@@ -18,12 +17,10 @@ export const captureStart = () => {
         recorder = new MediaRecorder(window.mediaStream);
 
         recorder.addEventListener('dataavailable', (event) => {
-            blobs.push(event.data);
-            toArrayBuffer(new Blob(blobs, { type: 'video/webm' }), function (ab: any) {
+            toArrayBuffer(new Blob([event.data], { type: 'video/webm' }), function (ab: any) {
                 const buffer = Buffer.from(ab);
                 captureSaveAction(buffer);
             });
-            // startRaceAction(blobs);
         });
         recorder.start();
     }
