@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useRef, useState } from 'react';
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { observer } from 'mobx-react';
@@ -66,6 +66,17 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
     const [channel7, setChannel7] = useState<Channel>(competition?.channel7 || Channel.R7);
     const [channel8, setChannel8] = useState<Channel>(competition?.channel8 || Channel.R8);
 
+    const [execCommandsEnabled, setExecCommandsEnabled] = useState<boolean>(competition?.execCommandsEnabled || false);
+    const [execReadyCommand, setExecReadyCommand] = useState<string>(
+        competition?.execReadyCommand || 'echo "READY\n" | nc 192.168.1.1 1618'
+    );
+    const [execStartCommand, setExecStartCommand] = useState<string>(
+        competition?.execStartCommand || 'echo "START\n" | nc 192.168.1.1 1618'
+    );
+    const [execFinishCommand, setExecFinishCommand] = useState<string>(
+        competition?.execFinishCommand || 'echo "FINISH\n" | nc 192.168.1.1 1618'
+    );
+
     const [openAddGate, setOpenAddGate] = useState(false);
     const [openEditGate, setOpenEditGate] = useState<IGate | undefined>(undefined);
 
@@ -91,19 +102,35 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
         setName(event.target.value);
     }, []);
 
-    const handleChangeSelected = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeSelected = useCallback(() => {
         setSelected((prev) => !prev);
     }, []);
 
-    const handleChangeSkipFirstGate = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeSkipFirstGate = useCallback(() => {
         setSkipFirstGate((prev) => !prev);
     }, []);
 
-    const handleChangePlayFail = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangePlayFail = useCallback(() => {
         setPlayFail((prev) => !prev);
     }, []);
 
-    const handleChangeLogo = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
+    const handleChangeExecCommandsEnabled = useCallback(() => {
+        setExecCommandsEnabled((prev) => !prev);
+    }, []);
+
+    const handleChangeExecReadyCommand = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setExecReadyCommand(event.target.value);
+    }, []);
+
+    const handleChangeExecStartCommand = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setExecStartCommand(event.target.value);
+    }, []);
+
+    const handleChangeExecFinishCommand = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setExecFinishCommand(event.target.value);
+    }, []);
+
+    const handleChangeLogo = useCallback(async () => {
         if (inputFileRef.current && inputFileRef.current.files?.[0]?.path) {
             setLogo(await window.api.copyFile(inputFileRef.current.files?.[0]?.path));
         }
@@ -148,7 +175,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
     const handleUpdateGate = useCallback(
         (_id: string, gate: Omit<IGate, '_id'>) => {
             const arrGates = [...gates];
-            var index = _.findIndex(arrGates, { _id });
+            const index = _.findIndex(arrGates, { _id });
             if (index >= 0) {
                 arrGates.splice(index, 1, { ...gate, _id });
                 setGates(arrGates);
@@ -192,7 +219,11 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                 channel5,
                 channel6,
                 channel7,
-                channel8
+                channel8,
+                execFinishCommand,
+                execReadyCommand,
+                execStartCommand,
+                execCommandsEnabled
             };
             if (competition) {
                 competitionUpdateAction(competition._id, newValue);
@@ -225,7 +256,11 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
         onClose,
         selected,
         skipFirstGate,
-        playFail
+        playFail,
+        execFinishCommand,
+        execReadyCommand,
+        execStartCommand,
+        execCommandsEnabled
     ]);
 
     const handleDelete = useCallback(() => {
@@ -251,6 +286,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                             <Tab label="Gates" value="Gates" id="Gates" />
                             <Tab label="Channels" value="Channels" id="Channels" />
                             <Tab label="Colors" value="Colors" id="Colors" />
+                            <Tab label="Exec command" value="ExecCommand" id="ExecCommand" />
                         </Tabs>
                     </Box>
                     <div hidden={tabSelected !== 'Data'} className={styles.tabPanel}>
@@ -351,6 +387,43 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                             <PositionColor label="Position 6" value={color6} onChange={setColor6} />
                             <PositionColor label="Position 7" value={color7} onChange={setColor7} />
                             <PositionColor label="Position 8" value={color8} onChange={setColor8} />
+                        </Box>
+                    </div>
+                    <div hidden={tabSelected !== 'ExecCommand'} className={styles.tabPanel}>
+                        <Box component="form" sx={{ '& > :not(style)': { m: 1 } }} noValidate autoComplete="off">
+                            <FormControlLabel
+                                control={
+                                    <Switch checked={execCommandsEnabled} onChange={handleChangeExecCommandsEnabled} />
+                                }
+                                label="Enabled exec commands"
+                            />
+                            <TextField
+                                id="ready-command"
+                                label="Ready race command"
+                                fullWidth
+                                variant="outlined"
+                                value={execReadyCommand}
+                                disabled={!execCommandsEnabled}
+                                onChange={handleChangeExecReadyCommand}
+                            />
+                            <TextField
+                                id="ready-command"
+                                label="Start race command"
+                                fullWidth
+                                variant="outlined"
+                                value={execStartCommand}
+                                disabled={!execCommandsEnabled}
+                                onChange={handleChangeExecStartCommand}
+                            />
+                            <TextField
+                                id="finish-command"
+                                label="Finish race command"
+                                fullWidth
+                                variant="outlined"
+                                value={execFinishCommand}
+                                disabled={!execCommandsEnabled}
+                                onChange={handleChangeExecFinishCommand}
+                            />
                         </Box>
                     </div>
                 </Box>

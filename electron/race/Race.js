@@ -1,4 +1,5 @@
 const { app } = require('electron');
+const { exec } = require('child_process');
 const sound = require('node-wav-player');
 const path = require('path');
 const { Worker } = require('worker_threads');
@@ -81,6 +82,7 @@ class Race {
         if (this.raceStatus === 'STOP') {
             this.clear();
             connector.sendSyncTime();
+            const competition = group.competition;
             this.selectedGroup = clearPositionInGroup(group);
             let count = await groupUpdate(this.selectedGroup._id, this.selectedGroup);
             const round = this.selectedGroup.round || {};
@@ -89,6 +91,9 @@ class Race {
             sendToAllMessage('group-in-race', this.selectedGroup);
             this.numberPackages = [];
             this.raceStatus = 'READY';
+            if (competition?.execCommandsEnabled && competition?.execReadyCommand) {
+                this.execCommand(competition.execReadyCommand);
+            }
             groupUpdate(this.selectedGroup._id, { timeReady: DateTime.now().toMillis() }).then((count) => {
                 sendToAllMessage('group-update-response', count);
             });
@@ -111,6 +116,9 @@ class Race {
             await sleep(400);
 
             this.raceStatus = 'RUN';
+            if (competition?.execCommandsEnabled && competition?.execStartCommand) {
+                this.execCommand(competition.execStartCommand);
+            }
             this.startTime = DateTime.now().toMillis();
             this.sendRaceStatus(this.startTime);
             groupUpdate(this.selectedGroup._id, { timeStart: this.startTime }).then((count) => {
@@ -144,6 +152,12 @@ class Race {
     stop = () => {
         connector.setRace(this);
         this.raceStatus = 'STOP';
+        if (
+            this.selectedGroup?.competition?.execCommandsEnabled &&
+            this.selectedGroup?.competition?.execFinishCommand
+        ) {
+            this.execCommand(this.selectedGroup?.competition?.execFinishCommand);
+        }
         groupUpdate(this.selectedGroup._id, { timeStop: DateTime.now().toMillis() }).then((count) => {
             sendToAllMessage('group-update-response', count);
         });
@@ -411,6 +425,20 @@ class Race {
     sendRaceStatus = (startTime) => {
         connector.setRace(this);
         sendToAllMessage('race-status-message', this.raceStatus, startTime);
+    };
+
+    execCommand = (command) => {
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                console.log(`error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.log(`stderr: ${stderr}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+        });
     };
 }
 

@@ -65,7 +65,7 @@ export const VtxVideo: FC<IProps> = ({ round, group, currentTime }: IProps) => {
             };
             lapInsertAction(newLap);
         }
-    }, [group._id, group.sportsmen, group.teams, group?.timeStart, memberGroupId, round._id]);
+    }, [group._id, group.sportsmen, group.teams, group?.timeReady, group?.timeStart, memberGroupId, round._id]);
 
     const handleShowFileInFolder = useCallback(() => {
         showFileInFolderAction(group.videoSrc!);
