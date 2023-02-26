@@ -1,3 +1,32 @@
+const blob = new Blob(
+    [
+        `
+        class Processor extends AudioWorkletProcessor {
+            constructor() {
+                super();
+            }
+        
+            process(inputs, outputs) {
+                const input = inputs[0];
+                const output = outputs[0];
+        
+                for (let channel = 0; channel < output.length; ++channel) {
+                    if (output[channel] && input[channel]) {
+                        output[channel].set(input[channel]);
+                    }
+                }
+        
+                return true;
+            }
+        }
+        
+        registerProcessor('my-audio-processor', Processor);
+    `
+    ],
+    { type: 'application/javascript' }
+);
+const url = URL.createObjectURL(blob);
+
 // @ts-ignore
 const audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext)();
 
@@ -8,22 +37,20 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext || window
 //volume of the tone. Default is 1, off is 0.
 //type of tone. Possible values are sine, square, sawtooth, triangle, and custom. Default is sine.
 //callback to use on end of tone
-export const beep = (
+export const beep = async (
     duration: number,
     frequency: number,
     volume: number,
     type: OscillatorType,
     callback?: () => {}
-): void => {
-    const oscillator = audioCtx.createOscillator();
-    const gainNode = audioCtx.createGain();
+): Promise<void> => {
+    await audioCtx.audioWorklet.addModule(url);
+    const oscillator = new OscillatorNode(audioCtx);
+    const gainNode = new AudioWorkletNode(audioCtx, 'my-audio-processor');
 
     oscillator.connect(gainNode);
     gainNode.connect(audioCtx.destination);
 
-    if (volume) {
-        gainNode.gain.value = volume;
-    }
     if (frequency) {
         oscillator.frequency.value = frequency;
     }
