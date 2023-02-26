@@ -40,7 +40,6 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext || window
 export const beep = async (
     duration: number,
     frequency: number,
-    volume: number,
     type: OscillatorType,
     callback?: () => {}
 ): Promise<void> => {
