@@ -39,6 +39,11 @@ export const CaptureVtx: FC = observer(() => {
                 if (videoRef.current) {
                     videoRef.current.srcObject = null;
                 }
+                if (window.mediaStream) {
+                    window.mediaStream.getTracks().forEach(function (track) {
+                        track.stop();
+                    });
+                }
                 story?.setVtxDevice(undefined);
                 window.mediaStream = undefined;
             }
