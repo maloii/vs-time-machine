@@ -45,10 +45,20 @@ interface IProps {
     onChangePosition?: (id: string) => void;
     onSelectVideoCurrentTime?: (currentTime: number) => void;
     groupLaps?: ILap[];
+    scrollable?: boolean;
 }
 
 export const TableLaps: FC<IProps> = observer(
-    ({ round, group, readonly, raceStatus, onChangePosition, onSelectVideoCurrentTime, groupLaps }: IProps) => {
+    ({
+        round,
+        group,
+        readonly,
+        raceStatus,
+        onChangePosition,
+        onSelectVideoCurrentTime,
+        groupLaps,
+        scrollable = true
+    }: IProps) => {
         const [openLapsMember, setOpenLapsMember] = useState<string | undefined>(undefined);
         const refTableContainer = useRef<HTMLDivElement>(null);
         const laps = matrixLapsWithPitStop(
@@ -245,7 +255,12 @@ export const TableLaps: FC<IProps> = observer(
             ((groupLaps || []).filter((lap: ILap) => lap.memberGroupId === id) || []).length;
 
         return (
-            <TableContainer component={Paper} variant="outlined" className={styles.root} ref={refTableContainer}>
+            <TableContainer
+                component={Paper}
+                variant="outlined"
+                className={cn(styles.root, { [styles.scrollable]: scrollable })}
+                ref={refTableContainer}
+            >
                 <Table size="small" stickyHeader>
                     <TableHead>
                         <TableRow>

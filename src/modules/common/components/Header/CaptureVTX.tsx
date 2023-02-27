@@ -1,7 +1,11 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
+import { autorun } from 'mobx';
+import uniqid from 'uniqid';
 import { IconButton, MenuItem, TextField } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
+
+import { competitionUpdateAction } from '@/actions/actionCompetitionRequest';
 
 import { story } from '@/story/story';
 
@@ -11,30 +15,34 @@ export const CaptureVtx: FC = observer(() => {
     const [devices, setDevices] = useState<MediaDeviceInfo[]>();
     const videoRef = useRef<HTMLVideoElement>(null);
 
+    const handleStreamVideo = useCallback((deviceId: string) => {
+        // @ts-ignore
+        window.navigator.getUserMedia(
+            {
+                video: {
+                    width: 1280,
+                    height: 720,
+                    deviceId: deviceId
+                },
+                audio: false
+            },
+            (localMediaStream: MediaStream) => {
+                window.mediaStream = localMediaStream;
+                if (videoRef.current) {
+                    videoRef.current.srcObject = window.mediaStream;
+                }
+            },
+            (error: any) => console.log(error)
+        );
+    }, []);
+
     const handleChangeVtxDevice = useCallback(
         async (event) => {
+            if (!story?.competition) return;
             if (event.target.value) {
                 const device = devices?.find((item) => item.deviceId === event.target.value);
-                story?.setVtxDevice(device);
-
-                // @ts-ignore
-                window.navigator.getUserMedia(
-                    {
-                        video: {
-                            width: 1280,
-                            height: 720,
-                            deviceId: device!.deviceId
-                        },
-                        audio: false
-                    },
-                    (localMediaStream: MediaStream) => {
-                        window.mediaStream = localMediaStream;
-                        if (videoRef.current) {
-                            videoRef.current.srcObject = window.mediaStream;
-                        }
-                    },
-                    (error: any) => console.log(error)
-                );
+                competitionUpdateAction(story?.competition?._id, { captureDeviceId: device!.deviceId });
+                handleStreamVideo(device!.deviceId);
             } else {
                 if (videoRef.current) {
                     videoRef.current.srcObject = null;
@@ -44,12 +52,13 @@ export const CaptureVtx: FC = observer(() => {
                         track.stop();
                     });
                 }
-                story?.setVtxDevice(undefined);
+                competitionUpdateAction(story.competition._id, { captureDeviceId: undefined });
                 window.mediaStream = undefined;
             }
         },
-        [devices]
+        [devices, handleStreamVideo]
     );
+
     const handleUpdateDevices = useCallback(() => {
         navigator.mediaDevices.enumerateDevices().then((items) => {
             setDevices(items.filter((item) => item.kind === 'videoinput'));
@@ -60,13 +69,22 @@ export const CaptureVtx: FC = observer(() => {
         handleUpdateDevices();
     }, [handleUpdateDevices]);
 
+    useEffect(() => {
+        autorun(() => {
+            if (story?.competition?.captureDeviceId) {
+                handleStreamVideo(story.competition.captureDeviceId);
+            }
+        });
+    }, [handleStreamVideo]);
+
     return (
         <div className={styles.captureVtx}>
             <TextField
                 className={styles.selectDevices}
+                key={uniqid()}
                 select
                 fullWidth
-                value={story?.vtxDevice?.deviceId}
+                value={story?.competition?.captureDeviceId}
                 onChange={handleChangeVtxDevice}
                 label="Device video"
                 size="small"
@@ -82,7 +100,7 @@ export const CaptureVtx: FC = observer(() => {
             <IconButton onClick={handleUpdateDevices}>
                 <RefreshIcon sx={{ fontSize: 16 }} />
             </IconButton>
-            {Boolean(story.vtxDevice) && (
+            {Boolean(story?.competition?.captureDeviceId) && (
                 <div className={styles.containerVideoPlayer}>
                     <video controls ref={videoRef} className={styles.videoPlayer} autoPlay />
                 </div>

@@ -68,7 +68,7 @@ window.api.ipcRenderer.on(
         story.setRaceStatus(raceStatus);
         story.setStartTime(startTime);
 
-        if (story.vtxDevice && window.mediaStream) {
+        if (story.competition?.captureDeviceId && story.competition?.captureVTXEnabled && window.mediaStream) {
             switch (raceStatus) {
                 case TypeRaceStatus.READY:
                     captureStart();

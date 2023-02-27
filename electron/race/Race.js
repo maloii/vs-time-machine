@@ -94,7 +94,8 @@ class Race {
             if (competition?.execCommandsEnabled && competition?.execReadyCommand) {
                 this.execCommand(competition.execReadyCommand);
             }
-            groupUpdate(this.selectedGroup._id, { timeReady: DateTime.now().toMillis() }).then((count) => {
+            this.selectedGroup.timeReady = DateTime.now().toMillis();
+            groupUpdate(this.selectedGroup._id, { timeReady: this.selectedGroup.timeReady }).then((count) => {
                 sendToAllMessage('group-update-response', count);
             });
             this.sendRaceStatus();
@@ -120,6 +121,7 @@ class Race {
                 this.execCommand(competition.execStartCommand);
             }
             this.startTime = DateTime.now().toMillis();
+            this.selectedGroup.timeStart = this.startTime;
             this.sendRaceStatus(this.startTime);
             groupUpdate(this.selectedGroup._id, { timeStart: this.startTime }).then((count) => {
                 sendToAllMessage('group-update-response', count);
@@ -158,7 +160,8 @@ class Race {
         ) {
             this.execCommand(this.selectedGroup?.competition?.execFinishCommand);
         }
-        groupUpdate(this.selectedGroup._id, { timeStop: DateTime.now().toMillis() }).then((count) => {
+        this.selectedGroup.timeStop = DateTime.now().toMillis();
+        groupUpdate(this.selectedGroup._id, { timeStop: this.selectedGroup.timeStop }).then((count) => {
             sendToAllMessage('group-update-response', count);
         });
         this.clear();
@@ -203,7 +206,14 @@ class Race {
 
     newLap = async (millisecond, transponder, numberPackage, gateNumber) => {
         connector.setRace(this);
-        if (this.raceStatus === 'RUN' && !this.numberPackages.includes(numberPackage)) {
+
+        if (
+            (this.raceStatus === 'RUN' ||
+                (this.raceStatus === 'STOP' &&
+                    this.selectedGroup.timeStop >= millisecond &&
+                    this.selectedGroup.timeStart < millisecond)) &&
+            !this.numberPackages.includes(numberPackage)
+        ) {
             this.numberPackages.push(numberPackage);
             const membersGroup = findMembersGroupByTransponder(this.selectedGroup, transponder);
             const sportsman = findInMembersGroupSportsmanByTransponder(membersGroup, transponder);

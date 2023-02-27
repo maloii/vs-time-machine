@@ -28,7 +28,6 @@ export class Story {
     public startTime: number | undefined = undefined;
     public groupInRace: IGroup | undefined = undefined;
     public connectorMessage: string | undefined = undefined;
-    public vtxDevice: MediaDeviceInfo | undefined = undefined;
 
     public constructor() {
         makeAutoObservable(this);
@@ -96,10 +95,6 @@ export class Story {
 
     public setConnectorMessage = (newConnectorMessage: string | undefined): void => {
         this.connectorMessage = newConnectorMessage;
-    };
-
-    public setVtxDevice = (newVtxDevice: MediaDeviceInfo | undefined): void => {
-        this.vtxDevice = newVtxDevice;
     };
 }
 

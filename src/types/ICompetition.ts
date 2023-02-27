@@ -33,4 +33,7 @@ export interface ICompetition {
     execReadyCommand: string;
     execStartCommand: string;
     execFinishCommand: string;
+
+    captureVTXEnabled: boolean;
+    captureDeviceId?: string;
 }

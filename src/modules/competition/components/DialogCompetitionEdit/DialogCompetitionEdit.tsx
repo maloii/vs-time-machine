@@ -46,6 +46,8 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
     const [selected, setSelected] = useState(competition?.selected || false);
     const [skipFirstGate, setSkipFirstGate] = useState(competition?.skipFirstGate || false);
     const [playFail, setPlayFail] = useState(competition?.playFail || false);
+    const [captureVTXEnabled, setCaptureVTXEnabled] = useState(competition?.captureVTXEnabled || false);
+
     const [logo, setLogo] = useState(competition?.logo || window.api.DEFAULT_COMPETITION_LOGO);
 
     const [color1, setColor1] = useState<Color>(competition?.color1 || Color.BLUE);
@@ -112,6 +114,10 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
 
     const handleChangePlayFail = useCallback(() => {
         setPlayFail((prev) => !prev);
+    }, []);
+
+    const handleChangeCaptureVTXEnabled = useCallback(() => {
+        setCaptureVTXEnabled((prev) => !prev);
     }, []);
 
     const handleChangeExecCommandsEnabled = useCallback(() => {
@@ -204,6 +210,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                 selected,
                 skipFirstGate,
                 playFail,
+                captureVTXEnabled,
                 color1,
                 color2,
                 color3,
@@ -257,6 +264,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
         selected,
         skipFirstGate,
         playFail,
+        captureVTXEnabled,
         execFinishCommand,
         execReadyCommand,
         execStartCommand,
@@ -336,6 +344,12 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                             <FormControlLabel
                                 control={<Switch checked={playFail} onChange={handleChangePlayFail} />}
                                 label="Play a violation sound"
+                            />
+                            <FormControlLabel
+                                control={
+                                    <Switch checked={captureVTXEnabled} onChange={handleChangeCaptureVTXEnabled} />
+                                }
+                                label="Capture VTX"
                             />
                         </Box>
                     </div>
