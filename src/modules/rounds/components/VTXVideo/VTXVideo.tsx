@@ -90,10 +90,10 @@ export const VtxVideo: FC<IProps> = ({ round, group, currentTime }: IProps) => {
                 <Button color="primary" onClick={handleToStop}>
                     TO FINISH
                 </Button>
+                <div style={{ flex: 1 }} />
                 <Button color="primary" onClick={handleShowFileInFolder}>
                     OPEN FILE
                 </Button>
-                <div style={{ flex: 1 }} />
                 <TextField
                     select
                     className={styles.selectMembersGroup}
