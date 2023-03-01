@@ -11,7 +11,7 @@ import { story } from '@/story/story';
 
 import styles from './styles.module.scss';
 
-export const CaptureVtx: FC = observer(() => {
+export const SelectSourceDVR: FC = observer(() => {
     const [devices, setDevices] = useState<MediaDeviceInfo[]>();
     const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -36,7 +36,7 @@ export const CaptureVtx: FC = observer(() => {
         );
     }, []);
 
-    const handleChangeVtxDevice = useCallback(
+    const handleChangeDvrDevice = useCallback(
         async (event) => {
             if (!story?.competition) return;
             if (event.target.value) {
@@ -78,15 +78,15 @@ export const CaptureVtx: FC = observer(() => {
     }, [handleStreamVideo]);
 
     return (
-        <div className={styles.captureVtx}>
+        <div className={styles.captureDvr}>
             <TextField
                 className={styles.selectDevices}
                 key={uniqid()}
                 select
                 fullWidth
                 value={story?.competition?.captureDeviceId}
-                onChange={handleChangeVtxDevice}
-                label="Device video"
+                onChange={handleChangeDvrDevice}
+                label="Select source DVR"
                 size="small"
                 disabled={!devices?.length}
             >

@@ -46,6 +46,8 @@ interface IProps {
     onSelectVideoCurrentTime?: (currentTime: number) => void;
     groupLaps?: ILap[];
     scrollable?: boolean;
+    onOpenEditSportsman?: (_id: string) => void;
+    onOpenEditTeam?: (_id: string) => void;
 }
 
 export const TableLaps: FC<IProps> = observer(
@@ -57,7 +59,9 @@ export const TableLaps: FC<IProps> = observer(
         onChangePosition,
         onSelectVideoCurrentTime,
         groupLaps,
-        scrollable = true
+        scrollable = true,
+        onOpenEditSportsman,
+        onOpenEditTeam
     }: IProps) => {
         const [openLapsMember, setOpenLapsMember] = useState<string | undefined>(undefined);
         const refTableContainer = useRef<HTMLDivElement>(null);
@@ -269,6 +273,13 @@ export const TableLaps: FC<IProps> = observer(
                                 <TableCell
                                     key={item._id}
                                     className={cn({ [styles.searched]: item?.searchTransponder })}
+                                    onDoubleClick={() =>
+                                        onOpenEditSportsman &&
+                                        onOpenEditTeam &&
+                                        (item.sportsman
+                                            ? onOpenEditSportsman(item.sportsman._id)
+                                            : onOpenEditTeam(item.team?._id!))
+                                    }
                                 >
                                     <div className={styles.header}>
                                         <div>

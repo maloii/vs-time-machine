@@ -15,28 +15,32 @@ import { TypeLap } from '@/types/TypeLap';
 import { sportsmanName } from '@/utils/sportsmanName';
 
 import styles from './styles.module.scss';
+import { ICompetition } from '@/types/ICompetition';
 
 interface IProps {
     round: IRound;
     group: IGroup;
+    competition: ICompetition;
     currentTime?: number;
 }
 
-export const VtxVideo: FC<IProps> = ({ round, group, currentTime }: IProps) => {
+export const DVRVideo: FC<IProps> = ({ round, group, competition, currentTime }: IProps) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [memberGroupId, setMemberGroupId] = useState<string>();
 
     const handleToStart = useCallback(() => {
         if (videoRef.current) {
-            videoRef.current.currentTime = ((group?.timeStart || 0) - (group?.timeReady || 0)) / 1000;
+            videoRef.current.currentTime =
+                ((group?.timeStart || 0) - (group?.timeReady || 0) + competition.latencyDVR) / 1000;
         }
-    }, [group?.timeReady, group?.timeStart]);
+    }, [competition.latencyDVR, group?.timeReady, group?.timeStart]);
 
     const handleToStop = useCallback(() => {
         if (videoRef.current) {
-            videoRef.current.currentTime = ((group?.timeStop || 0) - (group?.timeReady || 0)) / 1000;
+            videoRef.current.currentTime =
+                ((group?.timeStop || 0) - (group?.timeReady || 0) + competition.latencyDVR) / 1000;
         }
-    }, [group?.timeReady, group?.timeStop]);
+    }, [competition.latencyDVR, group?.timeReady, group?.timeStop]);
 
     const handleChangeMembersGroup = useCallback((event) => {
         setMemberGroupId(event.target.value);
@@ -50,7 +54,9 @@ export const VtxVideo: FC<IProps> = ({ round, group, currentTime }: IProps) => {
             const sportsmanId = (sportsman ? sportsman?.sportsman?._id : team?.team?.sportsmenIds?.[0]) || '';
             const millisecond =
                 (group?.timeStart || 0) +
-                (Math.ceil(videoRef.current.currentTime * 1000) - ((group?.timeStart || 0) - (group?.timeReady || 0)));
+                (Math.ceil(videoRef.current.currentTime * 1000) -
+                    ((group?.timeStart || 0) - (group?.timeReady || 0)) -
+                    competition.latencyDVR);
             const newLap = {
                 typeLap: TypeLap.OK,
                 timeLap: 0,
@@ -73,9 +79,9 @@ export const VtxVideo: FC<IProps> = ({ round, group, currentTime }: IProps) => {
 
     useEffect(() => {
         if (videoRef.current && currentTime !== undefined) {
-            videoRef.current.currentTime = currentTime;
+            videoRef.current.currentTime = currentTime + competition.latencyDVR / 1000;
         }
-    }, [currentTime]);
+    }, [competition.latencyDVR, currentTime]);
 
     if (!group.videoSrc) {
         return null;

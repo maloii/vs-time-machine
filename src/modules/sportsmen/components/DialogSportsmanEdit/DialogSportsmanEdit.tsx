@@ -24,9 +24,9 @@ interface IProps {
     open: boolean;
     onClose: () => void;
     sportsman?: ISportsman;
-    onSave: (sportsman: Omit<ISportsman, '_id' | 'competitionId'>) => void;
+    onSave?: (sportsman: Omit<ISportsman, '_id' | 'competitionId'>) => void;
     onUpdate: (_id: string, sportsman: Omit<ISportsman, '_id' | 'competitionId'>) => void;
-    onDelete: (_id: string) => void;
+    onDelete?: (_id: string) => void;
 }
 
 export const DialogSportsmanEdit: FC<IProps> = observer(
@@ -125,7 +125,7 @@ export const DialogSportsmanEdit: FC<IProps> = observer(
                     selected: sportsman.selected,
                     hasTransponder: sportsman.hasTransponder
                 });
-            } else {
+            } else if (onSave) {
                 onSave({ ...newDataSportsman, selected: true });
             }
         }, [
@@ -150,7 +150,7 @@ export const DialogSportsmanEdit: FC<IProps> = observer(
         ]);
 
         const handleDelete = useCallback(() => {
-            if (sportsman?._id) {
+            if (sportsman?._id && onDelete) {
                 onDelete(sportsman?._id);
             }
         }, [onDelete, sportsman?._id]);
@@ -185,6 +185,7 @@ export const DialogSportsmanEdit: FC<IProps> = observer(
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
+                                    autoFocus
                                     type="number"
                                     variant="filled"
                                     label="Transponders"
@@ -243,7 +244,7 @@ export const DialogSportsmanEdit: FC<IProps> = observer(
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    {!!sportsman && (
+                    {!!sportsman && !!onDelete && (
                         <Button onClick={handleDelete} style={{ marginRight: 'auto' }} color="error">
                             Delete
                         </Button>

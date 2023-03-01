@@ -5,7 +5,7 @@ import { story } from '@/story/story';
 
 import styles from './styles.module.scss';
 
-export const CaptureVtxScreen: FC = observer(() => {
+export const CaptureDVRScreen: FC = observer(() => {
     const videoRef = useRef<HTMLVideoElement>(null);
 
     useEffect(() => {

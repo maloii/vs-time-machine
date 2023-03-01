@@ -46,7 +46,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
     const [selected, setSelected] = useState(competition?.selected || false);
     const [skipFirstGate, setSkipFirstGate] = useState(competition?.skipFirstGate || false);
     const [playFail, setPlayFail] = useState(competition?.playFail || false);
-    const [captureVTXEnabled, setCaptureVTXEnabled] = useState(competition?.captureVTXEnabled || false);
+    const [captureDVREnabled, setCaptureDVREnabled] = useState(competition?.captureDVREnabled || false);
 
     const [logo, setLogo] = useState(competition?.logo || window.api.DEFAULT_COMPETITION_LOGO);
 
@@ -78,6 +78,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
     const [execFinishCommand, setExecFinishCommand] = useState<string>(
         competition?.execFinishCommand || 'echo "FINISH\n" | nc 192.168.1.1 1618'
     );
+    const [latencyDVR, setLatencyDVR] = useState<number>(competition?.latencyDVR || 1000);
 
     const [openAddGate, setOpenAddGate] = useState(false);
     const [openEditGate, setOpenEditGate] = useState<IGate | undefined>(undefined);
@@ -116,8 +117,8 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
         setPlayFail((prev) => !prev);
     }, []);
 
-    const handleChangeCaptureVTXEnabled = useCallback(() => {
-        setCaptureVTXEnabled((prev) => !prev);
+    const handleChangeCaptureDVREnabled = useCallback(() => {
+        setCaptureDVREnabled((prev) => !prev);
     }, []);
 
     const handleChangeExecCommandsEnabled = useCallback(() => {
@@ -134,6 +135,10 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
 
     const handleChangeExecFinishCommand = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setExecFinishCommand(event.target.value);
+    }, []);
+
+    const handleChangeLatencyDVR = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setLatencyDVR(parseInt(event.target.value, 10));
     }, []);
 
     const handleChangeLogo = useCallback(async () => {
@@ -210,7 +215,6 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                 selected,
                 skipFirstGate,
                 playFail,
-                captureVTXEnabled,
                 color1,
                 color2,
                 color3,
@@ -230,7 +234,9 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                 execFinishCommand,
                 execReadyCommand,
                 execStartCommand,
-                execCommandsEnabled
+                execCommandsEnabled,
+                captureDVREnabled,
+                latencyDVR
             };
             if (competition) {
                 competitionUpdateAction(competition._id, newValue);
@@ -264,11 +270,12 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
         selected,
         skipFirstGate,
         playFail,
-        captureVTXEnabled,
+        captureDVREnabled,
         execFinishCommand,
         execReadyCommand,
         execStartCommand,
-        execCommandsEnabled
+        execCommandsEnabled,
+        latencyDVR
     ]);
 
     const handleDelete = useCallback(() => {
@@ -295,6 +302,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                             <Tab label="Channels" value="Channels" id="Channels" />
                             <Tab label="Colors" value="Colors" id="Colors" />
                             <Tab label="Exec command" value="ExecCommand" id="ExecCommand" />
+                            <Tab label="DVR" value="DVR" id="DVR" />
                         </Tabs>
                     </Box>
                     <div hidden={tabSelected !== 'Data'} className={styles.tabPanel}>
@@ -344,12 +352,6 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                             <FormControlLabel
                                 control={<Switch checked={playFail} onChange={handleChangePlayFail} />}
                                 label="Play a violation sound"
-                            />
-                            <FormControlLabel
-                                control={
-                                    <Switch checked={captureVTXEnabled} onChange={handleChangeCaptureVTXEnabled} />
-                                }
-                                label="Capture VTX"
                             />
                         </Box>
                     </div>
@@ -437,6 +439,25 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                                 value={execFinishCommand}
                                 disabled={!execCommandsEnabled}
                                 onChange={handleChangeExecFinishCommand}
+                            />
+                        </Box>
+                    </div>
+                    <div hidden={tabSelected !== 'DVR'} className={styles.tabPanel}>
+                        <Box component="form" sx={{ '& > :not(style)': { m: 1 } }} noValidate autoComplete="off">
+                            <FormControlLabel
+                                control={
+                                    <Switch checked={captureDVREnabled} onChange={handleChangeCaptureDVREnabled} />
+                                }
+                                label="Capture DVR"
+                            />
+                            <TextField
+                                id="latency-dvr"
+                                label="Latency DVR"
+                                fullWidth
+                                variant="outlined"
+                                value={latencyDVR}
+                                disabled={!captureDVREnabled}
+                                onChange={handleChangeLatencyDVR}
                             />
                         </Box>
                     </div>

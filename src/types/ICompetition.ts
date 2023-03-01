@@ -34,6 +34,7 @@ export interface ICompetition {
     execStartCommand: string;
     execFinishCommand: string;
 
-    captureVTXEnabled: boolean;
+    captureDVREnabled: boolean;
+    latencyDVR: number;
     captureDeviceId?: string;
 }

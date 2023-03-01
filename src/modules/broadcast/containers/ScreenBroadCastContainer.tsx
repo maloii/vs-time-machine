@@ -7,7 +7,7 @@ import { observer } from 'mobx-react';
 import { StopWatch } from '@/modules/rounds/components/StopWatch/StopWatch';
 import { TableLaps } from '@/modules/rounds/components/TableLaps/TableLaps';
 import { TakeOffArea } from '@/modules/broadcast/components/TakeOffArea/TakeOffArea';
-import { CaptureVtxScreen } from '@/modules/broadcast/components/CaptureVTXScreen/CaptureVTXScreen';
+import { CaptureDVRScreen } from '@/modules/broadcast/components/CaptureDVRScreen/CaptureDVRScreen';
 import { story } from '@/story/story';
 import { IBroadCast } from '@/types/IBroadCast';
 import { TypeBroadCastComponents } from '@/types/TypeBroadCastComponents';
@@ -73,8 +73,8 @@ export const ScreenBroadCastContainer: FC = observer(() => {
                     />
                 );
             }
-        } else if (idComponent === TypeBroadCastComponents.CAPTURE_VTX.toString()) {
-            return <CaptureVtxScreen />;
+        } else if (idComponent === TypeBroadCastComponents.CAPTURE_DVR.toString()) {
+            return <CaptureDVRScreen />;
         } else if (idComponent) {
             const report = _.find(story.reports, ['_id', idComponent]);
             if (report)

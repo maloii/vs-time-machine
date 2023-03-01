@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react';
 import _ from 'lodash';
 import { Button, Grid, IconButton, Tooltip } from '@mui/material';
@@ -11,12 +11,17 @@ import { IRound } from '@/types/IRound';
 import { TypeRaceStatus } from '@/types/TypeRaceStatus';
 import { IGroup } from '@/types/IGroup';
 import { ColorCss } from '@/types/Color';
+import { ITeam } from '@/types/ITeam';
+import { ISportsman } from '@/types/ISportsman';
+
 import {
     groupDeleteAction,
     groupInsertAction,
     groupSelectAction,
     groupUpdateAction,
-    loadLapsForGroupAction
+    loadLapsForGroupAction,
+    sportsmanUpdateAction,
+    teamUpdateAction
 } from '@/actions/actionRequest';
 import {
     roundDeleteAction,
@@ -32,11 +37,14 @@ import { TableLaps } from '@/modules/rounds/components/TableLaps/TableLaps';
 import { StopWatch } from '@/modules/rounds/components/StopWatch/StopWatch';
 import { TabRounds } from '@/modules/rounds/components/TabRounds/TabRounds';
 import { DialogChangePositionsInGroup } from '@/modules/rounds/components/DialogChangePositionsInGroup/DialogChangePositionsInGroup';
-import { VtxVideo } from '@/modules/rounds/components/VTXVideo/VTXVideo';
+import { DVRVideo } from '@/modules/rounds/components/DVRVideo/DVRVideo';
 
 import { sportsmanName } from '@/utils/sportsmanName';
 
 import styles from './styles.module.scss';
+import { DialogSportsmanEdit } from '@/modules/sportsmen/components/DialogSportsmanEdit/DialogSportsmanEdit';
+import { DialogTeamEdit } from '@/modules/sportsmen/components/DialogTeamEdit/DialogTeamEdit';
+import { computed } from 'mobx';
 
 export const RoundsContainer: FC = observer(() => {
     const [openDialogAddRound, setOpenDialogAddRound] = useState(false);
@@ -45,15 +53,19 @@ export const RoundsContainer: FC = observer(() => {
     const [openDialogEditGroup, setOpenDialogEditGroup] = useState<IGroup>();
     const [openDialogChangePositions, setOpenDialogChangePositions] = useState<IGroup>();
     const [videoCurrentTime, setVideoCurrentTime] = useState<number>();
+    const [openDialogEditSportsman, setOpenDialogEditSportsman] = useState(false);
+    const [openDialogEditTeam, setOpenDialogEditTeam] = useState(false);
+    const [sportsmanEdit, setSportsmanEdit] = useState<ISportsman>();
+    const [teamEdit, setTeamEdit] = useState<ITeam>();
 
-    const sportsmen = _.sortBy(story.sportsmen, 'lastName');
-    const teams = _.sortBy(story.teams, 'name');
+    const sportsmen = useMemo(() => computed(() => _.sortBy(story.sportsmen, 'lastName')), []).get();
+    const teams = useMemo(() => computed(() => _.sortBy(story.teams, 'name')), []).get();
 
-    const rounds = [...(story.rounds || [])].sort((a, b) => a.sort - b.sort);
-    const groups = [...(story.groups || [])];
+    const rounds = useMemo(() => computed(() => [...(story.rounds || [])].sort((a, b) => a.sort - b.sort)), []).get();
+    const groups = useMemo(() => computed(() => [...(story.groups || [])]), []).get();
 
-    const selectedRound = rounds.find((round) => round.selected);
-    const selectedGroup = groups.find((group) => group.selected);
+    const selectedRound = useMemo(() => rounds.find((round) => round.selected), [rounds]);
+    const selectedGroup = useMemo(() => groups.find((group) => group.selected), [groups]);
     const raceReadyToStart = !story.raceStatus || story.raceStatus === TypeRaceStatus.STOP;
 
     const handleSelectRound = useCallback(async (_id: string) => {
@@ -238,6 +250,47 @@ export const RoundsContainer: FC = observer(() => {
         navigator.clipboard.writeText(textGroups).then(() => alert('Group list copied to clipboard.'));
     }, [groups]);
 
+    const handleOpenEditSportsman = useCallback(
+        (_id: string) => {
+            setSportsmanEdit(_.find(sportsmen, ['_id', _id]));
+        },
+        [sportsmen]
+    );
+
+    const handleOpenEditTeam = useCallback(
+        (_id: string) => {
+            setTeamEdit(_.find(teams, ['_id', _id]));
+        },
+        [teams]
+    );
+
+    const handleClose = useCallback(() => {
+        setSportsmanEdit(undefined);
+        setTeamEdit(undefined);
+        setOpenDialogEditSportsman(false);
+        setOpenDialogEditTeam(false);
+    }, []);
+
+    const handleUpdateSportsman = useCallback(
+        (_id: string, sportsman: Omit<ISportsman, '_id' | 'competitionId'>) => {
+            if (story.competition && _id) {
+                sportsmanUpdateAction(_id, sportsman);
+                handleClose();
+            }
+        },
+        [handleClose]
+    );
+
+    const handleUpdateTeam = useCallback(
+        (_id: string, team: Omit<ITeam, '_id' | 'competitionId'>) => {
+            if (story.competition && _id) {
+                teamUpdateAction(_id, team);
+                handleClose();
+            }
+        },
+        [handleClose]
+    );
+
     useEffect(() => {
         if (selectedGroup) {
             loadLapsForGroupAction(selectedGroup._id);
@@ -320,9 +373,12 @@ export const RoundsContainer: FC = observer(() => {
                                     groupLaps={story.laps}
                                     onChangePosition={handleOpenChangePositions}
                                     onSelectVideoCurrentTime={handleSelectVideoCurrentTime}
+                                    onOpenEditSportsman={handleOpenEditSportsman}
+                                    onOpenEditTeam={handleOpenEditTeam}
                                 />
-                                <VtxVideo
+                                <DVRVideo
                                     key={selectedGroup?.videoSrc}
+                                    competition={story.competition!}
                                     round={selectedRound}
                                     group={selectedGroup}
                                     currentTime={videoCurrentTime}
@@ -363,6 +419,24 @@ export const RoundsContainer: FC = observer(() => {
                     onClose={handleCloseDialog}
                     onUpdate={handleEditGroup}
                     group={openDialogChangePositions}
+                />
+            )}
+            {(openDialogEditSportsman || !!sportsmanEdit) && (
+                <DialogSportsmanEdit
+                    open={openDialogEditSportsman || !!sportsmanEdit}
+                    sportsman={sportsmanEdit}
+                    onClose={handleClose}
+                    onUpdate={handleUpdateSportsman}
+                />
+            )}
+            {(openDialogEditTeam || !!teamEdit) && (
+                <DialogTeamEdit
+                    open={openDialogEditTeam || !!teamEdit}
+                    team={teamEdit}
+                    teams={teams}
+                    sportsmen={sportsmen}
+                    onClose={handleClose}
+                    onUpdate={handleUpdateTeam}
                 />
             )}
         </div>
