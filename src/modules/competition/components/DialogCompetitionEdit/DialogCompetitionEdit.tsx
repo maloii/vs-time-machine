@@ -78,7 +78,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
     const [execFinishCommand, setExecFinishCommand] = useState<string>(
         competition?.execFinishCommand || 'echo "FINISH\n" | nc 192.168.1.1 1618'
     );
-    const [latencyDVR, setLatencyDVR] = useState<number>(competition?.latencyDVR || 1000);
+    const [latencyDVR, setLatencyDVR] = useState<number>(competition?.latencyDVR || 300);
 
     const [openAddGate, setOpenAddGate] = useState(false);
     const [openEditGate, setOpenEditGate] = useState<IGate | undefined>(undefined);
