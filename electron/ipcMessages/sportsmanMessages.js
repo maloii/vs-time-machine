@@ -5,7 +5,7 @@ const {
     sportsmanUpdate,
     sportsmanDelete
 } = require('../repository/sportsmanRepository');
-const { sendToAllMessage } = require("./sendMessage");
+const { sendToAllMessage } = require('./sendMessage');
 
 ipcMain.on('load-sportsmen-for-competition-request', async (e, competitionId) => {
     const sportsmen = await sportsmenFindByCompetitionId(competitionId);
@@ -24,6 +24,7 @@ ipcMain.on('sportsman-insert-request', async (e, sportsman) => {
 ipcMain.on('sportsman-update-request', async (e, _id, sportsman) => {
     const count = await sportsmanUpdate(_id, sportsman);
     sendToAllMessage('sportsman-update-response', count);
+    sendToAllMessage('round-update-response', count);
 });
 
 ipcMain.handle('sportsman-delete-request', async (e, _id) => {

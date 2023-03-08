@@ -54,6 +54,10 @@ const clearSearchTransponderInGroup = (group) => {
 const clearPositionInGroup = (group) => {
     return {
         ...group,
+        videoSrc: undefined,
+        timeStart: undefined,
+        timeReady: undefined,
+        timeStop: undefined,
         sportsmen: (group.sportsmen || []).map((item) => ({
             ...item,
             position: undefined,

@@ -15,6 +15,7 @@ ipcMain.on('team-insert-request', async (e, team) => {
 ipcMain.on('team-update-request', async (e, _id, team) => {
     const count = await teamUpdate(_id, team);
     sendToAllMessage('team-update-response', count);
+    sendToAllMessage('round-update-response', count);
 });
 
 ipcMain.handle('team-delete-request', async (e, _id) => {

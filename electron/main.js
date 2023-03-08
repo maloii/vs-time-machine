@@ -13,7 +13,8 @@ function createWindow() {
         height: 1080,
         webPreferences: {
             preload: path.join(__dirname, './preload.js'),
-            contextIsolation: true
+            contextIsolation: true,
+            webSecurity: false
         },
         icon: path.join(__dirname, 'AppIcon.icns')
     });

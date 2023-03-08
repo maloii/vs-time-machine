@@ -199,6 +199,11 @@ export const SportsmenContainer: FC = observer(() => {
             </Box>
             <div hidden={tabSelected !== 'Sportsmen'} className={styles.tabPanel}>
                 <div className={styles.actions}>
+                    <div className={styles.count}>
+                        Selected: {sportsmen.filter((item) => item.selected).length}, Has transponder:{' '}
+                        {sportsmen.filter((item) => item.hasTransponder).length}
+                    </div>
+                    <div style={{ flex: 1 }} />
                     <Button color="primary" startIcon={<AddIcon />} onClick={handleOpenAddSportsman}>
                         Add sportsman
                     </Button>
@@ -228,6 +233,8 @@ export const SportsmenContainer: FC = observer(() => {
             </div>
             <div hidden={tabSelected !== 'Teams'} className={styles.tabPanel}>
                 <div className={styles.actions}>
+                    <div className={styles.count}>Selected: {teams.filter((item) => item.selected).length}</div>
+                    <div style={{ flex: 1 }} />
                     <Button color="primary" startIcon={<AddIcon />} onClick={handleOpenAddTeam}>
                         Add team
                     </Button>

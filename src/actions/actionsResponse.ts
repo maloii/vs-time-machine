@@ -17,6 +17,7 @@ import { loadReportsAction } from '@/actions/actionReportRequest';
 import { IBroadCast } from '@/types/IBroadCast';
 import { getGroupInRaceAction, getRaceStatusAction } from '@/actions/actionRaceRequest';
 import { loadBroadCastsAction } from '@/actions/actionBroadcastRequest';
+import { captureStart, captureStop } from '@/actions/capture/capture';
 
 window.api.ipcRenderer.on('load-competitions-response', (e: any, competitions: ICompetition[]) => {
     story.setCompetitions(competitions);
@@ -66,6 +67,17 @@ window.api.ipcRenderer.on(
     (e: any, raceStatus: TypeRaceStatus, startTime: number | undefined) => {
         story.setRaceStatus(raceStatus);
         story.setStartTime(startTime);
+
+        if (story.competition?.captureDeviceId && story.competition?.captureDVREnabled && window.mediaStream) {
+            switch (raceStatus) {
+                case TypeRaceStatus.READY:
+                    captureStart();
+                    break;
+                case TypeRaceStatus.STOP:
+                    captureStop();
+                    break;
+            }
+        }
     }
 );
 

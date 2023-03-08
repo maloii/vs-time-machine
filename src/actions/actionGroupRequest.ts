@@ -32,7 +32,7 @@ export const groupUpdateAction = (
     _id: string,
     group:
         | Omit<IGroup, '_id' | 'competitionId'>
-        | Omit<IGroup, '_id' | 'competitionId' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'>
+        | Omit<IGroup, '_id' | 'competitionId' | 'roundId' | 'close' | 'sort' | 'timeStart'>
 ): void => {
     window.api.ipcRenderer.send('group-update-request', _id, group);
 };

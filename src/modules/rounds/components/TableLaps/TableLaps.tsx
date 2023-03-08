@@ -23,6 +23,7 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ListIcon from '@mui/icons-material/List';
+import VideocamIcon from '@mui/icons-material/Videocam';
 import ConstructionIcon from '@mui/icons-material/Construction';
 import { sportsmanName } from '@/utils/sportsmanName';
 import { story } from '@/story/story';
@@ -42,11 +43,26 @@ interface IProps {
     readonly?: boolean;
     raceStatus?: TypeRaceStatus;
     onChangePosition?: (id: string) => void;
+    onSelectVideoCurrentTime?: (currentTime: number) => void;
     groupLaps?: ILap[];
+    scrollable?: boolean;
+    onOpenEditSportsman?: (_id: string) => void;
+    onOpenEditTeam?: (_id: string) => void;
 }
 
 export const TableLaps: FC<IProps> = observer(
-    ({ round, group, readonly, raceStatus, onChangePosition, groupLaps }: IProps) => {
+    ({
+        round,
+        group,
+        readonly,
+        raceStatus,
+        onChangePosition,
+        onSelectVideoCurrentTime,
+        groupLaps,
+        scrollable = true,
+        onOpenEditSportsman,
+        onOpenEditTeam
+    }: IProps) => {
         const [openLapsMember, setOpenLapsMember] = useState<string | undefined>(undefined);
         const refTableContainer = useRef<HTMLDivElement>(null);
         const laps = matrixLapsWithPitStop(
@@ -95,6 +111,15 @@ export const TableLaps: FC<IProps> = observer(
                 laps[memberGroupId]?.filter((item: ILap | undefined) => !!item && item.typeLap === TypeLap.OK),
                 'timeLap'
             );
+            const timeAfterStart = ((lap?.millisecond || 0) - (group?.timeReady || 0)) / 1000;
+            const buttonSelectTime =
+                onSelectVideoCurrentTime && group.videoSrc && lap?.millisecond ? (
+                    <IconButton onClick={() => onSelectVideoCurrentTime(timeAfterStart)}>
+                        <VideocamIcon sx={{ fontSize: 16 }} />
+                    </IconButton>
+                ) : (
+                    ''
+                );
             let textLap: ReactNode = '';
             if (lap?.typeLap === TypeLap.START) textLap = 'Start';
             if (lap?.typeLap && [TypeLap.OK, TypeLap.PIT_STOP_END].includes(lap.typeLap)) {
@@ -125,6 +150,7 @@ export const TableLaps: FC<IProps> = observer(
                 return (
                     <TableCell>
                         <b>{textLap}</b>
+                        {buttonSelectTime}
                     </TableCell>
                 );
             return (
@@ -137,6 +163,7 @@ export const TableLaps: FC<IProps> = observer(
                     ) : (
                         textLap
                     )}
+                    {buttonSelectTime}
                 </TableCell>
             );
         };
@@ -232,7 +259,12 @@ export const TableLaps: FC<IProps> = observer(
             ((groupLaps || []).filter((lap: ILap) => lap.memberGroupId === id) || []).length;
 
         return (
-            <TableContainer component={Paper} variant="outlined" className={styles.root} ref={refTableContainer}>
+            <TableContainer
+                component={Paper}
+                variant="outlined"
+                className={cn(styles.root, { [styles.scrollable]: scrollable })}
+                ref={refTableContainer}
+            >
                 <Table size="small" stickyHeader>
                     <TableHead>
                         <TableRow>
@@ -241,6 +273,13 @@ export const TableLaps: FC<IProps> = observer(
                                 <TableCell
                                     key={item._id}
                                     className={cn({ [styles.searched]: item?.searchTransponder })}
+                                    onDoubleClick={() =>
+                                        onOpenEditSportsman &&
+                                        onOpenEditTeam &&
+                                        (item.sportsman
+                                            ? onOpenEditSportsman(item.sportsman._id)
+                                            : onOpenEditTeam(item.team?._id!))
+                                    }
                                 >
                                     <div className={styles.header}>
                                         <div>

@@ -28,4 +28,13 @@ export interface ICompetition {
     channel6: Channel;
     channel7: Channel;
     channel8: Channel;
+
+    execCommandsEnabled: boolean;
+    execReadyCommand: string;
+    execStartCommand: string;
+    execFinishCommand: string;
+
+    captureDVREnabled: boolean;
+    latencyDVR: number;
+    captureDeviceId?: string;
 }

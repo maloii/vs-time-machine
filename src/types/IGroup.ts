@@ -29,11 +29,13 @@ export interface IGroup {
     selected: boolean;
     close: boolean;
     timeStart?: number;
-    startMillisecond?: number;
+    timeReady?: number;
+    timeStop?: number;
     typeGroup: TypeGroup;
     sportsmen: IMembersGroup[];
     teams: IMembersGroup[];
     competition?: ICompetition;
     round?: IRound;
     laps?: ILap[];
+    videoSrc?: string;
 }

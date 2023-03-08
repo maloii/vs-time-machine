@@ -40,7 +40,8 @@
     "uniqid": "~5.4.0",
     "uuid": "~8.3.2",
     "web-vitals": "~2.1.2",
-    "axios": "~0.26.1"
+    "axios": "~0.26.1",
+    "buffer": "~6.0.3"
   },
   "devDependencies": {
     "@types/jest": "~26.0.24",
@@ -92,7 +93,14 @@
     ],
     "mac": {
       "icon": "assets/icon/AppIcon.icns",
-      "category": "public.app-category.utilities"
+      "category": "public.app-category.utilities",
+      "hardenedRuntime": false,
+      "extendInfo": {
+        "NSCameraUsageDescription": "This app needs access to the camera"
+      },
+      "target": [
+        "dmg"
+      ]
     },
     "win": {
       "icon": "assets/icon/icon_256@1x.png"

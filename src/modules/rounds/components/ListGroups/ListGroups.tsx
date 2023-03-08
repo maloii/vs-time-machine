@@ -14,10 +14,7 @@ interface IProps {
     onEdit: (id: string) => void;
     onSelect: (id: string) => void;
     onDelete: (id: string) => void;
-    onUpdate: (
-        id: string,
-        group: Omit<IGroup, '_id' | 'roundId' | 'close' | 'sort' | 'timeStart' | 'startMillisecond'>
-    ) => void;
+    onUpdate: (id: string, group: Omit<IGroup, '_id' | 'roundId' | 'close' | 'sort' | 'timeStart'>) => void;
 }
 
 export const ListGroups: FC<IProps> = observer(

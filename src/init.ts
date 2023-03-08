@@ -89,7 +89,7 @@ export const initLaps = (selectedGroup: IGroup | undefined, readonly: boolean) =
                 newLap.typeLap
             )
         ) {
-            beep(20, 1000, 1, 'sine');
+            beep(20, 1000, 'sine');
         }
     });
 };

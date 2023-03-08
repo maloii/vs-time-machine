@@ -10,7 +10,7 @@ export const competitionInsertAction = (competition: Omit<ICompetition, '_id'>):
 
 export const competitionUpdateAction = (
     _id: string,
-    competition: Omit<ICompetition, '_id'> | Pick<ICompetition, 'logo'>
+    competition: Omit<ICompetition, '_id'> | Pick<ICompetition, 'logo'> | Pick<ICompetition, 'captureDeviceId'>
 ): void => {
     window.api.ipcRenderer.send('competition-update-request', _id, competition);
 };

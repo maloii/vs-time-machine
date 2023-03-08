@@ -1,13 +1,14 @@
 import React, { FC, ReactNode, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { autorun } from 'mobx';
 import _ from 'lodash';
 import cn from 'classnames';
 import { observer } from 'mobx-react';
 import { StopWatch } from '@/modules/rounds/components/StopWatch/StopWatch';
 import { TableLaps } from '@/modules/rounds/components/TableLaps/TableLaps';
 import { TakeOffArea } from '@/modules/broadcast/components/TakeOffArea/TakeOffArea';
+import { CaptureDVRScreen } from '@/modules/broadcast/components/CaptureDVRScreen/CaptureDVRScreen';
 import { story } from '@/story/story';
-import { handleLoadBroadCastByIdAction, loadBroadCastsAction } from '@/actions/actionBroadcastRequest';
 import { IBroadCast } from '@/types/IBroadCast';
 import { TypeBroadCastComponents } from '@/types/TypeBroadCastComponents';
 import { ContentReport } from '@/modules/reports/components/ContentReport/ContentReport';
@@ -30,24 +31,12 @@ export const ScreenBroadCastContainer: FC = observer(() => {
     }, [broadCast?.background, broadCast?.chromaKey]);
 
     useEffect(() => {
-        if (params.screenId) {
-            handleLoadBroadCastByIdAction(params.screenId).then(setBroadCast);
-            window.api.ipcRenderer.removeAllListeners('broadcast-insert-response');
-            window.api.ipcRenderer.removeAllListeners('broadcast-update-response');
-            window.api.ipcRenderer.removeAllListeners('broadcast-delete-response');
-            window.api.ipcRenderer.on('broadcast-insert-response', () => {
-                handleLoadBroadCastByIdAction(params.screenId!).then(setBroadCast);
-                if (story?.competition?._id) loadBroadCastsAction(story.competition._id!);
-            });
-            window.api.ipcRenderer.on('broadcast-update-response', () => {
-                handleLoadBroadCastByIdAction(params.screenId!).then(setBroadCast);
-                if (story?.competition?._id) loadBroadCastsAction(story.competition._id!);
-            });
-            window.api.ipcRenderer.on('broadcast-delete-response', () => {
-                handleLoadBroadCastByIdAction(params.screenId!).then(setBroadCast);
-                if (story?.competition?._id) loadBroadCastsAction(story.competition._id!);
-            });
-        }
+        console.log('----');
+        autorun(() => {
+            if (params.screenId) {
+                setBroadCast(story.broadCasts.find((broadCast) => broadCast._id === params.screenId));
+            }
+        });
     }, [params.screenId]);
 
     const screenComponent = (idComponent?: string): ReactNode | null => {
@@ -69,6 +58,7 @@ export const ScreenBroadCastContainer: FC = observer(() => {
                             groupLaps={story.laps}
                             raceStatus={story.raceStatus}
                             readonly
+                            scrollable={false}
                         />
                     </>
                 );
@@ -83,6 +73,8 @@ export const ScreenBroadCastContainer: FC = observer(() => {
                     />
                 );
             }
+        } else if (idComponent === TypeBroadCastComponents.CAPTURE_DVR.toString()) {
+            return <CaptureDVRScreen />;
         } else if (idComponent) {
             const report = _.find(story.reports, ['_id', idComponent]);
             if (report)

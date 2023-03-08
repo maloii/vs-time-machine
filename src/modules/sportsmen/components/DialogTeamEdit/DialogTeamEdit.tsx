@@ -27,9 +27,9 @@ interface IProps {
     team?: ITeam;
     teams: ITeam[];
     sportsmen: ISportsman[];
-    onSave: (team: Omit<ITeam, '_id' | 'competitionId'>) => void;
+    onSave?: (team: Omit<ITeam, '_id' | 'competitionId'>) => void;
     onUpdate: (_id: string, team: Omit<ITeam, '_id' | 'competitionId'>) => void;
-    onDelete: (_id: string) => void;
+    onDelete?: (_id: string) => void;
 }
 
 export const DialogTeamEdit: FC<IProps> = ({
@@ -100,13 +100,13 @@ export const DialogTeamEdit: FC<IProps> = ({
         };
         if (team?._id) {
             onUpdate(team?._id, { ...newDataTeam, selected: team.selected });
-        } else {
+        } else if (onSave) {
             onSave({ ...newDataTeam, selected: true });
         }
     }, [city, country, name, onSave, onUpdate, photo, position, sportsmenIds, team?._id, team?.selected]);
 
     const handleDelete = useCallback(() => {
-        if (team?._id) {
+        if (team?._id && onDelete) {
             onDelete(team?._id);
         }
     }, [onDelete, team?._id]);
@@ -175,7 +175,7 @@ export const DialogTeamEdit: FC<IProps> = ({
                 </Box>
             </DialogContent>
             <DialogActions>
-                {!!team && (
+                {!!team && !!onDelete && (
                     <Button onClick={handleDelete} style={{ marginRight: 'auto' }} color="error">
                         Delete
                     </Button>
