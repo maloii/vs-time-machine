@@ -145,6 +145,7 @@ const generateGroupsFromBeforeRound = async (round) => {
             const newGroup = {
                 ...group,
                 _id: undefined,
+                videoSrc: undefined,
                 roundId: round._id,
                 sportsmen: group?.sportsmen?.map((sportsman) => ({
                     ...sportsman,

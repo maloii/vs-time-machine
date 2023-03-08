@@ -71,7 +71,16 @@ export const DVRVideo: FC<IProps> = ({ round, group, competition, currentTime }:
             };
             lapInsertAction(newLap);
         }
-    }, [group._id, group.sportsmen, group.teams, group?.timeReady, group?.timeStart, memberGroupId, round._id]);
+    }, [
+        competition.latencyDVR,
+        group._id,
+        group.sportsmen,
+        group.teams,
+        group?.timeReady,
+        group?.timeStart,
+        memberGroupId,
+        round._id
+    ]);
 
     const handleShowFileInFolder = useCallback(() => {
         showFileInFolderAction(group.videoSrc!);

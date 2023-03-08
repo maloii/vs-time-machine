@@ -377,7 +377,7 @@ export const RoundsContainer: FC = observer(() => {
                                     onOpenEditTeam={handleOpenEditTeam}
                                 />
                                 <DVRVideo
-                                    key={selectedGroup?.videoSrc}
+                                    key={selectedGroup?.videoSrc || selectedGroup._id}
                                     competition={story.competition!}
                                     round={selectedRound}
                                     group={selectedGroup}
