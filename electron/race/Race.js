@@ -98,23 +98,29 @@ class Race {
             groupUpdate(this.selectedGroup._id, { timeReady: this.selectedGroup.timeReady }).then((count) => {
                 sendToAllMessage('group-update-response', count);
             });
+            if (this.raceStatus === 'STOP') return;
             this.sendRaceStatus();
             speech('10 секунд до старта.');
             await sleep(8000);
+            if (this.raceStatus === 'STOP') return;
             speech('Удачной гонки!');
             await sleep(1500);
+            if (this.raceStatus === 'STOP') return;
             this.raceStatus = 'COUNTDOWN_3';
             this.sendRaceStatus();
             await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`) });
             await sleep(200);
+            if (this.raceStatus === 'STOP') return;
             this.raceStatus = 'COUNTDOWN_2';
             this.sendRaceStatus();
             await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`) });
             await sleep(200);
+            if (this.raceStatus === 'STOP') return;
             this.raceStatus = 'COUNTDOWN_1';
             this.sendRaceStatus();
             await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`) });
             await sleep(400);
+            if (this.raceStatus === 'STOP') return;
 
             this.raceStatus = 'RUN';
             if (competition?.execCommandsEnabled && competition?.execStartCommand) {
@@ -173,11 +179,11 @@ class Race {
             clearInterval(this.timerSearch);
         }
         if (this.timerStop) {
-            clearInterval(this.timerStop);
+            clearTimeout(this.timerStop);
         }
         if (this.timersSayTime?.length > 0) {
             for (const timerToClear of this.timersSayTime) {
-                clearInterval(timerToClear);
+                clearTimeout(timerToClear);
             }
             this.timersSayTime = [];
         }
@@ -292,7 +298,6 @@ class Race {
                     } else {
                         typeLap = 'HIDDEN';
                         if (competition.playFail) {
-                            //runServicePlay('fail.mp3');
                             speech(`${sportsman.lastName} мимо!`);
                         }
                     }
@@ -396,7 +401,6 @@ class Race {
                 }
 
                 if (competition.playFail && typeLap === 'HIDDEN') {
-                    //runServicePlay('fail.mp3');
                     speech(`${sportsman.lastName} мимо!`);
                 }
                 const newLap = await lapInsert({
@@ -451,17 +455,5 @@ class Race {
         });
     };
 }
-
-const runServicePlay = (file) => {
-    return new Promise((resolve, reject) => {
-        const fullPathToFile = path.join(app.getPath('userData'), `/sounds/${file}`);
-        const worker = new Worker(path.join(__dirname, '../utils/play.js'), { workerData: { file: fullPathToFile } });
-        worker.on('message', resolve);
-        worker.on('error', reject);
-        worker.on('exit', (code) => {
-            if (code !== 0) reject(new Error(`stopped with  ${code} exit code`));
-        });
-    });
-};
 
 module.exports = { race: new Race() };

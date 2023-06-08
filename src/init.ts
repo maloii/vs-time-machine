@@ -77,13 +77,14 @@ export const initByCompetition = (competition?: ICompetition) => {
     }
 };
 
-export const initLaps = (selectedGroup: IGroup | undefined, readonly: boolean) => {
+export const initLaps = (selectedGroup: IGroup | undefined, readonly: boolean, playBeep: boolean) => {
     window.api.ipcRenderer.removeAllListeners('new-lap-update');
     window.api.ipcRenderer.on('new-lap-update', (e: any, newLap: ILap) => {
         if (selectedGroup?._id === newLap.groupId) {
             loadLapsForGroupAction(newLap.groupId);
         }
         if (
+            playBeep &&
             !readonly &&
             [TypeLap.OK, TypeLap.START, TypeLap.PIT_STOP_END, TypeLap.PIT_STOP_BEGIN, TypeLap.GATE].includes(
                 newLap.typeLap

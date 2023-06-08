@@ -45,7 +45,10 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
     const [name, setName] = useState<string>(competition?.name || '');
     const [selected, setSelected] = useState(competition?.selected || false);
     const [skipFirstGate, setSkipFirstGate] = useState(competition?.skipFirstGate || false);
-    const [playFail, setPlayFail] = useState(competition?.playFail || false);
+    const [playFail, setPlayFail] = useState<boolean>(competition?.playFail || false);
+    const [playBeep, setPlayBeep] = useState<boolean>(
+        competition?.playBeep !== undefined ? competition?.playBeep : true
+    );
     const [captureDVREnabled, setCaptureDVREnabled] = useState(competition?.captureDVREnabled || false);
 
     const [logo, setLogo] = useState(competition?.logo || window.api.DEFAULT_COMPETITION_LOGO);
@@ -115,6 +118,10 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
 
     const handleChangePlayFail = useCallback(() => {
         setPlayFail((prev) => !prev);
+    }, []);
+
+    const handleChangePlayBeep = useCallback(() => {
+        setPlayBeep((prev) => !prev);
     }, []);
 
     const handleChangeCaptureDVREnabled = useCallback(() => {
@@ -215,6 +222,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                 selected,
                 skipFirstGate,
                 playFail,
+                playBeep,
                 color1,
                 color2,
                 color3,
@@ -270,6 +278,7 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
         selected,
         skipFirstGate,
         playFail,
+        playBeep,
         captureDVREnabled,
         execFinishCommand,
         execReadyCommand,
@@ -352,6 +361,10 @@ export const DialogCompetitionEdit: FC<IProps> = observer(({ open, onClose, comp
                             <FormControlLabel
                                 control={<Switch checked={playFail} onChange={handleChangePlayFail} />}
                                 label="Play a violation sound"
+                            />
+                            <FormControlLabel
+                                control={<Switch checked={playBeep} onChange={handleChangePlayBeep} />}
+                                label="Play lap beep"
                             />
                         </Box>
                     </div>

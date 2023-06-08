@@ -29,6 +29,11 @@ const url = URL.createObjectURL(blob);
 
 // @ts-ignore
 const audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext)();
+let gainNode: AudioWorkletNode | undefined = undefined;
+audioCtx.audioWorklet.addModule(url).then(() => {
+    gainNode = new AudioWorkletNode(audioCtx, 'my-audio-processor');
+    gainNode.connect(audioCtx.destination);
+});
 
 //All arguments are optional:
 
@@ -43,23 +48,20 @@ export const beep = async (
     type: OscillatorType,
     callback?: () => {}
 ): Promise<void> => {
-    await audioCtx.audioWorklet.addModule(url);
-    const oscillator = new OscillatorNode(audioCtx);
-    const gainNode = new AudioWorkletNode(audioCtx, 'my-audio-processor');
+    if (gainNode) {
+        const oscillator = new OscillatorNode(audioCtx);
+        oscillator.connect(gainNode);
+        if (frequency) {
+            oscillator.frequency.value = frequency;
+        }
+        if (type) {
+            oscillator.type = type;
+        }
+        if (callback) {
+            oscillator.onended = callback;
+        }
 
-    oscillator.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-
-    if (frequency) {
-        oscillator.frequency.value = frequency;
+        oscillator.start(audioCtx.currentTime);
+        oscillator.stop(audioCtx.currentTime + (duration || 500) / 1000);
     }
-    if (type) {
-        oscillator.type = type;
-    }
-    if (callback) {
-        oscillator.onended = callback;
-    }
-
-    oscillator.start(audioCtx.currentTime);
-    oscillator.stop(audioCtx.currentTime + (duration || 500) / 1000);
 };

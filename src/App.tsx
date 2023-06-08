@@ -16,7 +16,7 @@ const App = observer(() => {
     useEffect(() => {
         const readonly =
             window.location.pathname?.indexOf('screen') >= 0 || window.location.hash?.indexOf('screen') >= 0;
-        autorun(() => initLaps(selectedGroup, readonly));
+        autorun(() => initLaps(selectedGroup, readonly, Boolean(story.competition?.playBeep)));
     }, [selectedGroup]);
 
     useEffect(() => {
