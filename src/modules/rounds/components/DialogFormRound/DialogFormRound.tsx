@@ -63,6 +63,19 @@ export const DialogFormRound: FC<IProps> = ({ open, onClose, onSave, onUpdate, o
     );
     const [countNextGo, setCountNextGo] = useState(2);
 
+    const copySettingsFromRound = useCallback(
+        (roundId: string) => {
+            const copyRound = (rounds || []).find((item) => item._id === roundId);
+            if (copyRound) {
+                setTypeRound(copyRound.typeRound);
+                setTypeRace(copyRound.typeRace);
+                setTypeStartRace(copyRound.typeStartRace);
+                setCountLap(copyRound.countLap);
+                setMaxTimeRace(copyRound.maxTimeRace);
+            }
+        },
+        [rounds]
+    );
     const handleChangeName = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
     }, []);
@@ -81,15 +94,25 @@ export const DialogFormRound: FC<IProps> = ({ open, onClose, onSave, onUpdate, o
     const handleChangeMaxTimeRace = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setMaxTimeRace(Number(event.target.value));
     }, []);
-    const handleChangeTypeGenerateRound = useCallback((event: SelectChangeEvent<TypeGenerateRound>) => {
-        setTypeGenerateRound(event.target.value as TypeGenerateRound);
-    }, []);
+    const handleChangeTypeGenerateRound = useCallback(
+        (event: SelectChangeEvent<TypeGenerateRound>) => {
+            if (event.target.value === TypeGenerateRound.COPY_BEFORE_ROUND && fromRoundCopy) {
+                copySettingsFromRound(fromRoundCopy);
+            }
+            setTypeGenerateRound(event.target.value as TypeGenerateRound);
+        },
+        [copySettingsFromRound, fromRoundCopy]
+    );
     const handleChangeCountSportsmen = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setCountSportsmen(Number(event.target.value));
     }, []);
-    const handleChangeFromRoundCopy = useCallback((event: SelectChangeEvent<string>) => {
-        setFromRoundCopy(event.target.value as string);
-    }, []);
+    const handleChangeFromRoundCopy = useCallback(
+        (event: SelectChangeEvent<string>) => {
+            copySettingsFromRound(event.target.value);
+            setFromRoundCopy(event.target.value as string);
+        },
+        [copySettingsFromRound]
+    );
     const handleChangeTypeRaceElimination = useCallback((event: SelectChangeEvent<TypeRaceElimination>) => {
         setTypeRaceElimination(event.target.value as TypeRaceElimination);
     }, []);
