@@ -49,8 +49,7 @@ const mainMenu = Menu.buildFromTemplate([
                             importWindow.loadURL(
                                 isDev
                                     ? 'http://localhost:3000/import/rcpilots'
-                                    : `file://${path.join(__dirname, '../../build/index.html')}`,
-                                isDev ? undefined : { hash: '/import/rcpilots' }
+                                    : `file://${path.join(__dirname, '../../build/index.html#import/rcpilots')}`
                             );
 
                             importWindow.on('closed', () => {
@@ -79,8 +78,7 @@ const mainMenu = Menu.buildFromTemplate([
                     importWindow.loadURL(
                         isDev
                             ? 'http://localhost:3000/settings'
-                            : `file://${path.join(__dirname, '../../build/index.html')}`,
-                        isDev ? undefined : { hash: 'settings' }
+                            : `file://${path.join(__dirname, '../../build/index.html#settings')}`
                     );
 
                     importWindow.on('closed', () => {
