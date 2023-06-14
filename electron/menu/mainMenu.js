@@ -49,7 +49,7 @@ const mainMenu = Menu.buildFromTemplate([
                             importWindow.loadURL(
                                 isDev
                                     ? 'http://localhost:3000/import/rcpilots'
-                                    : `file://${path.join(__dirname, '../../build/index.html#/import/rcpilots')}`
+                                    : `file://${path.join(__dirname, '../../build/index.html')}#/import/rcpilots`
                             );
 
                             importWindow.on('closed', () => {
