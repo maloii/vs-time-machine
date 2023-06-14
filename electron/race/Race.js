@@ -58,10 +58,12 @@ class Race {
 
     sayTimeLeft = async (maxTimeRace, voice) => {
         let indexTimer = 0;
-        if (maxTimeRace >= 1000 * 60) {
+        if (maxTimeRace >= 1000 * 30) {
             this.timersSayTime[indexTimer++] = setTimeout(() => {
                 speech(voice.toEndRace10sec, voice.windowsVoice);
             }, maxTimeRace - 1000 * 10);
+        }
+        if (maxTimeRace >= 1000 * 60) {
             this.timersSayTime[indexTimer++] = setTimeout(() => {
                 speech(voice.toEndRace30sec, voice.windowsVoice);
             }, maxTimeRace - 1000 * 30);
@@ -154,7 +156,9 @@ class Race {
                         speech(voice.raceIsOver, voice.windowsVoice);
                     }
                 }, maxTimeRace);
-                this.sayTimeLeft(maxTimeRace, voice);
+                if (voice.toEndRaceEnabled) {
+                    this.sayTimeLeft(maxTimeRace, voice);
+                }
             }
 
             this.lastTimeLap = {};
