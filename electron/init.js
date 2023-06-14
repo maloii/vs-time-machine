@@ -1,5 +1,6 @@
 const { app } = require('electron');
 const fs = require('fs');
+const fse = require('fs-extra');
 const path = require('path');
 const fsPromise = require('fs').promises;
 const settings = require('electron-settings');
@@ -62,6 +63,10 @@ const copyDefaultImages = () => {
 };
 
 const initSettings = async () => {
+    await fse.copySync(path.join(__dirname, `../locales`), `${app.getPath('userData')}/locales`, {
+        overwrite: true,
+        recursive: true
+    });
     await i18n.changeLanguage(app.getLocale());
     const voice = await settings.get('voice');
     if (!voice) {
