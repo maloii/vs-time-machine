@@ -8,7 +8,6 @@ export interface ICompetition {
     logo: string;
     selected: boolean;
     skipFirstGate?: boolean;
-    playFail?: boolean;
     playBeep?: boolean;
     gates: IGate[];
 

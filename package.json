@@ -33,7 +33,7 @@
     "react-router-dom": "~6.1.1",
     "react-scripts": "5.0.0",
     "react-to-print": "~2.14.3",
-    "say": "~0.16.0",
+    "one-time": "~1.0.0",
     "serialport": "~9.2.8",
     "stay-awake": "~0.0.3",
     "ts-enum-util": "~4.0.2",
@@ -41,7 +41,10 @@
     "uuid": "~8.3.2",
     "web-vitals": "~2.1.2",
     "axios": "~0.26.1",
-    "buffer": "~6.0.3"
+    "buffer": "~6.0.3",
+    "electron-settings": "~4.0.2",
+    "i18next": "~22.5.1",
+    "i18next-fs-backend": "~2.1.3"
   },
   "devDependencies": {
     "@types/jest": "~26.0.24",

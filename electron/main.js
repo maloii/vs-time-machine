@@ -41,3 +41,17 @@ app.on('window-all-closed', function () {
     stayAwake.allow();
     app.quit();
 });
+
+// i18n.on('loaded', (loaded) => {
+//     i18n.changeLanguage(app.getLocale());
+//     i18n.off('loaded');
+// });
+
+// i18n.on('languageChanged', (lng) => {
+//     menuFactoryService.buildMenu(app, win, i18n);
+//     win.webContents.send('language-changed', {
+//         language: lng,
+//         namespace: config.namespace,
+//         resource: i18n.getResourceBundle(lng, config.namespace)
+//     });
+// });

@@ -8,12 +8,15 @@ import { BroadCastContainer } from '@/modules/broadcast/containers/BroadCastCont
 import { ScreenBroadCastContainer } from '@/modules/broadcast/containers/ScreenBroadCastContainer';
 import { MainLayout } from '@/modules/common/components/MainLayout/MainLayout';
 import { ImportFromRcPilotsProContainer } from '@/modules/import/containers/ImportFromRcPilotsProContainer';
+import { SettingsContainer } from '@/modules/settings/containers/SettingsContainer';
 
 export const Router: FC = observer(() => {
     const routers = (
         <Routes>
             <Route path="/screen/:screenId" element={<ScreenBroadCastContainer />} />
             <Route path="/import/rcpilots" element={<ImportFromRcPilotsProContainer />} />
+            <Route path="/settings" element={<SettingsContainer />} />
+
             <Route
                 element={
                     <MainLayout>

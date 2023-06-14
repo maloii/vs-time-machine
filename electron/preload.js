@@ -19,6 +19,7 @@ const API = {
     copyFile: (file) => copyFile(file),
     saveFile: (fileName, blob) => saveFile(fileName, blob),
     deleteFile: (file) => deleteFile(file),
+    platform: process.platform,
     ipcRenderer: {
         on: (channel, ...data) => ipcRenderer.on(channel, ...data),
         send: (channel, ...data) => ipcRenderer.send(channel, ...data),

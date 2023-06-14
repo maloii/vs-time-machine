@@ -1,0 +1,14 @@
+{
+  "initInviteText": "На старт приглашается {{groupName}}. {{pilots}}",
+  "initDelayStartText": "10 секунд до старта",
+  "initHappyRacingText": "Удачной гонки!",
+  "initToEndRace10secText": "десять секунд",
+  "initToEndRace30secText": "тридцать секунд",
+  "initToEndRace1minText": "До конца гонки осталась одна минута",
+  "initToEndRace5minText": "До конца гонки осталась пять минут",
+  "initToEndRace10minText": "До конца гонки осталась десять минут",
+  "raceIsOverText": "Гонка завершена!",
+  "playFailText": "{{pilot}} мимо!",
+  "pilotFinishedText": "{{pilot}} финишировал!",
+  "allPilotsFinishedText": "Все пилоты финишировали!"
+}

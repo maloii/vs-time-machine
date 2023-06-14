@@ -1,8 +1,12 @@
-const Say = require('say').Say;
+const Say = require('./say').Say;
 const say = new Say();
 
-const speech = (text) => {
-    say.speak(text);
+const speech = (text, voice) => {
+    say.speak(text, voice || undefined);
 };
 
-module.exports = { speech };
+const getWindowsVoices = () => {
+    return say.getVoices();
+};
+
+module.exports = { speech, getWindowsVoices };
