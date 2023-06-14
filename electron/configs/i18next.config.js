@@ -1,5 +1,6 @@
 const i18n = require('i18next');
 const i18nextBackend = require('i18next-node-fs-backend');
+const path = require('path');
 
 const i18nextOptions = {
     fallbackLng: 'en',
@@ -7,10 +8,10 @@ const i18nextOptions = {
     ns: 'translation',
     backend: {
         // path where resources get loaded from
-        loadPath: './locales/{{lng}}/{{ns}}.json',
+        loadPath: path.join(__dirname, '../../locales/{{lng}}/{{ns}}.json'),
 
         // path to post missing resources
-        addPath: './locales/{{lng}}/{{ns}}.missing.json',
+        addPath: path.join(__dirname, '../../locales/{{lng}}/{{ns}}.missing.json'),
 
         // jsonIndent to use when storing json files
         jsonIndent: 2
