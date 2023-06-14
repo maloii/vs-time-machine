@@ -3,7 +3,7 @@ const childProcess = require('child_process');
 const SayPlatformBase = require('./base.js');
 
 const BASE_SPEED = 0; // Unsupported
-const COMMAND = 'cmd /c chcp 65001>nul && powershell';
+const COMMAND = 'powershell';
 
 class SayPlatformWin32 extends SayPlatformBase {
     constructor() {
@@ -33,7 +33,7 @@ class SayPlatformWin32 extends SayPlatformBase {
         args.push(psCommand);
         options.shell = true;
 
-        return { command: COMMAND, args, pipedData, options };
+        return { command: 'cmd /c chcp 65001>nul && ' + COMMAND, args, pipedData, options };
     }
 
     buildExportCommand({ text, voice, speed, filename }) {

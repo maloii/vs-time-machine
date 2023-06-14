@@ -5,8 +5,17 @@ const speech = (text, voice) => {
     say.speak(text, voice || undefined);
 };
 
+const getWindowsVoicesPromise = () => {
+    return new Promise((resolve, reject) => {
+        say.getInstalledVoices((err, data) => {
+            if (err) return reject(err);
+            resolve(data);
+        });
+    });
+};
+
 const getWindowsVoices = () => {
-    return say.getVoices();
+    return getWindowsVoicesPromise();
 };
 
 module.exports = { speech, getWindowsVoices };

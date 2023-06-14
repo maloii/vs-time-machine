@@ -211,7 +211,7 @@ export const SettingsContainer: FC = () => {
                                     onChange={handleChangeVoice}
                                 >
                                     <MenuItem value="">{''}</MenuItem>
-                                    {windowsVoices.map((voice) => (
+                                    {(windowsVoices || []).map((voice) => (
                                         <MenuItem key={voice} value={voice}>
                                             {voice}
                                         </MenuItem>
