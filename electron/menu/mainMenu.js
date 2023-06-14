@@ -78,7 +78,7 @@ const mainMenu = Menu.buildFromTemplate([
                     importWindow.loadURL(
                         isDev
                             ? 'http://localhost:3000/settings'
-                            : `file://${path.join(__dirname, '../../build/index.html#/settings')}`
+                            : `file://${path.join(__dirname, '../../build/index.html')}#/settings`
                     );
 
                     importWindow.on('closed', () => {
