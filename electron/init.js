@@ -63,10 +63,6 @@ const copyDefaultImages = () => {
 };
 
 const initSettings = async () => {
-    await fse.copySync(path.join(__dirname, `../locales`), `${app.getPath('userData')}/locales`, {
-        overwrite: true,
-        recursive: true
-    });
     await i18n.changeLanguage(app.getLocale());
     const voice = await settings.get('voice');
     if (!voice) {
