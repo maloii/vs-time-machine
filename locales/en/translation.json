@@ -1,3 +1,14 @@
 {
-  "inviteText": "{{groupName}} is invited to start. {{pilots}}"
+  "inviteText": "{{groupName}} is invited to start. {{pilots}}",
+  "initDelayStartText": "10 seconds before the start",
+  "initHappyRacingText": "Happy racing!",
+  "initToEndRace10secText": "ten seconds",
+  "initToEndRace30secText": "thirty seconds",
+  "initToEndRace1minText": "One minute left in the race",
+  "initToEndRace5minText": "Five minutes left in the race",
+  "initToEndRace10minText": "Ten minutes left in the race",
+  "raceIsOverText": "The race is over!",
+  "playFailText": "{{pilot}} by!",
+  "pilotFinishedText": "{{pilot}} finished!",
+  "allPilotsFinishedText": "All pilots finished!"
 }
