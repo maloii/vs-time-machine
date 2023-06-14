@@ -24,9 +24,8 @@ function createBroadCastWindow(id) {
     const idScreen = v4();
     global.windows[`${id}-${idScreen}`] = screenWindow;
     screenWindow.loadURL(
-        isDev
-            ? `http://localhost:3000/screen/${id}`
-            : `file://${path.join(__dirname, `../../build/index.html#/screen/${id}`)}`
+        isDev ? `http://localhost:3000/screen/${id}` : `file://${path.join(__dirname, '../../build/index.html')}`,
+        isDev ? undefined : { hash: `/screen/${id}` }
     );
     screenWindow.on('closed', () => {
         delete global.windows[`${id}-${idScreen}`];

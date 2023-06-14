@@ -1,4 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
+import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import {
     Box,
     Button,
@@ -17,10 +18,6 @@ import { ISettingVoice } from '@/types/ISettingVoice';
 import { getSettingValue, getWindowsVoices, setSettingValue } from '@/actions/settingsRequest';
 
 import styles from './styles.module.scss';
-import { Channel, ChannelFrequencies } from '@/types/VTXChannel';
-import { $enum } from 'ts-enum-util';
-import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
-import i18n from '../../../../electron/configs/i18next.config';
 
 export const SettingsContainer: FC = () => {
     const [tabSelected, setTabSelected] = useState('Voice');
