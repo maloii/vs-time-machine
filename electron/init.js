@@ -1,6 +1,5 @@
 const { app } = require('electron');
 const fs = require('fs');
-const fse = require('fs-extra');
 const path = require('path');
 const fsPromise = require('fs').promises;
 const settings = require('electron-settings');
