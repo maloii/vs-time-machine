@@ -123,18 +123,19 @@ class Race {
             this.raceStatus = 'COUNTDOWN_3';
             this.sendRaceStatus();
             await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`), sync: true });
-            // await sleep(200);
             if (this.raceStatus === 'STOP') return;
             this.raceStatus = 'COUNTDOWN_2';
             this.sendRaceStatus();
             await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`), sync: true });
-            // await sleep(200);
             if (this.raceStatus === 'STOP') return;
             this.raceStatus = 'COUNTDOWN_1';
             this.sendRaceStatus();
             await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`), sync: true });
-            // await sleep(400);
             if (this.raceStatus === 'STOP') return;
+
+            setTimeout(() => {
+                sound.play({ path: path.join(app.getPath('userData'), `/sounds/long_beep.wav`), sync: true });
+            }, 0);
 
             this.raceStatus = 'RUN';
             if (competition?.execCommandsEnabled && competition?.execStartCommand) {
@@ -170,8 +171,6 @@ class Race {
             (this.selectedGroup.teams || []).forEach((membersGroup) => {
                 this.lastTimeLap[membersGroup._id] = this.startTime;
             });
-
-            await sound.play({ path: path.join(app.getPath('userData'), `/sounds/long_beep.wav`), sync: true });
         }
     };
 
