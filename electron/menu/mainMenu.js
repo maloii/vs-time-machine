@@ -28,7 +28,7 @@ const mainMenu = Menu.buildFromTemplate([
         label: 'File',
         submenu: [
             {
-                label: 'import sportsmen from',
+                label: 'Import sportsmen from',
                 submenu: [
                     {
                         label: 'rcpilots.pro',
@@ -49,7 +49,7 @@ const mainMenu = Menu.buildFromTemplate([
                             importWindow.loadURL(
                                 isDev
                                     ? 'http://localhost:3000/import/rcpilots'
-                                    : `file://${path.join(__dirname, '../../build/index.html#/import/rcpilots')}`
+                                    : `file://${path.join(__dirname, '../../build/index.html')}#/import/rcpilots`
                             );
 
                             importWindow.on('closed', () => {
@@ -58,6 +58,33 @@ const mainMenu = Menu.buildFromTemplate([
                         }
                     }
                 ]
+            },
+            {
+                label: 'Settings',
+                click: () => {
+                    const importWindow = new BrowserWindow({
+                        width: 800,
+                        height: 800,
+                        webPreferences: {
+                            preload: path.join(__dirname, '../preload.js'),
+                            contextIsolation: true,
+                            webSecurity: false
+                        },
+                        icon: path.join(__dirname, 'AppIcon.icns')
+                    });
+                    const idScreen = v4();
+                    global.windows[idScreen] = importWindow;
+
+                    importWindow.loadURL(
+                        isDev
+                            ? 'http://localhost:3000/settings'
+                            : `file://${path.join(__dirname, '../../build/index.html')}#/settings`
+                    );
+
+                    importWindow.on('closed', () => {
+                        delete global.windows[idScreen];
+                    });
+                }
             }
         ]
     },

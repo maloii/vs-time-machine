@@ -10,6 +10,7 @@ const connectMessages = require('./connectMessages');
 const reportMessages = require('./reportMessages');
 const broadCastMessages = require('./broadCastMessages');
 const captureMessages = require('./captureMessages');
+const settingsMessages = require('./settingsMessages');
 
 module.exports = {
     lapsMessages,
@@ -23,5 +24,6 @@ module.exports = {
     connectMessages,
     reportMessages,
     broadCastMessages,
-    captureMessages
+    captureMessages,
+    settingsMessages
 };

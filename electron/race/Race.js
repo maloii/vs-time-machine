@@ -2,8 +2,8 @@ const { app } = require('electron');
 const { exec } = require('child_process');
 const sound = require('node-wav-player');
 const path = require('path');
-const { Worker } = require('worker_threads');
 const { DateTime } = require('luxon');
+const settings = require('electron-settings');
 const { speech } = require('../speech/speech');
 const { connector } = require('../Connector');
 const { groupUpdate, groupSavePositions, groupFindById } = require('../repository/groupRepository');
@@ -21,6 +21,7 @@ const {
 const _ = require('lodash');
 const { sendToAllMessage } = require('../ipcMessages/sendMessage');
 const { lapDeleteByGroupId, lapsFindByMemberGroupId, lapInsert } = require('../repository/lapRepository');
+const { replaceDoubleBraces } = require('../utils/replaceDoubleBraces');
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -44,41 +45,50 @@ class Race {
 
     invitation = async (group) => {
         this.selectedGroup = group;
+        const voice = await settings.get('voice');
         sendToAllMessage('group-in-race', this.selectedGroup);
-        const text = `На старт приглашается ${group.name}. ${getAllNameMembersInGroup(group).join(', ')}`;
-        speech(text);
+        speech(
+            replaceDoubleBraces(voice.invite, {
+                groupName: group.name,
+                pilots: getAllNameMembersInGroup(group).join(', ')
+            }),
+            voice.windowsVoice
+        );
     };
 
-    sayTimeLeft = (maxTimeRace) => {
+    sayTimeLeft = async (maxTimeRace, voice) => {
         let indexTimer = 0;
+        if (maxTimeRace >= 1000 * 30) {
+            this.timersSayTime[indexTimer++] = setTimeout(() => {
+                speech(voice.toEndRace10sec, voice.windowsVoice);
+            }, maxTimeRace - 1000 * 10);
+        }
         if (maxTimeRace >= 1000 * 60) {
             this.timersSayTime[indexTimer++] = setTimeout(() => {
-                speech('десять секунд');
-            }, maxTimeRace - 1000 * 10);
-            this.timersSayTime[indexTimer++] = setTimeout(() => {
-                speech('тридцать секунд');
+                speech(voice.toEndRace30sec, voice.windowsVoice);
             }, maxTimeRace - 1000 * 30);
         }
         if (maxTimeRace >= 1000 * 60 * 2) {
             this.timersSayTime[indexTimer++] = setTimeout(() => {
-                speech('До конца гонки осталась одна минута');
+                speech(voice.toEndRace1min, voice.windowsVoice);
             }, maxTimeRace - 1000 * 60);
         }
         if (maxTimeRace >= 1000 * 60 * 9) {
             this.timersSayTime[indexTimer++] = setTimeout(() => {
-                speech('До конца гонки осталась пять минут');
+                speech(voice.toEndRace5min, voice.windowsVoice);
             }, maxTimeRace - 1000 * 60 * 5);
         }
 
         if (maxTimeRace >= 1000 * 60 * 15) {
             this.timersSayTime[indexTimer++] = setTimeout(() => {
-                speech('До конца гонки осталась десять минут');
+                speech(voice.toEndRace10min, voice.windowsVoice);
             }, maxTimeRace - 1000 * 60 * 10);
         }
     };
 
     start = async (group) => {
         connector.setRace(this);
+        const voice = await settings.get('voice');
         if (this.raceStatus === 'STOP') {
             this.clear();
             connector.sendSyncTime();
@@ -100,27 +110,32 @@ class Race {
             });
             if (this.raceStatus === 'STOP') return;
             this.sendRaceStatus();
-            speech('10 секунд до старта.');
-            await sleep(8000);
-            if (this.raceStatus === 'STOP') return;
-            speech('Удачной гонки!');
-            await sleep(1500);
+            if (voice.delayStartEnabled && voice.delayStartSec && voice.delayStartSec > 2) {
+                speech(voice.delayStart, voice.windowsVoice);
+                await sleep(voice.delayStartSec * 1000 - 2000);
+            }
+            if (voice.happyRacingEnabled) {
+                if (this.raceStatus === 'STOP') return;
+                speech(voice.happyRacing, voice.windowsVoice);
+                await sleep(1500);
+            }
             if (this.raceStatus === 'STOP') return;
             this.raceStatus = 'COUNTDOWN_3';
             this.sendRaceStatus();
-            await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`) });
-            await sleep(200);
+            await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`), sync: true });
             if (this.raceStatus === 'STOP') return;
             this.raceStatus = 'COUNTDOWN_2';
             this.sendRaceStatus();
-            await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`) });
-            await sleep(200);
+            await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`), sync: true });
             if (this.raceStatus === 'STOP') return;
             this.raceStatus = 'COUNTDOWN_1';
             this.sendRaceStatus();
-            await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`) });
-            await sleep(400);
+            await sound.play({ path: path.join(app.getPath('userData'), `/sounds/beep.wav`), sync: true });
             if (this.raceStatus === 'STOP') return;
+
+            setTimeout(() => {
+                sound.play({ path: path.join(app.getPath('userData'), `/sounds/long_beep.wav`), sync: true });
+            }, 0);
 
             this.raceStatus = 'RUN';
             if (competition?.execCommandsEnabled && competition?.execStartCommand) {
@@ -138,9 +153,13 @@ class Race {
                 this.timerStop = setTimeout(() => {
                     if (round.typeRace !== 'FIXED_TIME_AND_ONE_LAP_AFTER') this.stop();
                     sound.play({ path: path.join(app.getPath('userData'), `/sounds/long_beep.wav`) });
-                    speech('Гонка завершена!');
+                    if (voice.raceIsOverEnabled) {
+                        speech(voice.raceIsOver, voice.windowsVoice);
+                    }
                 }, maxTimeRace);
-                this.sayTimeLeft(maxTimeRace);
+                if (voice.toEndRaceEnabled) {
+                    this.sayTimeLeft(maxTimeRace, voice);
+                }
             }
 
             this.lastTimeLap = {};
@@ -152,8 +171,6 @@ class Race {
             (this.selectedGroup.teams || []).forEach((membersGroup) => {
                 this.lastTimeLap[membersGroup._id] = this.startTime;
             });
-
-            await sound.play({ path: path.join(app.getPath('userData'), `/sounds/long_beep.wav`) });
         }
     };
 
@@ -212,7 +229,7 @@ class Race {
 
     newLap = async (millisecond, transponder, numberPackage, gateNumber) => {
         connector.setRace(this);
-
+        const voice = await settings.get('voice');
         if (
             (this.raceStatus === 'RUN' ||
                 (this.raceStatus === 'STOP' &&
@@ -297,8 +314,13 @@ class Race {
                         this.lastTimeGates[membersGroup._id] = {};
                     } else {
                         typeLap = 'HIDDEN';
-                        if (competition.playFail) {
-                            speech(`${sportsman.lastName} мимо!`);
+                        if (voice.playFailEnabled) {
+                            speech(
+                                replaceDoubleBraces(voice.playFail, {
+                                    pilot: sportsman.lastName
+                                }),
+                                voice.windowsVoice
+                            );
                         }
                     }
                 }
@@ -325,8 +347,14 @@ class Race {
 
                 if (round.typeRace === 'FIXED_COUNT_LAPS' && typeLap === 'OK') {
                     if (okLaps.length + 1 >= Number(round.countLap)) {
-                        const text = `${getNameMemberInGroup(membersGroup)} финишировал!`;
-                        speech(text);
+                        if (voice.pilotFinishedEnabled) {
+                            speech(
+                                replaceDoubleBraces(voice.pilotFinishedText, {
+                                    pilot: getNameMemberInGroup(membersGroup)
+                                }),
+                                voice.windowsVoice
+                            );
+                        }
                         const group = await groupFindById(this.selectedGroup._id);
                         if (
                             [...(group.sportsmen || []), ...(group.teams || [])].reduce(
@@ -334,9 +362,11 @@ class Race {
                                 true
                             )
                         ) {
-                            setTimeout(() => {
-                                speech('Все пилоты финишировали!');
-                            }, 3000);
+                            if (voice.pilotFinishedEnabled) {
+                                setTimeout(() => {
+                                    speech(voice.allPilotsFinished, voice.windowsVoice);
+                                }, 3000);
+                            }
                             this.stop();
                         }
                     }
@@ -400,8 +430,13 @@ class Race {
                     typeLap = 'GATE';
                 }
 
-                if (competition.playFail && typeLap === 'HIDDEN') {
-                    speech(`${sportsman.lastName} мимо!`);
+                if (voice.playFailEnabled && typeLap === 'HIDDEN') {
+                    speech(
+                        replaceDoubleBraces(voice.playFail, {
+                            pilot: sportsman.lastName
+                        }),
+                        voice.windowsVoice
+                    );
                 }
                 const newLap = await lapInsert({
                     millisecond,
