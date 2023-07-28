@@ -1,6 +1,6 @@
 {
   "name": "vs-time-machine",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "productName": "VS Time Machine",
   "dependencies": {
